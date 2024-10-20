@@ -1,0 +1,60 @@
+.table-container {
+    padding: 20px;
+    background-color: #fff; /* Fundo branco para a tabela */
+    border-radius: 8px; /* Borda arredondada */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+  }
+  
+  .table-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .add-button {
+    background-color: #4caf50; /* Verde */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px; /* Maior padding para mais espaço */
+    text-align: left;
+    transition: background-color 0.3s; /* Transição suave para o fundo */
+  }
+  
+  th {
+    background-color: #4caf50; /* Cor verde para cabeçalho */
+    color: white; /* Texto branco no cabeçalho */
+    font-weight: bold; /* Texto em negrito */
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9; /* Cor de fundo para linhas pares */
+  }
+  
+  tr:hover {
+    background-color: #f1f1f1; /* Efeito de hover na linha */
+  }
+  
+  .action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: transform 0.2s; /* Efeito de transição */
+  }
+  
+  .action-button:hover {
+    transform: scale(1.1); /* Efeito de aumentar o tamanho do ícone ao passar o mouse */
+  }
+  

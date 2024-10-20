@@ -1,0 +1,377 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import MatrizCadastro from '../cadastro/MatrizCadastro';
+import AnalitoCadastro from '../cadastro/AnalitoCadastro';
+import ClienteCadastro from '../cadastro/ClienteCadastro';
+
+
+import {
+    Box,
+    Drawer,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Collapse,
+    Avatar,
+    Typography,
+    IconButton,
+} from '@mui/material';
+import {
+    Home as HomeIcon,
+    Description as DescriptionIcon,
+    PersonAdd as PersonAddIcon,
+    Inventory as InventoryIcon,
+    ExpandLess,
+    ExpandMore,
+    ArrowForward as ArrowForwardIcon,
+    ArrowBack as ArrowBackIcon,
+} from '@mui/icons-material';
+
+const SideBar = ({ drawerOpen, toggleDrawer }) => {
+
+
+    const [openOverlay, setOpenOverlay] = useState(false); // Estado para controlar o overlay
+
+    const handleOpenOverlay = () => {
+        setOpenOverlay(true); // Abre o overlay
+    };
+
+    const handleCloseOverlay = () => {
+        setOpenOverlay(false); // Fecha o overlay
+    };
+
+
+
+
+
+
+    const [openProcessos, setOpenProcessos] = useState(false);
+
+    const [openListas, setOpenListas] = useState(false);
+
+
+    const [openCadastroPessoas, setOpenCadastroPessoas] = useState(false);
+    const [openCadastroItens, setOpenCadastroItens] = useState(false);
+    const [selectedItem, setSelectedItem] = useState('/'); // Estado para item selecionado
+
+    const handleProcessosClick = () => setOpenProcessos(!openProcessos);
+    const handleListasClick = () => setOpenListas(!openListas);
+
+
+    const handleCadastroPessoasClick = () => setOpenCadastroPessoas(!openCadastroPessoas);
+    const handleCadastroItensClick = () => setOpenCadastroItens(!openCadastroItens);
+
+    return (
+        <>
+            <Drawer
+                sx={{
+                    width: 300,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: 300,
+                        boxSizing: 'border-box',
+                        backgroundColor: '#4CAF50',
+                        color: 'white',
+                        mt: 8,
+                        height: '100vh', // Defina a altura da sidebar para preencher a tela
+                    },
+                }}
+                variant="persistent"
+                anchor="left"
+                open={drawerOpen}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                    <Avatar sx={{ width: 56, height: 56, bgcolor: '#FFD700' }}>U</Avatar>
+                    <Typography variant="h6" sx={{ mt: 1 }}>
+                        Usuário
+                    </Typography>
+                    <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
+                        usuatio@exemplo.com
+                    </Typography>
+                </Box>
+
+                <List>
+                    <ListItem
+                        button
+                        component={Link}
+                        to="/" // Define a rota
+                        onClick={() => setSelectedItem('/')} // Atualiza o item selecionado
+                        selected={selectedItem === '/'} // Condição para o estilo selecionado
+                        sx={{
+                            bgcolor: selectedItem === '/' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                            textDecoration: 'none',
+                            color: 'white',
+                        }}
+                    >
+                        <ListItemIcon>
+                            <HomeIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Home" />
+                    </ListItem>
+                    <ListItem button onClick={handleListasClick}>
+                        <ListItemIcon>
+                            <DescriptionIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Listas" />
+                        {openListas ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+
+                    <Collapse in={openListas} timeout="auto" unmountOnExit>
+
+
+                        <List component="div" disablePadding>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/analiseLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/analiseLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/analiseLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/analiseLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Análises" />
+                            </ListItem>
+
+
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/procedimentoLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/procedimentoLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/procedimentoLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/procedimentoLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Procedimentos" />
+                            </ListItem>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/contratoLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/contratoLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/contratoLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/contratoLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Contratos" />
+                            </ListItem>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/contratoLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/contratoLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/contratoLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/contratoLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Contratos" />
+                            </ListItem>
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/matrizLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/matrizLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/matrizLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/matrizLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Matrizes" />
+                            </ListItem>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/clientesLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/clientesLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/clientesLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/clientesLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Clientes" />
+                            </ListItem>
+
+
+
+                            <ListItem button onClick={() => setSelectedItem('/amostras')}>
+                                <ListItemText primary="Amostras" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+
+                    <ListItem button onClick={handleCadastroPessoasClick}>
+                        <ListItemIcon>
+                            <PersonAddIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Cadastro de Pessoas" />
+                        {openCadastroPessoas ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                    <Collapse in={openCadastroPessoas} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            {/* Adicione as opções aqui, se houver */}
+                        </List>
+                    </Collapse>
+
+                    <ListItem button onClick={handleCadastroItensClick}>
+                        <ListItemIcon>
+                            <InventoryIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+
+
+
+                        <ListItemText primary="Cadastro de Itens" />
+                        {openCadastroItens ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+
+                    <Collapse in={openCadastroItens} timeout="auto" unmountOnExit>
+
+                        <List component="div" disablePadding>
+                            <ListItem button sx={{ pl: 4 }} onClick={() => setSelectedItem('/amostras')}>
+                                <ListItemText primary="Amostras" />
+                            </ListItem>
+
+
+
+                            <ListItem button sx={{ pl: 4 }} onClick={() => setSelectedItem('/reagentes')}>
+                                <ListItemText primary="Reagentes" />
+                            </ListItem>
+
+                            <div>
+                                <ListItem
+                                    button
+                                    onClick={handleOpenOverlay} // Abre o overlay ao clicar
+                                    sx={{
+                                        pl: 4, // Adiciona o mesmo padding à esquerda que o botão de "Reagentes"
+                                        bgcolor: selectedItem === '/matrizCadastro' ? '#8BC34A' : 'transparent',
+                                        textDecoration: 'none',
+                                        color: 'white',
+                                    }}
+                                >
+                                    <ListItemText primary="Matriz" />
+                                </ListItem>
+                                <MatrizCadastro open={openOverlay} handleClose={handleCloseOverlay} />
+                            </div>
+
+
+                            <div>
+                                <ListItem
+                                    button
+                                    onClick={handleOpenOverlay} // Abre o overlay ao clicar
+                                    sx={{
+                                        pl: 4, // Adiciona o mesmo padding à esquerda que o botão de "Reagentes"
+                                        bgcolor: selectedItem === '/analitoCadastro' ? '#8BC34A' : 'transparent',
+                                        textDecoration: 'none',
+                                        color: 'white',
+                                    }}
+                                >
+                                    <ListItemText primary="Analito" />
+                                </ListItem>
+                                <AnalitoCadastro open={openOverlay} handleClose={handleCloseOverlay} />
+                            </div>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/clienteCadastro" // Define a nova rota
+                                onClick={() => setSelectedItem('/clienteCadastro')} // Atualiza o item selecionado
+                                selected={selectedItem === '/clienteCadastro'} // Condição para o estilo selecionado
+                                sx={{
+                                    pl: 4,
+                                    bgcolor: selectedItem === '/clienteCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Clientes" />
+                            </ListItem>
+
+
+
+
+
+
+
+
+                        </List>
+                    </Collapse>
+                </List>
+            </Drawer >
+
+            {/* Retângulo com ícones quando a sidebar estiver oculta */}
+            {
+                !drawerOpen && (
+                    <Box
+                        sx={{
+                            position: 'fixed',
+                            left: 0,
+                            top: 0,
+                            height: '100vh', // Altura igual à altura da sidebar
+                            width: 60, // Largura reduzida para apenas mostrar ícones
+                            backgroundColor: '#4CAF50',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            borderRadius: 1,
+                            boxShadow: 2,
+                            paddingTop: '70px', // Adiciona espaço acima dos ícones
+                        }}
+                    >
+                        <IconButton onClick={toggleDrawer} sx={{ color: 'white' }}>
+                            <ArrowForwardIcon />
+                        </IconButton>
+                        <IconButton sx={{ color: 'white' }}>
+                            <HomeIcon />
+                        </IconButton>
+                        <IconButton sx={{ color: 'white' }}>
+                            <DescriptionIcon />
+                        </IconButton>
+                        <IconButton sx={{ color: 'white' }}>
+                            <PersonAddIcon />
+                        </IconButton>
+                        <IconButton sx={{ color: 'white' }}>
+                            <InventoryIcon />
+                        </IconButton>
+                    </Box>
+                )
+            }
+        </>
+    );
+};
+
+export default SideBar;

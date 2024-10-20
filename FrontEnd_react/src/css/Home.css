@@ -1,0 +1,185 @@
+/* Paleta de cores */
+:root {
+    --primary-bg: #1E1E24; /* Fundo escuro */
+    --primary-text: #FFFFFF; /* Texto branco */
+    --highlight: #8BC34A; /* Verde claro */
+    --secondary-bg: #3E4C59; /* Cinza-azulado para fundo dos botões */
+    --sidebar-bg: #2C3E50; /* Fundo da sidebar */
+    --sidebar-hover: #8BC34A; /* Verde claro no hover da sidebar */
+    --button-bg: #2C3E50; /* Fundo dos botões */
+    --button-hover: #C8E6C9; /* Verde claro no hover */
+    --button-border: #8BC34A; /* Cor da borda dos botões */
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+  }
+  
+  .home-container {
+    display: flex;
+  }
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Ajuste a altura conforme necessário */
+  }
+  
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: var(--sidebar-bg); /* Fundo da sidebar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+  }
+  
+  .sidebar-logo {
+    margin-bottom: 40px;
+  }
+  
+  .logo {
+    width: 80px;
+  }
+  
+  .sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar-nav ul li {
+    margin: 20px 0;
+  }
+  
+  .sidebar-nav ul li a {
+    text-decoration: none;
+    color: var(--primary-text);
+    font-size: 18px;
+    transition: color 0.3s;
+  }
+  
+  .sidebar-nav ul li a:hover {
+    color: var(--sidebar-hover); /* Verde claro no hover */
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: var(--primary-bg); /* Fundo escuro para o conteúdo */
+  }
+  
+  .header {
+    margin-bottom: 40px;
+  }
+  
+  .title {
+    font-size: 28px;
+    color: var(--highlight); /* Verde claro */
+  }
+  
+  .home-container {
+    padding: 20px; /* Espaço ao redor do container principal */
+  }
+  
+  .button-grid {
+    display: flex; /* Usando Flexbox para alinhar os botões na mesma linha */
+    justify-content: space-around; /* Espaçamento uniforme entre os botões */
+    flex-wrap: wrap; /* Permite que os botões se movam para a linha de baixo se a tela for pequena */
+    margin-top: 20px; /* Espaço acima da grade de botões */
+  }
+  
+  .dashboard-button {
+    background-color: var(--button-bg);
+    color: var(--primary-text);
+    border: 2px solid var(--button-border);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+    width: 180px; /* Largura fixa */
+    height: 100px; /* Altura fixa */
+    display: flex; /* Flexbox para centralizar conteúdo */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    margin: 10px; /* Espaçamento entre os botões */
+  }
+  
+  
+  
+  .dashboard-button:hover {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
+  }
+  
+  .dashboard-button .icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  
+
+  .square-container {
+    display: flex; /* Usar flexbox para alinhar os quadrados lado a lado */
+    justify-content: space-around; /* Espaço uniforme entre os quadrados */
+    margin-top: 70px; /* Margem acima dos quadrados */
+  }
+  
+  .square {
+    width: 45%; /* Largura do quadrado */
+    height: 300px; /* Altura do quadrado */
+    border: 1px solid var(--button-border);
+    border-radius: 10px; /* Bordas arredondadas */
+    margin: 10px; /* Espaçamento entre os quadrados */
+    background-color: #f8f9fa; /* Cor de fundo do quadrado */
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    padding: 10px; /* Adiciona espaçamento interno */
+  }
+  
+  .chart-container {
+    width: 100%; /* 100% da largura do quadrado */
+    height: 100%; /* 100% da altura do quadrado */
+  }
+  
+  .square-container {
+  display: flex; /* Usar flexbox para alinhamento horizontal */
+  gap: 20px; /* Espaçamento entre os quadrados */
+}
+
+.square {
+  flex: 1; /* Ocupa o mesmo espaço dentro do contêiner flexível */
+  background-color: white; /* Cor de fundo do quadrado */
+  border: 1px solid #ddd; /* Borda do quadrado */
+  border-radius: 8px; /* Bordas arredondadas */
+  padding: 16px; /* Espaçamento interno */
+  display: flex;
+  flex-direction: column; /* Para organizar o conteúdo verticalmente */
+}
+
+.doughnut-container {
+  display: flex; /* Usar flexbox para organizar os elementos */
+  flex-direction: row; /* Organizar em linha */
+  justify-content: space-between; /* Espaço entre gráfico e lista */
+  align-items: flex-start; /* Alinhamento do conteúdo no início */
+}
+
+.analysis-list {
+  margin-left: 20px; /* Margem à esquerda para espaçamento */
+  color: #333; /* Cor da fonte (escura) */
+}
+
+.analysis-list h3 {
+  margin-bottom: 8px; /* Espaço abaixo do título da lista */
+  color: #333; /* Cor do título (escura) */
+}
+
+.analysis-list ul {
+  list-style: none; /* Remove marcadores da lista */
+  padding: 0; /* Remove espaçamento padrão */
+}
+
+    
