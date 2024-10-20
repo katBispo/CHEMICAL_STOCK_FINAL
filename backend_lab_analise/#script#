@@ -1,0 +1,5 @@
+ /usr/bin/env /usr/lib/jvm/jdk-17-oracle-x64/bin/java @/tmp/cp_c4nydq76nxl6l3n7ge6b9q297.argfile com.laboratorio.labanalise.LabanaliseApplication 
+
+ cd /home/kauan/CU/backend_lab_analise-main ; /usr/bin/env /usr/lib/jvm/jdk-17-oracle-x64/bin/java @/tmp/cp_c4nydq76nxl6l3n7ge6b9q297.argfile com.laboratorio.labanalise.LabanaliseApplication 
+
+ cd /home/kauan/CU/backend_lab_analise-main ; /usr/bin/env /usr/lib/jvm/jdk-17-oracle-x64/bin/java @/tmp/cp_c4nydq76nxl6l3n7ge6b9q297.argfile com.laboratorio.labanalise.LabanaliseApplication 
