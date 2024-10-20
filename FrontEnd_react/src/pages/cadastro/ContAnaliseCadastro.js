@@ -6,108 +6,112 @@ import {
     IconButton,
     Typography,
     Button,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
     TextField,
     Autocomplete,
     Dialog,
     DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SideBar from '../components/SideBar.js'; 
-import { useNavigate } from 'react-router-dom';
+import SideBar from '../components/SideBar.js';
+import FeedbackDialog from '../components/FeedbackDialog.js';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function AnaliseCadastro() {
+function ContCadastroAnalise() {
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const toggleDrawer = () => setDrawerOpen((prev) => !prev);
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [clientes, setClientes] = useState([]); // Para armazenar os clientes
     const navigate = useNavigate();
 
-    const [selectedProcedure, setSelectedProcedure] = useState(null);
-    const [selectedContracts, setSelectedContracts] = useState(null);
-    const [selectedMatriz, setSelectedMatrizes] = useState(null);
-    const [nome, setNome] = useState('');
-    const [quantidadeAmostras, setQuantidadeAmostras] = useState('');
-    const [descricao, setDescricao] = useState('');
-    const [dataInicio, setDataInicio] = useState('');
-    const [prazoFinalizacao, setPrazoFinalizacao] = useState('');
+    const location = useLocation();
+    const { quantidadeAnalises, contratoNome } = location.state;
 
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [openAlertDialog, setOpenAlertDialog] = useState(false);
+
+
+    const [selectedContracts, setSelectedContracts] = useState({ label: contratoNome }); // Define o valor inicial como um objeto
+    const [nome, setNome] = useState(''); // Ajustado para nome
+    const [quantidadeAmostras, setQuantidadeAmostras] = useState(quantidadeAnalises); // Define o valor inicial da quantidade
+    const [numeroContrato, setNumeroContrato] = useState('');
+    const [observacao, setObservacao] = useState('');
+    const [dataInicio, setDataInicio] = useState(''); // Alterado
+    const [prazoFinalizacao, setPrazoFinalizacao] = useState(''); // Alterado
+    const [procedures, setProcedures] = useState([]);
+    const [selectedProcedure, setSelectedProcedure] = useState(null);
+    const [matrizes, setMatrizes] = useState([]);
+    const [selectedMatrizes, setSelectedMatrizes] = useState(null);
+
+    const [progress, setProgress] = useState(0); // Estado para controlar o progresso
+    const [isLoading, setIsLoading] = useState(false); // Estado para controle de loading
+
+
+    // Para controlar o progresso
+    const [totalAnalises, setTotalAnalises] = useState(0);
+
+    // Dialog states
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+
+    const toggleDrawer = () => {
+        setDrawerOpen((prev) => !prev);
+    };
+
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setIsLoading(true);
+        const totalAnalises = quantidadeAnalises; // Armazena a quantidade total de análises
+        setProgress(0); // Resetando o progresso
 
-        const data = {
-            nome,
-            contratos: selectedContracts,
-            matriz: selectedMatriz,
-            procedimento: selectedProcedure,
-            quantidade: quantidadeAmostras,
-            descricao,
-            dataInicio,
-            prazoFinalizacao,
-        };
+        for (let i = 0; i < quantidadeAmostras; i++) {
+            const data = {
+                nome,
+                contratos: selectedContracts,
+                matriz: selectedMatrizes,
+                procedimento: selectedProcedure,
+                quantidade: quantidadeAmostras,
+                descricao: observacao,
+                dataInicio,
+                prazoFinalizacao,
+            };
 
-        try {
-            const response = await fetch('http://localhost:8080/analise', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+            try {
+                const response = await fetch('http://localhost:8080/analise', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
 
-            if (response.ok) {
-                setOpenConfirm(true); // Abre o diálogo de confirmação
-            } else {
-                console.error('Erro ao salvar a análise');
+                if (response.ok) {
+                    setDialogMessage(`Análise ${i + 1} cadastrada com sucesso!`);
+                    console.log(`Análise ${i + 1} salva com sucesso`);
+                } else {
+                    const errorData = await response.json();
+                    console.error('Erro ao salvar a análise:', errorData);
+                    setDialogMessage('Erro ao cadastrar a análise.');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setDialogMessage('Erro ao salvar a análise no banco de dados.');
             }
-        } catch (error) {
-            console.error('Erro:', error);
+
+            // Atualizando o progresso
+            setProgress(((i + 1) / quantidadeAmostras) * 100);
         }
+
+        setIsLoading(false);
+        setDialogOpen(true);
     };
 
-    const handleConfirmYes = () => {
-        setOpenConfirm(false);
-        // Redireciona para a tela de cadastro de analises passando a quantidade
-        navigate('/contrato-cadastrar-analises', { state: { quantidadeAmostras } });
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        navigate('/alguma-rota'); // Redirecionar após o fechamento do diálogo, se necessário
     };
-
-    const handleConfirmNo = () => {
-        setOpenConfirm(false);
-        setOpenAlertDialog(true);
-    };
-
-    const handleAlertOk = () => {
-        setOpenAlertDialog(false);
-        navigate('/home');
-    };
-
-    const procedures = [
-        { label: 'Procedimento 1' },
-        { label: 'Procedimento 2' },
-        { label: 'Procedimento 3' },
-    ];
-
-    const contracts = [
-        { label: 'contrato 1' },
-        { label: 'contrato 2' },
-        { label: 'contrato 3' },
-    ];
-
-    const matrizes = [
-        { label: 'Água do Mar' },
-        { label: 'Água do Rio' },
-        { label: 'Água de Poço' },
-        { label: 'Água de Lagos' },
-        { label: 'Água de Reservatório' },
-        { label: 'Solo' },
-        { label: 'Ar' },
-        { label: 'Sedimento' },
-        { label: 'Alimento' },
-        { label: 'Particulado' },
-    ];
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -116,7 +120,7 @@ function AnaliseCadastro() {
                     <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Cadastro de Análises
                     </Typography>
                 </Toolbar>
@@ -139,6 +143,17 @@ function AnaliseCadastro() {
                     <Typography variant="h4" gutterBottom>
                         Cadastrar Análise
                     </Typography>
+
+                    {quantidadeAnalises > 0 && (
+                        <Box mt={6}>
+                            <LinearProgress variant="determinate" value={progress} />
+                            <Typography variant="caption" align="center">{`Cadastrando: ${Math.round(progress)}%`}</Typography>
+                        </Box>
+                    )}
+
+                    {console.log('Total Análises:', totalAnalises)}
+                    {console.log('Progress:', progress)}
+
                     <form onSubmit={handleSubmit}>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
@@ -150,9 +165,10 @@ function AnaliseCadastro() {
                                 onChange={(e) => setNome(e.target.value)}
                             />
                             <Autocomplete
-                                options={contracts}
+                                options={[{ label: contratoNome }]} // Passa um array com um único objeto
                                 getOptionLabel={(option) => option.label}
-                                onChange={(event, value) => setSelectedContracts(value)}
+                                value={selectedContracts} // Define o valor atual
+                                onChange={(event, value) => setSelectedContracts(value)} // Atualiza o estado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -160,9 +176,11 @@ function AnaliseCadastro() {
                                         required
                                         margin="normal"
                                         style={{ width: '300px' }}
+                                        disabled // Torna o campo não editável
                                     />
                                 )}
                             />
+
                         </Box>
 
                         <Box display="flex" justifyContent="flex-start" gap={2}>
@@ -234,45 +252,22 @@ function AnaliseCadastro() {
                             margin="normal"
                             style={{ width: '350px' }}
                             InputProps={{ style: { height: '100px' } }}
-                            value={descricao}
-                            onChange={(e) => setDescricao(e.target.value)}
+                            value={observacao}
+                            onChange={(e) => setObservacao(e.target.value)}
                         />
 
                         <Box display="flex" justifyContent="center" marginTop={2}>
-                            <Button variant="contained" type="submit">
-                                Salvar
+                            <Button variant="contained" type="submit" disabled={isLoading}>
+                                {isLoading ? 'Cadastrando...' : 'Salvar'}
                             </Button>
                         </Box>
-
-                        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-                            <DialogTitle>Confirmação</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Deseja cadastrar as {quantidadeAmostras} amostras agora?
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleConfirmYes}>Sim</Button>
-                                <Button onClick={handleConfirmNo}>Não</Button>
-                            </DialogActions>
-                        </Dialog>
-
-                        <Dialog open={openAlertDialog} onClose={() => setOpenAlertDialog(false)}>
-                            <DialogTitle>Alerta</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Para adicionar amostras posteriormente, não esqueça de adicionar o ID dessa análise.
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleAlertOk}>Ok</Button>
-                            </DialogActions>
-                        </Dialog>
                     </form>
                 </Box>
+                {/* Usando o novo componente FeedbackDialog */}
+                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
             </Box>
         </Box>
     );
 }
 
-export default AnaliseCadastro;
+export default ContCadastroAnalise;

@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
+import FeedbackDialog from '../components/FeedbackDialog'; // Importe o novo componente
+
 import { useNavigate } from 'react-router-dom';
 
 function ContratoCadastro() {
@@ -28,10 +30,14 @@ function ContratoCadastro() {
     const [selectedContracts, setSelectedContracts] = useState(null);
     const [nomeContrato, setNomeContrato] = useState(''); // Alterado
     const [quantidadeAnalises, setQuantidadeAnalises] = useState(''); // Alterado
-    const [numeroContrato, setNumeroContrato] = useState(''); 
+    const [numeroContrato, setNumeroContrato] = useState('');
     const [observacao, setObservacao] = useState('');
     const [dataContrato, setDataContrato] = useState(''); // Alterado
     const [dataEntrega, setDataEntrega] = useState(''); // Alterado
+
+    // Dialog states
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
 
 
     const toggleDrawer = () => {
@@ -45,6 +51,7 @@ function ContratoCadastro() {
             if (response.ok) {
                 const data = await response.json();
                 setClientes(data); // Armazena a lista de clientes no estado
+
             } else {
                 console.error('Erro ao buscar clientes');
             }
@@ -79,22 +86,36 @@ function ContratoCadastro() {
             });
 
             if (response.ok) {
+                setDialogMessage('Cliente cadastrado com sucesso!');
+
                 console.log('Contrato salvo com sucesso');
                 setOpenConfirm(true);
             } else {
                 const errorData = await response.json();
                 console.error('Erro ao salvar o contrato:', errorData);
+                setDialogMessage('Erro ao cadastrar o cliente.');
+
             }
         } catch (error) {
             console.error('Erro ao enviar dados:', error);
+            setDialogMessage('Erro ao salvar o cliente no banco de dados.');
+
         }
+        setDialogOpen(true);
+
     };
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
 
     const handleConfirmYes = () => {
         setOpenConfirm(false);
-        navigate('/cadastrar-amostras', { state: { quantidadeAnalises } });
+        navigate('/contrato-cadastrar-analises', { state: { quantidadeAnalises, contratoNome: nomeContrato } });
     };
-
+    
+    
     const handleConfirmNo = () => {
         setOpenConfirm(false);
     };
@@ -229,6 +250,8 @@ function ContratoCadastro() {
                         </Dialog>
                     </form>
                 </Box>
+                {/* Usando o novo componente FeedbackDialog */}
+                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
             </Box>
         </Box>
     );

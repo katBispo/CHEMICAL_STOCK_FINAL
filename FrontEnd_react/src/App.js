@@ -11,12 +11,11 @@ import AnalitoLista from './pages/lista/AnalitoLista';
 
 import AnaliseCadastro from './pages/cadastro/AnaliseCadastro';
 import ContratoCadastro from './pages/cadastro/ContratoCadastro';
-import CONTAnaliseCadastro from './pages/cadastro/cont-AnaliseCadastro';
 import ProcedimentoCadastro from './pages/cadastro/ProcedimentoCadastro';
 import MatrizCadastro from './pages/cadastro/MatrizCadastro'
 import AnalitoCadastro from './pages/cadastro/AnalitoCadastro';
 import ClienteCadastro from './pages/cadastro/ClienteCadastro';
-
+import ContAnaliseCadastro from './pages/cadastro/ContAnaliseCadastro';
 
 import { Link } from 'react-router-dom';
 import { MdArtTrack } from 'react-icons/md';
@@ -37,13 +36,14 @@ function App() {
 
         <Route path="/analiseCadastro" element={<AnaliseCadastro />} />
         <Route path="/contratoCadastro" element={<ContratoCadastro />} />
-        <Route path="/cont-analiseCadastro" element={<CONTAnaliseCadastro />} />
         <Route path="/procedimentoCadastro" element={<ProcedimentoCadastro />} />
         <Route path="/clienteCadastro" element={<ClienteCadastro />} />
         <Route path="/matrizCadastro" element={<MatrizCadastro />} />
         <Route path="/analitoCadastro" element={<AnalitoCadastro />} />
         <Route path="/clienteCadastro" element={<ClienteCadastro />} />
+        <Route path="/contrato-cadastrar-analises" element={<ContAnaliseCadastro />} />
 
+        
 
 
       </Routes>
