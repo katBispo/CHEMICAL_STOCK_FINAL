@@ -21,14 +21,17 @@ public class Procedimento implements Serializable {
     private String descricaoProcedimento;
 
     @Lob
-    private byte[] pdfData;  // Campo para armazenar o PDF
+    private byte[] pdfData; // Campo para armazenar o PDF
 
-    @ManyToMany(mappedBy = "procedimentos")
-    private List<ReagenteUsado> reagenteUsados = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+        name = "PROCEDIMENTO_AMOSTRA",
+        joinColumns = @JoinColumn(name = "id_procedimento"),
+        inverseJoinColumns = @JoinColumn(name = "id_amostra")
+    )
+    private List<Amostra> amostras = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "ID_AMOSTRA", nullable = false)
-    private Amostra amostra;
+    // Getters e Setters
 
     public Procedimento() {
     }
@@ -69,6 +72,14 @@ public class Procedimento implements Serializable {
 
     public void setPdfData(byte[] pdfData) {
         this.pdfData = pdfData;
+    }
+
+    public List<Amostra> getAmostras() {
+        return amostras;
+    }
+
+    public void setAmostras(List<Amostra> amostras) {
+        this.amostras = amostras;
     }
 
     @Override

@@ -1,5 +1,5 @@
 import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import FilterOverlay from '../components/FilterOverlay';
 import { useNavigate } from 'react-router-dom';
@@ -24,23 +24,35 @@ import {
     IconButton,
 } from '@mui/material';
 
-const data = [
-    {
-        id: '#20462',
-        name: 'Ácido Sulfúrico',
-        startDate: '13/05/2022',
-        endDate: '13/05/2022',
-        contract: 'Contrato A',
-        procedure: 'Procedimento B',
-        matrix: 'Ácido',
-    },
-];
 
-const analises = [
-    { id: 1, nome: 'Ácido Sulfúrico', data: '12/12/2025', cliente: 'Cliente A', matriz: 'Ácido', analito: 'Sulfúrico', qtdAmostras: '5', status: 'concluida' },
-    { id: 2, nome: 'Hidróxido de Sódio', data: '10/11/2024', cliente: 'Cliente B', matriz: 'Base', analito: 'Sódio', qtdAmostras: '3', status: 'atrasada' },
-    { id: 3, nome: 'Nitrato de Potássio', data: '01/06/2024', cliente: 'Cliente C', matriz: 'Sal', analito: 'Potássio', qtdAmostras: '2', status: 'em andamento' },
-];
+
+
+
+const AnalysisTable = () => {
+
+
+
+const [analises, setAnalises] = useState([]);
+
+// Função para buscar as análises
+const fetchAnalises = async () => {
+    try {
+        const response = await fetch('http://localhost:8080/analise'); // Endpoint para buscar as análises
+        if (response.ok) {
+            const data = await response.json();
+            setAnalises(data); // Armazena as análises no estado
+        } else {
+            console.error('Erro ao buscar análises');
+        }
+    } catch (error) {
+        console.error('Erro ao conectar ao backend:', error);
+    }
+};
+
+useEffect(() => {
+    fetchAnalises(); // Chama a função ao montar o componente
+}, []);
+
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -55,9 +67,6 @@ const getStatusColor = (status) => {
     }
 };
 
-
-
-const AnalysisTable = () => {
     const [drawerOpen, setDrawerOpen] = useState(false); // Alterado para false, para que comece fechado
     const [showFilter, setShowFilter] = useState(false);
     const [analisesFiltradas, setAnalisesFiltradas] = useState(analises);

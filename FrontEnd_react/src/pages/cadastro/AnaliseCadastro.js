@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     AppBar,
@@ -6,26 +6,39 @@ import {
     IconButton,
     Typography,
     Button,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
     TextField,
     Autocomplete,
     Dialog,
     DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SideBar from '../components/SideBar.js'; 
-import { useNavigate } from 'react-router-dom';
+import SideBar from '../components/SideBar.js';
+import FeedbackDialog from '../components/FeedbackDialog.js';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function AnaliseCadastro() {
+
+
+    const [clientes, setClientes] = useState([]); // Para armazenar os clientes
+    const [matrizes, setMatrizes] = useState([]); // Para armazenar as matrizes
+    const [procedures, setProcedures] = useState([]); // Para armazenar os procedimentos
+    const [contracts, setContracts] = useState([]); // Para armazenar os contratos
+
+    const [selectedMatriz, setSelectedMatriz] = useState(null);
+
+    const [selectedProcedure, setSelectedProcedure] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false); // Estado para controle do diálogo
+    const [dialogMessage, setDialogMessage] = useState(''); // Mensagem do diálogo
+
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
 
-    const [selectedProcedure, setSelectedProcedure] = useState(null);
     const [selectedContracts, setSelectedContracts] = useState(null);
-    const [selectedMatriz, setSelectedMatrizes] = useState(null);
     const [nome, setNome] = useState('');
     const [quantidadeAmostras, setQuantidadeAmostras] = useState('');
     const [descricao, setDescricao] = useState('');
@@ -35,18 +48,86 @@ function AnaliseCadastro() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openAlertDialog, setOpenAlertDialog] = useState(false);
 
+
+
+
+    const fetchMatrizes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/matriz');
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data); // Verifique o que é retornado aqui
+                setMatrizes(data);
+            } else {
+                console.error('Erro ao buscar matrizes');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+
+
+    // Função para buscar procedimentos
+    const fetchProcedures = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
+            if (response.ok) {
+                const data = await response.json();
+                setProcedures(data); // Armazena a lista de procedimentos no estado
+            } else {
+                console.error('Erro ao buscar procedimento');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+
+    // Função para buscar contratos
+    const fetchContracts = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/contrato'); // Endpoint que retorna todos os contratos
+            if (response.ok) {
+                const data = await response.json();
+                setContracts(data); // Armazena a lista de contratos no estado
+            } else {
+                console.error('Erro ao buscar contratos');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMatrizes(); // Chama a função para buscar matrizes
+        fetchProcedures(); // Chama a função para buscar procedimentos
+        fetchContracts(); // Chama a função para buscar contratos
+    }, []);
+
+
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log("Contrato selecionado:", selectedContracts); // Adicione isso antes do envio
 
+
+
+
+           
+    // Certifique-se de que um contrato foi selecionado
+    if (!selectedContracts || !selectedContracts.id) { // Verifique se selectedContract.id não é nulo
+        console.error('Nenhum contrato selecionado ou ID do contrato está faltando');
+        return; // Impede o envio se nenhum contrato estiver selecionado
+    }
         const data = {
             nome,
-            contratos: selectedContracts,
-            matriz: selectedMatriz,
-            procedimento: selectedProcedure,
+            contratos: selectedContracts ? selectedContracts.label : null,
+            matriz: selectedMatriz ? selectedMatriz.label : null,
+            procedimento: selectedProcedure ? selectedProcedure.label : null,
             quantidade: quantidadeAmostras,
             descricao,
             dataInicio,
             prazoFinalizacao,
+            statusAnalise: "EM_ANDAMENTO",
         };
 
         try {
@@ -66,49 +147,16 @@ function AnaliseCadastro() {
         } catch (error) {
             console.error('Erro:', error);
         }
-    };
-
-    const handleConfirmYes = () => {
-        setOpenConfirm(false);
-        // Redireciona para a tela de cadastro de analises passando a quantidade
-        navigate('/contrato-cadastrar-analises', { state: { quantidadeAmostras } });
-    };
-
-    const handleConfirmNo = () => {
-        setOpenConfirm(false);
-        setOpenAlertDialog(true);
-    };
+    }
 
     const handleAlertOk = () => {
         setOpenAlertDialog(false);
         navigate('/home');
     };
 
-    const procedures = [
-        { label: 'Procedimento 1' },
-        { label: 'Procedimento 2' },
-        { label: 'Procedimento 3' },
-    ];
-
-    const contracts = [
-        { label: 'contrato 1' },
-        { label: 'contrato 2' },
-        { label: 'contrato 3' },
-    ];
-
-    const matrizes = [
-        { label: 'Água do Mar' },
-        { label: 'Água do Rio' },
-        { label: 'Água de Poço' },
-        { label: 'Água de Lagos' },
-        { label: 'Água de Reservatório' },
-        { label: 'Solo' },
-        { label: 'Ar' },
-        { label: 'Sedimento' },
-        { label: 'Alimento' },
-        { label: 'Particulado' },
-    ];
-
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -116,7 +164,7 @@ function AnaliseCadastro() {
                     <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Cadastro de Análises
                     </Typography>
                 </Toolbar>
@@ -139,6 +187,9 @@ function AnaliseCadastro() {
                     <Typography variant="h4" gutterBottom>
                         Cadastrar Análise
                     </Typography>
+
+
+
                     <form onSubmit={handleSubmit}>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
@@ -151,8 +202,8 @@ function AnaliseCadastro() {
                             />
                             <Autocomplete
                                 options={contracts}
-                                getOptionLabel={(option) => option.label}
-                                onChange={(event, value) => setSelectedContracts(value)}
+                                getOptionLabel={(option) => option.nomeContrato} // Use o nome correto do campo
+                                onChange={(event, value) => setSelectedContracts(value)} // Mude para um único contrato
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -163,6 +214,7 @@ function AnaliseCadastro() {
                                     />
                                 )}
                             />
+
                         </Box>
 
                         <Box display="flex" justifyContent="flex-start" gap={2}>
@@ -189,9 +241,10 @@ function AnaliseCadastro() {
                         </Box>
 
                         <Box display="flex" justifyContent="flex-start" gap={2}>
+
                             <Autocomplete
-                                options={procedures}
-                                getOptionLabel={(option) => option.label}
+                                options={procedures} // Usando a lista de procedimentos
+                                getOptionLabel={(option) => option.nomeProcedimento} // Ajuste conforme a estrutura do seu procedimento
                                 onChange={(event, value) => setSelectedProcedure(value)}
                                 renderInput={(params) => (
                                     <TextField
@@ -214,9 +267,9 @@ function AnaliseCadastro() {
                         </Box>
 
                         <Autocomplete
-                            options={matrizes}
-                            getOptionLabel={(option) => option.label}
-                            onChange={(event, value) => setSelectedMatrizes(value)}
+                            options={matrizes} // Usando a lista de matrizes
+                            getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta
+                            onChange={(event, value) => setSelectedMatriz(value)}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -227,6 +280,7 @@ function AnaliseCadastro() {
                                 />
                             )}
                         />
+
 
                         <TextField
                             label="Descrição da Análise"
@@ -244,19 +298,6 @@ function AnaliseCadastro() {
                             </Button>
                         </Box>
 
-                        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-                            <DialogTitle>Confirmação</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Deseja cadastrar as {quantidadeAmostras} amostras agora?
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleConfirmYes}>Sim</Button>
-                                <Button onClick={handleConfirmNo}>Não</Button>
-                            </DialogActions>
-                        </Dialog>
-
                         <Dialog open={openAlertDialog} onClose={() => setOpenAlertDialog(false)}>
                             <DialogTitle>Alerta</DialogTitle>
                             <DialogContent>
@@ -270,6 +311,8 @@ function AnaliseCadastro() {
                         </Dialog>
                     </form>
                 </Box>
+                {/* Usando o novo componente FeedbackDialog */}
+                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
             </Box>
         </Box>
     );

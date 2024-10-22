@@ -1,6 +1,6 @@
-            
+
 import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import FilterOverlay from '../components/FilterOverlay';
 import { useNavigate } from 'react-router-dom';
@@ -25,65 +25,58 @@ import {
     IconButton,
 } from '@mui/material';
 
-const data = [
-    {
-        id: '#20462',
-        name: 'Ácido Sulfúrico',
-        startDate: '13/05/2022',
-        endDate: '13/05/2022',
-        contract: 'Contrato A',
-        procedure: 'Procedimento B',
-        matrix: 'Ácido',
-    },
-];
 
-const analises = [
-    { id: 1, nome: 'Ácido Sulfúrico', data: '12/12/2025', cliente: 'Cliente A', matriz: 'Ácido', analito: 'Sulfúrico', qtdAmostras: '5', status: 'concluida' },
-    { id: 2, nome: 'Hidróxido de Sódio', data: '10/11/2024', cliente: 'Cliente B', matriz: 'Base', analito: 'Sódio', qtdAmostras: '3', status: 'atrasada' },
-    { id: 3, nome: 'Nitrato de Potássio', data: '01/06/2024', cliente: 'Cliente C', matriz: 'Sal', analito: 'Potássio', qtdAmostras: '2', status: 'em andamento' },
-];
 
-const getStatusColor = (status) => {
-    switch (status) {
-        case 'concluida':
-            return { backgroundColor: 'green', color: '#fff' };
-        case 'em andamento':
-            return { backgroundColor: 'yellow', color: '#000' };
-        case 'atrasada':
-            return { backgroundColor: 'red', color: '#fff' };
-        default:
-            return {};
-    }
-};
 
 
 
 const AnalysisTable = () => {
+
+    const [contratos, setContratos] = useState([]);
+
     const [drawerOpen, setDrawerOpen] = useState(false); // Alterado para false, para que comece fechado
     const [showFilter, setShowFilter] = useState(false);
-    const [analisesFiltradas, setAnalisesFiltradas] = useState(analises);
     const navigate = useNavigate();
+
+    // Função para buscar os contratos
+    const fetchContratos = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/contratos');
+            if (response.ok) {
+                const data = await response.json();
+                setContratos(data);
+            } else {
+                console.error('Erro ao buscar contratos');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchContratos();
+    }, []);
 
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev); // Alterna o estado da sidebar
     };
 
-    const handleApplyFilter = (filters) => {
-        const { nome, matriz, analito } = filters;
-
-        const filtered = analises.filter((analise) =>
-            (!nome || analise.nome.toLowerCase().includes(nome.toLowerCase())) &&
-            (!matriz || analise.matriz.toLowerCase().includes(matriz.toLowerCase())) &&
-            (!analito || analise.analito.toLowerCase().includes(analito.toLowerCase()))
-        );
-
-        setAnalisesFiltradas(filtered);
-        setShowFilter(false);
-    };
-
+   
     const handleCancelFilter = () => {
         setShowFilter(false);
+    };
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'ATIVO':
+                return { backgroundColor: 'green', color: '#fff' };
+            case 'CANCELADO':
+                return { backgroundColor: 'yellow', color: '#000' };
+            case 'PENDENTE':
+                return { backgroundColor: 'red', color: '#fff' };
+            default:
+                return {};
+        }
     };
 
     return (
@@ -147,17 +140,19 @@ const AnalysisTable = () => {
                 </Box>
 
                 {/* Drawer para o filtro */}
-                <Drawer anchor="right" open={showFilter} onClose={() => setShowFilter(false)}>
-                    <FilterOverlay onApply={handleApplyFilter} onCancel={handleCancelFilter} />
-                </Drawer>
+               
+               
                 <Box display="flex" justifyContent="space-around" mt={2}>
-                    {/* Tabela de Análises */}
 
+                    {/* Tabela de contratos */}
+
+
+                    {/* Tabela de Contratos */}
                     <TableContainer component={Paper} style={{ marginTop: '20px', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
                         <Table>
                             <TableHead>
-                                <TableRow style={{ backgroundColor: '#4CAF50' }}> {/* Cabeçalho com cor verde mais elegante */}
-                                    {['Nome', 'Data', 'Cliente', 'Matriz', 'Analito', 'Quantidade de Amostras', 'Status', 'Ações'].map((header) => (
+                                <TableRow style={{ backgroundColor: '#4CAF50' }}>
+                                    {['Nome Contrato', 'Número Contrato', 'Quantidade de Análises', 'Data de Entrega', 'Nome Cliente, Status'].map((header) => (
                                         <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
                                             {header}
                                         </TableCell>
@@ -165,23 +160,22 @@ const AnalysisTable = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {analisesFiltradas.map((analise) => ( // Atualiza para usar analisesFiltradas
+                                {contratos.map((contrato) => (
                                     <TableRow
-                                        key={analise.id}
+                                        key={contrato.id}
                                         style={{ backgroundColor: '#fff', transition: 'background-color 0.3s' }}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'} // Efeito hover suave
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
                                     >
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.nome}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.data}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.cliente}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.matriz}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.analito}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center', paddingLeft: '30px' }}>{analise.qtdAmostras}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.nomeContrato}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.numeroContrato}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.quantidadeAnalises}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{new Date(contrato.dataEntrega).toLocaleDateString()}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.nomeCliente}</TableCell>
                                         <TableCell>
                                             <Box
                                                 sx={{
-                                                    ...getStatusColor(analise.status),
+                                                    ...getStatusColor(contrato.status),
                                                     padding: '5px',
                                                     borderRadius: '15px',
                                                     textAlign: 'center',
@@ -192,7 +186,7 @@ const AnalysisTable = () => {
                                                     fontWeight: 'bold',
                                                 }}
                                             >
-                                                {analise.status}
+                                                {contrato.status}
                                             </Box>
                                         </TableCell>
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>

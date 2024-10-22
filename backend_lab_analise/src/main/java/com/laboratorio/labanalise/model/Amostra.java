@@ -1,12 +1,13 @@
 package com.laboratorio.labanalise.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.laboratorio.labanalise.model.enums.StatusAmostra;
 
 @Entity
 @Table(name = "AMOSTRA")
@@ -15,32 +16,56 @@ public class Amostra implements Serializable {
 
     @Id
     private Long id;
+
     @Column(nullable = false)
     private String nome;
     private String enderecoColeta;
     private LocalDateTime dataColeta;
     private String coordenadaColeta;
 
+    // Nova variável para data limite de finalização
+    private LocalDateTime dataLimiteFinalizacao;
+
+    // Adicionando o status da amostra
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusAmostra status;
+
+    // Nova variável para descrição da amostra
+    @Column(nullable = true, length = 500) // O tamanho do campo pode ser ajustado conforme necessário
+    private String descricao;
+
     @ManyToMany(mappedBy = "amostras")
     private List<Analito> analitos = new ArrayList<>();
-    @OneToMany(mappedBy = "amostra")
+
+    @ManyToMany
+    @JoinTable(
+        name = "PROCEDIMENTO_AMOSTRA",
+        joinColumns = @JoinColumn(name = "id_amostra"),
+        inverseJoinColumns = @JoinColumn(name = "id_procedimento")
+    )
     private List<Procedimento> procedimentos = new ArrayList<>();
+
     @ManyToOne
-    @JoinColumn(name = "ID_ANALISE",nullable = false)
+    @JoinColumn(name = "ID_ANALISE", nullable = false)
     private Analise analise;
 
-
-    public Amostra(String nome, String enderecoColeta, LocalDateTime dataColeta, String coordenadaColeta) {
+    public Amostra(String nome, String enderecoColeta, LocalDateTime dataColeta, String coordenadaColeta, LocalDateTime dataLimiteFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
         this.coordenadaColeta = coordenadaColeta;
+        this.dataLimiteFinalizacao = dataLimiteFinalizacao;
+        this.status = status;
+        this.descricao = descricao;
     }
 
-    public Amostra(){
-
+    public Amostra() {
+        // Definindo um status padrão, se necessário
+        this.status = StatusAmostra.EM_ANDAMENTO;
     }
 
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -79,6 +104,38 @@ public class Amostra implements Serializable {
 
     public void setCoordenadaColeta(String coordenadaColeta) {
         this.coordenadaColeta = coordenadaColeta;
+    }
+
+    public LocalDateTime getDataLimiteFinalizacao() {
+        return dataLimiteFinalizacao;
+    }
+
+    public void setDataLimiteFinalizacao(LocalDateTime dataLimiteFinalizacao) {
+        this.dataLimiteFinalizacao = dataLimiteFinalizacao;
+    }
+
+    public StatusAmostra getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusAmostra status) {
+        this.status = status;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public List<Procedimento> getProcedimentos() {
+        return procedimentos;
+    }
+
+    public void setProcedimentos(List<Procedimento> procedimentos) {
+        this.procedimentos = procedimentos;
     }
 
     @Override

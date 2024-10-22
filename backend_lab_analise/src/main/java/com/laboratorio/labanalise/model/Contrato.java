@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.model;
 
+import com.laboratorio.labanalise.model.enums.StatusContrato;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -11,7 +12,6 @@ import java.util.Objects;
 public class Contrato implements Serializable {
     private static final long serialVersionUID = 1L;
 
-   
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +29,9 @@ public class Contrato implements Serializable {
 
     // Novo campo 'observacao'
     private String observacao;
+
+    @Enumerated(EnumType.STRING)
+    private StatusContrato statusContrato;
 
     @OneToMany(mappedBy = "contrato")
     private List<Analise> analises;
@@ -85,13 +88,20 @@ public class Contrato implements Serializable {
         this.quantidadeAnalises = quantidadeAnalises;
     }
 
-    // Getters e Setters para o campo 'observacao'
     public String getObservacao() {
         return observacao;
     }
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public StatusContrato getStatusContrato() {
+        return statusContrato;
+    }
+
+    public void setStatusContrato(StatusContrato statusContrato) {
+        this.statusContrato = statusContrato;
     }
 
     @Override

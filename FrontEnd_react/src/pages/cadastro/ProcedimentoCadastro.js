@@ -32,6 +32,7 @@ function ProcedimentoCadastro() {
 
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [openConfirm, setOpenConfirm] = useState(false); // Estado para controle do diálogo
+    const [dialogMessage, setDialogMessage] = useState(''); // Mensagem do diálogo
 
 
     const navigate = useNavigate();
@@ -44,27 +45,20 @@ function ProcedimentoCadastro() {
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        const data = {
-            nome: nomeProcedimento,
-            descricao,
-            pdf: pdfFile, // Você pode precisar converter para o formato necessário no backend.
-        };
-
-        console.log('Dados do formulário:', data);
-
+    
+        const formData = new FormData();
+        formData.append('nomeProcedimento', nomeProcedimento); // Substitua pelas variáveis corretas
+        formData.append('descricaoProcedimento', descricao);
+        formData.append('pdfFile', pdfFile); // Arquivo PDF
+    
         try {
-            const response = await fetch('http://localhost:8080/procedimentoCadastro', {
+            const response = await fetch('http://localhost:8080/procedimento', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: formData,
             });
-
+    
             if (response.ok) {
                 console.log('Procedimento salvo com sucesso');
             } else {
@@ -76,6 +70,8 @@ function ProcedimentoCadastro() {
             console.error('Erro:', error);
         }
     };
+    
+    
 
 
 
@@ -112,13 +108,14 @@ function ProcedimentoCadastro() {
                 <form onSubmit={handleSubmit}>
                     {/* Nome do Procedimento */}
                     <TextField
-                        label="Nome Procedimento"
+                        label="Nome do Procedimento"
                         value={nomeProcedimento}
-                        onChange={(e) => setNomeProcedimento(e.target.value)}
+                        onChange={(e) => setNomeProcedimento(e.target.value)} // Atualizando o valor no estado
                         required
                         margin="normal"
-                        style={{ width: '100%' }}
+                        fullWidth
                     />
+
 
                     {/* Descrição */}
                     <TextField
@@ -148,8 +145,12 @@ function ProcedimentoCadastro() {
                         </Button>
                     </Box>
                 </form>
+
             </Box>
+
         </Box>
+
+
     );
 }
 

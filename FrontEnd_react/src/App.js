@@ -16,6 +16,7 @@ import MatrizCadastro from './pages/cadastro/MatrizCadastro'
 import AnalitoCadastro from './pages/cadastro/AnalitoCadastro';
 import ClienteCadastro from './pages/cadastro/ClienteCadastro';
 import ContAnaliseCadastro from './pages/cadastro/ContAnaliseCadastro';
+import AmostraCadastro from './pages/cadastro/AmostraCadastro';
 
 import { Link } from 'react-router-dom';
 import { MdArtTrack } from 'react-icons/md';
@@ -42,6 +43,7 @@ function App() {
         <Route path="/analitoCadastro" element={<AnalitoCadastro />} />
         <Route path="/clienteCadastro" element={<ClienteCadastro />} />
         <Route path="/contrato-cadastrar-analises" element={<ContAnaliseCadastro />} />
+        <Route path="/amostraCadastro" element={<AmostraCadastro />} />
 
         
 

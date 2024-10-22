@@ -1,6 +1,5 @@
 package com.laboratorio.labanalise.model;
 
-
 import com.laboratorio.labanalise.model.enums.StatusAnalise;
 import jakarta.persistence.*;
 
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 @Entity
 @Table(name = "ANALISE")
 public class Analise implements Serializable {
@@ -19,24 +17,28 @@ public class Analise implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
     @Column(nullable = false)
     private String nome;
     private LocalDateTime dataCadastro;
     private String descricaoGeral;
+
+    @Enumerated(EnumType.STRING)
     private StatusAnalise statusAnalise;
+
     private Integer quantidadeAmostras;
     private LocalDate prazoFinalizacao;
 
     @ManyToOne
     @JoinColumn(name = "ID_MATRIZ", nullable = false)
     private Matriz matriz;
+
     @OneToMany(mappedBy = "analise")
     List<Amostra> amostras = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "ID_CONTRATO",nullable = false)
+    @JoinColumn(name = "ID_CONTRATO", nullable = false)
     private Contrato contrato;
 
     public Analise() {

@@ -31,16 +31,26 @@ import {
 const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
 
-    const [openOverlay, setOpenOverlay] = useState(false); // Estado para controlar o overlay
+    const [openMatrizOverlay, setOpenMatrizOverlay] = useState(false); // Estado para controlar o overlay da Matriz
+    const [openAnalitoOverlay, setOpenAnalitoOverlay] = useState(false); // Estado para controlar o overlay do Analito
 
-    const handleOpenOverlay = () => {
-        setOpenOverlay(true); // Abre o overlay
+    // Funções para abrir e fechar o overlay da Matriz
+    const handleOpenMatrizOverlay = () => {
+        setOpenMatrizOverlay(true);
     };
 
-    const handleCloseOverlay = () => {
-        setOpenOverlay(false); // Fecha o overlay
+    const handleCloseMatrizOverlay = () => {
+        setOpenMatrizOverlay(false);
     };
 
+    // Funções para abrir e fechar o overlay do Analito
+    const handleOpenAnalitoOverlay = () => {
+        setOpenAnalitoOverlay(true);
+    };
+
+    const handleCloseAnalitoOverlay = () => {
+        setOpenAnalitoOverlay(false);
+    };
 
 
 
@@ -233,24 +243,12 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                         </List>
                     </Collapse>
 
-                    <ListItem button onClick={handleCadastroPessoasClick}>
-                        <ListItemIcon>
-                            <PersonAddIcon sx={{ color: 'white' }} />
-                        </ListItemIcon>
-                        <ListItemText primary="Cadastro de Pessoas" />
-                        {openCadastroPessoas ? <ExpandLess /> : <ExpandMore />}
-                    </ListItem>
-                    <Collapse in={openCadastroPessoas} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            {/* Adicione as opções aqui, se houver */}
-                        </List>
-                    </Collapse>
+
 
                     <ListItem button onClick={handleCadastroItensClick}>
                         <ListItemIcon>
                             <InventoryIcon sx={{ color: 'white' }} />
                         </ListItemIcon>
-
 
 
                         <ListItemText primary="Cadastro de Itens" />
@@ -260,7 +258,39 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                     <Collapse in={openCadastroItens} timeout="auto" unmountOnExit>
 
                         <List component="div" disablePadding>
-                            <ListItem button sx={{ pl: 4 }} onClick={() => setSelectedItem('/amostras')}>
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/analiseCadastro" // Define a nova rota
+                                onClick={() => setSelectedItem('/analiseCadastro')} // Atualiza o item selecionado
+                                selected={selectedItem === '/analiseCadastro'} // Condição para o estilo selecionado
+                                sx={{
+                                    pl: 4,
+                                    bgcolor: selectedItem === '/analiseCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Análises" />
+                            </ListItem>
+
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/amostraCadastro" // Define a nova rota
+                                onClick={() => setSelectedItem('/amostraCadastro')} // Atualiza o item selecionado
+                                selected={selectedItem === '/amostraCadastro'} // Condição para o estilo selecionado
+                                sx={{
+                                    pl: 4,
+                                    bgcolor: selectedItem === '/amostraCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
                                 <ListItemText primary="Amostras" />
                             </ListItem>
 
@@ -273,9 +303,9 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                             <div>
                                 <ListItem
                                     button
-                                    onClick={handleOpenOverlay} // Abre o overlay ao clicar
+                                    onClick={handleOpenMatrizOverlay} // Abre o overlay da Matriz ao clicar
                                     sx={{
-                                        pl: 4, // Adiciona o mesmo padding à esquerda que o botão de "Reagentes"
+                                        pl: 4,
                                         bgcolor: selectedItem === '/matrizCadastro' ? '#8BC34A' : 'transparent',
                                         textDecoration: 'none',
                                         color: 'white',
@@ -283,16 +313,17 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                                 >
                                     <ListItemText primary="Matriz" />
                                 </ListItem>
-                                <MatrizCadastro open={openOverlay} handleClose={handleCloseOverlay} />
+                                <MatrizCadastro open={openMatrizOverlay} handleClose={handleCloseMatrizOverlay} />
                             </div>
 
 
+                            {/* Seção Analito */}
                             <div>
                                 <ListItem
                                     button
-                                    onClick={handleOpenOverlay} // Abre o overlay ao clicar
+                                    onClick={handleOpenAnalitoOverlay} // Abre o overlay do Analito ao clicar
                                     sx={{
-                                        pl: 4, // Adiciona o mesmo padding à esquerda que o botão de "Reagentes"
+                                        pl: 4,
                                         bgcolor: selectedItem === '/analitoCadastro' ? '#8BC34A' : 'transparent',
                                         textDecoration: 'none',
                                         color: 'white',
@@ -300,9 +331,8 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                                 >
                                     <ListItemText primary="Analito" />
                                 </ListItem>
-                                <AnalitoCadastro open={openOverlay} handleClose={handleCloseOverlay} />
+                                <AnalitoCadastro open={openAnalitoOverlay} handleClose={handleCloseAnalitoOverlay} />
                             </div>
-
 
 
                             <ListItem
@@ -319,6 +349,23 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                                 }}
                             >
                                 <ListItemText primary="Clientes" />
+                            </ListItem>
+
+
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/procedimentoCadastro" // Define a nova rota
+                                onClick={() => setSelectedItem('/procedimentoCadastro')} // Atualiza o item selecionado
+                                selected={selectedItem === '/procedimentoCadastro'} // Condição para o estilo selecionado
+                                sx={{
+                                    pl: 4,
+                                    bgcolor: selectedItem === '/procedimentoCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
+                                <ListItemText primary="Procedimentos" />
                             </ListItem>
 
 

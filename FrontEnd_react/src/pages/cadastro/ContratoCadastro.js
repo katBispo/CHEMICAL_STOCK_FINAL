@@ -28,6 +28,8 @@ function ContratoCadastro() {
 
 
     const [selectedContracts, setSelectedContracts] = useState(null);
+    const [SelectedClientes, setSelectedClientes] = useState(null);
+
     const [nomeContrato, setNomeContrato] = useState(''); // Alterado
     const [quantidadeAnalises, setQuantidadeAnalises] = useState(''); // Alterado
     const [numeroContrato, setNumeroContrato] = useState('');
@@ -68,12 +70,13 @@ function ContratoCadastro() {
         event.preventDefault();
         const data = {
             nomeContrato, // Alterado para corresponder ao modelo
-            contratos: selectedContracts ? selectedContracts.label : null, // Se houver seleção, pega o label do contrato
+            clientes: SelectedClientes ? SelectedClientes.label : null, // Se houver seleção, pega o label do contrato
             quantidadeAnalises, // Alterado para corresponder ao modelo
             descricao: observacao,
             dataContrato, // Alterado para corresponder ao modelo
             dataEntrega, // Alterado para corresponder ao modelo
             numeroContrato, // Mantido
+            statusContrato: "ATIVO", 
         };
 
         try {
@@ -86,19 +89,19 @@ function ContratoCadastro() {
             });
 
             if (response.ok) {
-                setDialogMessage('Cliente cadastrado com sucesso!');
+                setDialogMessage('contrato cadastrado com sucesso!');
 
                 console.log('Contrato salvo com sucesso');
                 setOpenConfirm(true);
             } else {
                 const errorData = await response.json();
                 console.error('Erro ao salvar o contrato:', errorData);
-                setDialogMessage('Erro ao cadastrar o cliente.');
+                setDialogMessage('Erro ao cadastrar o contrato.');
 
             }
         } catch (error) {
             console.error('Erro ao enviar dados:', error);
-            setDialogMessage('Erro ao salvar o cliente no banco de dados.');
+            setDialogMessage('Erro ao salvar o contrato no banco de dados.');
 
         }
         setDialogOpen(true);
@@ -163,7 +166,7 @@ function ContratoCadastro() {
                             <Autocomplete
                                 options={clientes} // Usando a lista de clientes
                                 getOptionLabel={(option) => option.nome} // Ajuste conforme a estrutura do seu cliente
-                                onChange={(event, value) => setSelectedContracts(value)}
+                                onChange={(event, value) => setSelectedClientes(value)}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}

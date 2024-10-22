@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/procedimentoCadastro")
+@RequestMapping(path = "/procedimento")
 public class ProcedimentoController {
 
     @Autowired
@@ -26,6 +26,11 @@ public class ProcedimentoController {
             @RequestParam("descricaoProcedimento") String descricaoProcedimento,
             @RequestParam("pdfFile") MultipartFile pdfFile) {
         try {
+            // Verificar se o arquivo PDF não está vazio
+            if (pdfFile.isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
             byte[] pdfData = pdfFile.getBytes();
 
             Procedimento procedimento = new Procedimento(nomeProcedimento, descricaoProcedimento);
@@ -41,7 +46,7 @@ public class ProcedimentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Procedimento>> listarProcedimento() {
+    public ResponseEntity<List<Procedimento>> listarProcedimentos() {
         List<Procedimento> procedimentos = service.buscarTodos();
         return ResponseEntity.ok().body(procedimentos);
     }
@@ -60,7 +65,7 @@ public class ProcedimentoController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Procedimento> deletarProcedimento(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarProcedimento(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
     }
