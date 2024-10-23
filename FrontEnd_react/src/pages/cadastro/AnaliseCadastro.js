@@ -28,22 +28,27 @@ function AnaliseCadastro() {
     const [procedures, setProcedures] = useState([]); // Para armazenar os procedimentos
     const [contracts, setContracts] = useState([]); // Para armazenar os contratos
 
-    const [selectedMatriz, setSelectedMatriz] = useState(null);
+    const [selectedMatriz, setSelectedMatriz] = useState(null); // Matriz selecionada
+    const [selectedProcedure, setSelectedProcedure] = useState(null); // Procedimento selecionado
+    const [selectedContract, setSelectedContract] = useState(null); // Contrato selecionado
 
-    const [selectedProcedure, setSelectedProcedure] = useState(null);
+    const [nome, setNome] = useState(''); // Nome da análise
+    const [quantidadeAmostras, setQuantidadeAmostras] = useState(''); // Quantidade de amostras
+    const [descricao, setDescricao] = useState(''); // Descrição da análise
+    const [dataCadastro, setDataCadastro] = useState(''); // Data de início da análise
+    const [prazoFinalizacao, setPrazoFinalizacao] = useState(''); // Prazo de finalização
     const [dialogOpen, setDialogOpen] = useState(false); // Estado para controle do diálogo
     const [dialogMessage, setDialogMessage] = useState(''); // Mensagem do diálogo
+
+
+
+    const [descricaoGeral, setDescricaoGeral] = useState(''); // Descrição geral da análise
 
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
 
-    const [selectedContracts, setSelectedContracts] = useState(null);
-    const [nome, setNome] = useState('');
-    const [quantidadeAmostras, setQuantidadeAmostras] = useState('');
-    const [descricao, setDescricao] = useState('');
-    const [dataInicio, setDataInicio] = useState('');
-    const [prazoFinalizacao, setPrazoFinalizacao] = useState('');
+
 
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openAlertDialog, setOpenAlertDialog] = useState(false);
@@ -51,38 +56,6 @@ function AnaliseCadastro() {
 
 
 
-    const fetchMatrizes = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/matriz');
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data); // Verifique o que é retornado aqui
-                setMatrizes(data);
-            } else {
-                console.error('Erro ao buscar matrizes');
-            }
-        } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
-        }
-    };
-
-
-    // Função para buscar procedimentos
-    const fetchProcedures = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
-            if (response.ok) {
-                const data = await response.json();
-                setProcedures(data); // Armazena a lista de procedimentos no estado
-            } else {
-                console.error('Erro ao buscar procedimento');
-            }
-        } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
-        }
-    };
-
-    // Função para buscar contratos
     const fetchContracts = async () => {
         try {
             const response = await fetch('http://localhost:8080/contrato'); // Endpoint que retorna todos os contratos
@@ -97,38 +70,76 @@ function AnaliseCadastro() {
         }
     };
 
+    const fetchMatrizes = async () => {
+        console.log("Buscando matrizes...");
+        try {
+            const response = await fetch('http://localhost:8080/matriz');
+            console.log("Status da resposta:", response.status);
+            const responseText = await response.text(); // Captura a resposta como texto
+            console.log("Conteúdo da resposta:", responseText); // Log do conteúdo
+    
+            if (response.ok) {
+                const data = JSON.parse(responseText); // Tenta parsear para JSON
+                console.log("Dados das matrizes:", data);
+                setMatrizes(data);
+            } else {
+                console.error('Erro ao buscar matrizes:', responseText);
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+    
+    
+
+    const fetchProcedures = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
+            if (response.ok) {
+                const data = await response.json();
+                setProcedures(data); // Armazena a lista de procedimentos no estado
+            } else {
+                console.error('Erro ao buscar procedimentos');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+
     useEffect(() => {
+        fetchContracts(); // Chama a função para buscar contratos
         fetchMatrizes(); // Chama a função para buscar matrizes
         fetchProcedures(); // Chama a função para buscar procedimentos
-        fetchContracts(); // Chama a função para buscar contratos
     }, []);
+
 
 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Contrato selecionado:", selectedContracts); // Adicione isso antes do envio
+        console.log("Contrato selecionado:", selectedContract); // Adicione isso antes do envio
 
 
 
 
-           
-    // Certifique-se de que um contrato foi selecionado
-    if (!selectedContracts || !selectedContracts.id) { // Verifique se selectedContract.id não é nulo
-        console.error('Nenhum contrato selecionado ou ID do contrato está faltando');
-        return; // Impede o envio se nenhum contrato estiver selecionado
-    }
+
+        // Certifique-se de que um contrato foi selecionado
+        if (!selectedContract || !selectedContract.id) { // Verifique se selectedContract.id não é nulo
+            console.error('Nenhum contrato selecionado ou ID do contrato está faltando');
+            return; // Impede o envio se nenhum contrato estiver selecionado
+        }
         const data = {
-            nome,
-            contratos: selectedContracts ? selectedContracts.label : null,
-            matriz: selectedMatriz ? selectedMatriz.label : null,
-            procedimento: selectedProcedure ? selectedProcedure.label : null,
-            quantidade: quantidadeAmostras,
-            descricao,
-            dataInicio,
-            prazoFinalizacao,
-            statusAnalise: "EM_ANDAMENTO",
+            nome: nome, // Outros campos da análise
+            descricaoGeral: descricaoGeral,
+            statusAnalise: "EM_ANDAMENTO", // Status default para a análise
+            contrato: selectedContract ? { id: selectedContract.id } : null, // Inclua o contrato aqui (atenção ao singular)
+            matriz: selectedMatriz ? { id: selectedMatriz.id } : null, // Inclua a matriz aqui
+            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null, // Inclua o procedimento aqui
+            quantidadeAmostras: quantidadeAmostras, // Ajuste conforme os campos do formulário
+            prazoFinalizacao: prazoFinalizacao,
+            dataCadastro: dataCadastro,
         };
+        console.log("Dados enviados:", data); // Verifique os dados antes de enviar
 
         try {
             const response = await fetch('http://localhost:8080/analise', {
@@ -202,8 +213,8 @@ function AnaliseCadastro() {
                             />
                             <Autocomplete
                                 options={contracts}
-                                getOptionLabel={(option) => option.nomeContrato} // Use o nome correto do campo
-                                onChange={(event, value) => setSelectedContracts(value)} // Mude para um único contrato
+                                getOptionLabel={(option) => option.nomeContrato} // Ajusta conforme a estrutura do contrato
+                                onChange={(event, value) => setSelectedContract(value)} // Atualiza o contrato selecionado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -225,8 +236,8 @@ function AnaliseCadastro() {
                                 margin="normal"
                                 InputLabelProps={{ shrink: true }}
                                 style={{ width: '350px' }}
-                                value={dataInicio}
-                                onChange={(e) => setDataInicio(e.target.value)}
+                                value={dataCadastro}
+                                onChange={(e) => setDataCadastro(e.target.value)}
                             />
                             <TextField
                                 label="Prazo de finalização"
@@ -243,9 +254,9 @@ function AnaliseCadastro() {
                         <Box display="flex" justifyContent="flex-start" gap={2}>
 
                             <Autocomplete
-                                options={procedures} // Usando a lista de procedimentos
-                                getOptionLabel={(option) => option.nomeProcedimento} // Ajuste conforme a estrutura do seu procedimento
-                                onChange={(event, value) => setSelectedProcedure(value)}
+                                options={procedures}
+                                getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
+                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -261,15 +272,17 @@ function AnaliseCadastro() {
                                 required
                                 margin="normal"
                                 style={{ width: '300px' }}
+                                type="number" // Adicione isso para garantir que seja um número
                                 value={quantidadeAmostras}
-                                onChange={(e) => setQuantidadeAmostras(e.target.value)}
+                                onChange={(e) => setQuantidadeAmostras(e.target.valueAsNumber)} // Use valueAsNumber para garantir que seja numérico
                             />
+
                         </Box>
 
                         <Autocomplete
-                            options={matrizes} // Usando a lista de matrizes
-                            getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta
-                            onChange={(event, value) => setSelectedMatriz(value)}
+                            options={matrizes}
+                            getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta da matriz
+                            onChange={(event, value) => setSelectedMatriz(value)} // Atualiza a matriz selecionada
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -281,15 +294,14 @@ function AnaliseCadastro() {
                             )}
                         />
 
-
                         <TextField
                             label="Descrição da Análise"
                             required
                             margin="normal"
                             style={{ width: '350px' }}
                             InputProps={{ style: { height: '100px' } }}
-                            value={descricao}
-                            onChange={(e) => setDescricao(e.target.value)}
+                            value={descricaoGeral}
+                            onChange={(e) => setDescricaoGeral(e.target.value)}
                         />
 
                         <Box display="flex" justifyContent="center" marginTop={2}>

@@ -21,13 +21,16 @@ public class Analise implements Serializable {
 
     @Column(nullable = false)
     private String nome;
-    private LocalDateTime dataCadastro;
+
+    private LocalDate dataCadastro;
+
     private String descricaoGeral;
 
     @Enumerated(EnumType.STRING)
     private StatusAnalise statusAnalise;
 
     private Integer quantidadeAmostras;
+
     private LocalDate prazoFinalizacao;
 
     @ManyToOne
@@ -35,22 +38,31 @@ public class Analise implements Serializable {
     private Matriz matriz;
 
     @OneToMany(mappedBy = "analise")
-    List<Amostra> amostras = new ArrayList<>();
+    private List<Amostra> amostras = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "ID_CONTRATO", nullable = false)
     private Contrato contrato;
 
+    @ManyToOne
+    @JoinColumn(name = "ID_PROCEDIMENTO", nullable = false)
+    private Procedimento procedimento;
+
     public Analise() {
     }
 
-    public Analise(String nome, LocalDateTime dataCadastro, String descricaoGeral, StatusAnalise statusAnalise, Integer quantidadeAmostras, LocalDate prazoFinalizacao) {
+    public Analise(String nome, LocalDate dataCadastro, String descricaoGeral, StatusAnalise statusAnalise, 
+                   Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, 
+                   Procedimento procedimento, Contrato contrato) {
         this.nome = nome;
         this.dataCadastro = dataCadastro;
         this.descricaoGeral = descricaoGeral;
         this.statusAnalise = statusAnalise;
         this.quantidadeAmostras = quantidadeAmostras;
         this.prazoFinalizacao = prazoFinalizacao;
+        this.matriz = matriz;
+        this.procedimento = procedimento;
+        this.contrato = contrato;
     }
 
     public Long getId() {
@@ -69,11 +81,11 @@ public class Analise implements Serializable {
         this.nome = nome;
     }
 
-    public LocalDateTime getDataCadastro() {
+    public LocalDate getDataCadastro() {
         return dataCadastro;
     }
 
-    public void setDataCadastro(LocalDateTime dataCadastro) {
+    public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
 
@@ -107,6 +119,30 @@ public class Analise implements Serializable {
 
     public void setPrazoFinalizacao(LocalDate prazoFinalizacao) {
         this.prazoFinalizacao = prazoFinalizacao;
+    }
+
+    public Matriz getMatriz() {
+        return matriz;
+    }
+
+    public void setMatriz(Matriz matriz) {
+        this.matriz = matriz;
+    }
+
+    public Contrato getContrato() {
+        return contrato;
+    }
+
+    public void setContrato(Contrato contrato) {
+        this.contrato = contrato;
+    }
+
+    public Procedimento getProcedimento() {
+        return procedimento;
+    }
+
+    public void setProcedimento(Procedimento procedimento) {
+        this.procedimento = procedimento;
     }
 
     @Override

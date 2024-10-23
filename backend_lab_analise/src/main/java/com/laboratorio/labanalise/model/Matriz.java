@@ -1,6 +1,6 @@
 package com.laboratorio.labanalise.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore; // Importar a anotação
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -16,9 +16,12 @@ public class Matriz implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String nomeMatriz;
+
     @OneToMany(mappedBy = "matriz")
+    @JsonIgnore // Adicionar aqui
     private List<Analise> analises = new ArrayList<>();
 
     public Matriz(String nomeMatriz) {
