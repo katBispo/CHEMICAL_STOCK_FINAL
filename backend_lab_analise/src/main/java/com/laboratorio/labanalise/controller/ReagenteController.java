@@ -1,6 +1,7 @@
 package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.enums.TipoReagente;
 import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/reagente")
+@RequestMapping(path = "/reagente")
 public class ReagenteController {
 
     @Autowired
@@ -20,7 +21,8 @@ public class ReagenteController {
     @PostMapping
     public ResponseEntity<Reagente> salvarReagente(@RequestBody Reagente reagente) {
         reagente = service.salvar(reagente);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(reagente.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(reagente.getId()).toUri();
         return ResponseEntity.created(uri).body(reagente);
     }
 
@@ -30,10 +32,16 @@ public class ReagenteController {
         return ResponseEntity.ok().body(reagentes);
     }
 
-    @DeleteMapping(path="/{id}")
-    public ResponseEntity<Reagente> deletarReagente(@PathVariable Long id) {
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deletarReagente(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
     }
 
+    // Novo endpoint para obter os tipos de reagentes
+    @GetMapping("/tipos")
+    public ResponseEntity<TipoReagente[]> getTiposReagente() {
+        TipoReagente[] tipos = TipoReagente.values();
+        return ResponseEntity.ok().body(tipos);
+    }
 }

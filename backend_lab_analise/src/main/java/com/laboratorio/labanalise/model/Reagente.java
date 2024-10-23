@@ -1,12 +1,13 @@
 package com.laboratorio.labanalise.model;
 
-
 import jakarta.persistence.*;
-
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.laboratorio.labanalise.model.enums.TipoReagente;
 
 @Entity
 @Table(name = "REAGENTE")
@@ -15,24 +16,39 @@ public class Reagente implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
-    @Column(length = 50,nullable = false)
+
+    @Column(length = 50, nullable = false)
     private String nome;
+
     @Column(nullable = false)
     private String marca;
+
     @Column(nullable = false)
     private String lote;
+
     @Column(nullable = false)
     private boolean controlado;
+
+    @Column(nullable = false)
+    private LocalDate dataValidade;
+
     @OneToMany(mappedBy = "reagente")
     private List<ReagenteUsado> reagenteUsados = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoReagente tipo;  // Campo para tipo de reagente (enum)
+
+    // Construtores
     public Reagente(String nome) {
         this.nome = nome;
     }
-    public Reagente() {}
 
+    public Reagente() {
+    }
+
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -45,6 +61,26 @@ public class Reagente implements Serializable {
         return nome;
     }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getLote() {
+        return lote;
+    }
+
+    public void setLote(String lote) {
+        this.lote = lote;
+    }
+
     public boolean isControlado() {
         return controlado;
     }
@@ -53,8 +89,20 @@ public class Reagente implements Serializable {
         this.controlado = controlado;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public LocalDate getDataValidade() {
+        return dataValidade;
+    }
+
+    public void setDataValidade(LocalDate dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public TipoReagente getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoReagente tipo) {
+        this.tipo = tipo;
     }
 
     @Override

@@ -84,9 +84,10 @@ function AmostraCadastro() {
     };
 
     // Função para buscar procedimentos
+    
     const fetchProcedures = async () => {
         try {
-            const response = await fetch('http://localhost:8080/procedures'); // Endpoint que retorna todos os procedimentos
+            const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
             if (response.ok) {
                 const data = await response.json();
                 setProcedures(data); // Armazena a lista de procedimentos no estado
@@ -130,7 +131,7 @@ function AmostraCadastro() {
             dataInicio,
             prazoFinalizacao,
             descricaoAnalise,
-            procedimentoId: selectedProcedure ? selectedProcedure.id : null,
+            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null, // Inclua o procedimento aqui
             analiseId: selectedAnalysis ? selectedAnalysis.id : null,
             coordenadaColeta: { latitude, longitude } // Pode ajustar para o formato que o backend espera
         };
@@ -248,17 +249,18 @@ function AmostraCadastro() {
 
                         {/* Procedimentos e Coordenadas */}
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <Autocomplete
-                                options={procedures} // Lista de procedimentos vinda do backend
-                                getOptionLabel={(option) => option.nome}
-                                onChange={(event, value) => setSelectedProcedure(value)}
+                            
+                        <Autocomplete
+                                options={procedures}
+                                getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
+                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
                                         label="Procedimentos Associados"
                                         required
                                         margin="normal"
-                                        style={{ width: '350px' }} // Ajuste a largura se necessário
+                                        style={{ width: '350px' }}
                                     />
                                 )}
                             />
@@ -273,21 +275,27 @@ function AmostraCadastro() {
                             />
                         </Box>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <Button
-                                onClick={handleOpenAnalitoSelector}
-                                sx={{
-                                    width: '300px', // Largura do botão
-                                    height: '50px', // Definindo uma altura fixa
-                                    backgroundColor: '#4caf50', // Cor verde
-                                    color: 'white', // Cor do texto
-                                    marginLeft: '16px', // Espaço à esquerda do botão
-                                    '&:hover': {
-                                        backgroundColor: '#45a049', // Cor ao passar o mouse
-                                    },
-                                }}
-                            >
-                                Selecionar Analitos
-                            </Button>
+                           {/* Botão para abrir o AnalitoSelector */}
+            <Button
+                onClick={handleOpenAnalitoSelector}
+                sx={{
+                    width: '300px',
+                    height: '50px',
+                    backgroundColor: '#4caf50',
+                    color: 'white',
+                    marginLeft: '16px',
+                    '&:hover': {
+                        backgroundColor: '#45a049',
+                    },
+                }}
+            >
+                Selecionar Analitos
+            </Button>
+
+            {/* Renderização condicional do AnalitoSelector */}
+            {showAnalitoSelector && (
+                <AnalitoSelector onClose={handleCloseAnalitoSelector} />
+            )}
                         </Box>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             {/* Campo de Descrição da Análise */}

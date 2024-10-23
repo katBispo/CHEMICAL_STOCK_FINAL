@@ -296,9 +296,22 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
 
 
-                            <ListItem button sx={{ pl: 4 }} onClick={() => setSelectedItem('/reagentes')}>
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/reagenteCadastro" // Define a nova rota
+                                onClick={() => setSelectedItem('/reagenteCadastro')} // Atualiza o item selecionado
+                                selected={selectedItem === '/reagenteCadastro'} // Condição para o estilo selecionado
+                                sx={{
+                                    pl: 4,
+                                    bgcolor: selectedItem === '/reagenteCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
                                 <ListItemText primary="Reagentes" />
                             </ListItem>
+
 
                             <div>
                                 <ListItem
