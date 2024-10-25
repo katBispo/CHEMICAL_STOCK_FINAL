@@ -17,6 +17,14 @@ public class Analito implements Serializable {
 
     @Column(nullable = false)
     private String nome;
+    
+    private String classificacao;
+    private String tipoAnalito;
+
+    @ElementCollection
+    @CollectionTable(name = "ANALITO_SUBTIPOS", joinColumns = @JoinColumn(name = "ID_ANALITO"))
+    @Column(name = "SUBTIPO")
+    private List<String> subtipoAnalito = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -38,7 +46,7 @@ public class Analito implements Serializable {
     public Analito() {
     }
 
-    // Getter and setter for id
+    // Getters e setters para id e nome
     public Long getId() {
         return id;
     }
@@ -47,7 +55,6 @@ public class Analito implements Serializable {
         this.id = id;
     }
 
-    // Getter and setter for nome
     public String getNome() {
         return nome;
     }
@@ -56,7 +63,30 @@ public class Analito implements Serializable {
         this.nome = nome;
     }
 
-    // Getter and setter for amostras
+    public String getClassificacao() {
+        return classificacao;
+    }
+
+    public void setClassificacao(String classificacao) {
+        this.classificacao = classificacao;
+    }
+
+    public String getTipoAnalito() {
+        return tipoAnalito;
+    }
+
+    public void setTipoAnalito(String tipoAnalito) {
+        this.tipoAnalito = tipoAnalito;
+    }
+
+    public List<String> getSubtipoAnalito() {
+        return subtipoAnalito;
+    }
+
+    public void setSubtipoAnalito(List<String> subtipoAnalito) {
+        this.subtipoAnalito = subtipoAnalito;
+    }
+
     public List<Amostra> getAmostras() {
         return amostras;
     }

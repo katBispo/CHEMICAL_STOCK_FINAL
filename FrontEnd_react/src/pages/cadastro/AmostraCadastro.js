@@ -3,6 +3,8 @@ import {
     Box,
     AppBar,
     Toolbar,
+    Alert,
+    Modal,
     IconButton,
     Typography,
     Button,
@@ -21,7 +23,14 @@ import AnalitoSelector from '../components/AnalitoSelector.js';
 import FeedbackDialog from '../components/FeedbackDialog.js';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-function AmostraCadastro() {
+function AmostraCadastro({ open, handleClose }) {
+
+    const [procedimento, setProcedimento] = useState([]); // Para armazenar os clientes
+    const [SelectedProcedimento, setSelectedProcedimento] = useState(null);
+
+    const [analise, setAnalise] = useState([]); // Para armazenar os clientes
+    const [SelectedAnalise, setSelectedAnalise] = useState(null);
+
 
     const [coordenadaColeta, setCoordenadaColeta] = useState('');
 
@@ -30,9 +39,21 @@ function AmostraCadastro() {
     const [showAnalitoSelector, setShowAnalitoSelector] = useState(false);
     const [nome, setNome] = useState('');
     const [quantidadeAmostras, setQuantidadeAmostras] = useState('');
-    const [dataInicio, setDataInicio] = useState('');
+    const [dataColeta, setDataColeta] = useState('');
     const [prazoFinalizacao, setPrazoFinalizacao] = useState('');
-    const [descricaoAnalise, setDescricaoAnalise] = useState('');
+    const [descricao, setDescricao] = useState('');
+
+
+
+    const [enderecoColeta, setEnderecoColeta] = useState('');
+
+
+
+    const [messageBoxOpen, setMessageBoxOpen] = useState(false);
+    const [messageBoxMessage, setMessageBoxMessage] = useState('');
+    const [messageBoxSeverity, setMessageBoxSeverity] = useState('success');
+
+
 
     // Função para abrir o AnalitoSelector
     const handleOpenAnalitoSelector = () => {
@@ -43,6 +64,10 @@ function AmostraCadastro() {
     const handleCloseAnalitoSelector = () => {
         setShowAnalitoSelector(false);
     };
+    const handleMessageBoxClose = () => {
+        setMessageBoxOpen(false);
+    };
+
 
     const [openConfirm, setOpenConfirm] = useState(false); // Estado para abrir/fechar o diálogo de confirmação
     const [openAlertDialog, setOpenAlertDialog] = useState(false); // Novo estado para a caixa de alerta
@@ -84,13 +109,13 @@ function AmostraCadastro() {
     };
 
     // Função para buscar procedimentos
-    
+
     const fetchProcedures = async () => {
         try {
             const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
             if (response.ok) {
                 const data = await response.json();
-                setProcedures(data); // Armazena a lista de procedimentos no estado
+                setProcedimento(data); // Armazena a lista de procedimentos no estado
             } else {
                 console.error('Erro ao buscar procedimentos');
             }
@@ -104,7 +129,7 @@ function AmostraCadastro() {
             const response = await fetch('http://localhost:8080/analise'); // Endpoint que retorna todas as matrizes
             if (response.ok) {
                 const data = await response.json();
-                setAnalyses(data); // Armazena a lista de matrizes no estado
+                setAnalise(data); // Armazena a lista de matrizes no estado
             } else {
                 console.error('Erro ao buscar análises');
             }
@@ -128,16 +153,17 @@ function AmostraCadastro() {
 
         const data = {
             nome,
-            dataInicio,
+            dataColeta,
             prazoFinalizacao,
-            descricaoAnalise,
+            enderecoColeta,
+            descricao,
             procedimento: selectedProcedure ? { id: selectedProcedure.id } : null, // Inclua o procedimento aqui
-            analiseId: selectedAnalysis ? selectedAnalysis.id : null,
+            analise: selectedAnalysis ? selectedAnalysis.id : null,
             coordenadaColeta: { latitude, longitude } // Pode ajustar para o formato que o backend espera
         };
 
         try {
-            const response = await fetch('/api/amostra', {
+            const response = await fetch('http://localhost:8080/amostra', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,8 +173,17 @@ function AmostraCadastro() {
 
             if (response.ok) {
                 console.log('Amostra cadastrada com sucesso!');
+                console.log('Matriz cadastrada:', data);
+                setNome('');
+                setMessageBoxMessage('Dados salvos com sucesso no banco de dados!');
+                setMessageBoxSeverity('success');
+                setMessageBoxOpen(true);
+                handleClose();
             } else {
                 console.error('Erro ao cadastrar amostra');
+                setMessageBoxMessage('Erro ao salvar dados em banco de dados.');
+                setMessageBoxSeverity('error');
+                setMessageBoxOpen(true);
             }
         } catch (error) {
             console.error('Erro ao conectar com o backend:', error);
@@ -208,9 +243,9 @@ function AmostraCadastro() {
                                 style={{ width: '350px' }}
                             />
                             <Autocomplete
-                                options={analyses} // Lista de análises vinda do backend
+                                options={analise} // Lista de análises vinda do backend
                                 getOptionLabel={(option) => option.nome}
-                                onChange={(event, value) => setSelectedAnalysis(value)}
+                                onChange={(event, value) => setSelectedAnalise(value)}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -230,8 +265,8 @@ function AmostraCadastro() {
                                 type="date"
                                 required
                                 margin="normal"
-                                value={dataInicio}
-                                onChange={(e) => setDataInicio(e.target.value)}
+                                value={dataColeta}
+                                onChange={(e) => setDataColeta(e.target.value)}
                                 InputLabelProps={{ shrink: true }}
                                 style={{ width: '350px' }}
                             />
@@ -249,11 +284,11 @@ function AmostraCadastro() {
 
                         {/* Procedimentos e Coordenadas */}
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                            
-                        <Autocomplete
-                                options={procedures}
+
+                            <Autocomplete
+                                options={procedimento}
                                 getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
-                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
+                                onChange={(event, value) => setSelectedProcedimento(value)} // Atualiza o procedimento selecionado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -274,37 +309,48 @@ function AmostraCadastro() {
                                 style={{ width: '350px' }}
                             />
                         </Box>
+                        {/* Botão para abrir o AnalitoSelector e Campo de Endereço */}
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                           {/* Botão para abrir o AnalitoSelector */}
-            <Button
-                onClick={handleOpenAnalitoSelector}
-                sx={{
-                    width: '300px',
-                    height: '50px',
-                    backgroundColor: '#4caf50',
-                    color: 'white',
-                    marginLeft: '16px',
-                    '&:hover': {
-                        backgroundColor: '#45a049',
-                    },
-                }}
-            >
-                Selecionar Analitos
-            </Button>
+                            <Button
+                                onClick={handleOpenAnalitoSelector}
+                                sx={{
+                                    width: '350px',
+                                    height: '50px',
+                                    backgroundColor: '#4caf50',
+                                    color: 'white',
+                                    marginLeft: '15px',
+                                    marginTop: '16px',
+                                    '&:hover': {
+                                        backgroundColor: '#45a049',
+                                    },
+                                }}
+                            >
+                                Selecionar Analitos
+                            </Button>
 
-            {/* Renderização condicional do AnalitoSelector */}
-            {showAnalitoSelector && (
-                <AnalitoSelector onClose={handleCloseAnalitoSelector} />
-            )}
-                        </Box>
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            {/* Campo de Descrição da Análise */}
+                            {/* Campo de Endereço */}
                             <TextField
-                                label="Descrição da Análise"
+                                label="Endereço"
                                 required
                                 margin="normal"
-                                value={descricaoAnalise}
-                                onChange={(e) => setDescricaoAnalise(e.target.value)}
+                                value={enderecoColeta}
+                                onChange={(e) => setEnderecoColeta(e.target.value)}
+                                style={{ width: '350px' }}
+                            />
+
+                            {/* Renderização condicional do AnalitoSelector */}
+                            {showAnalitoSelector && (
+                                <AnalitoSelector onClose={handleCloseAnalitoSelector} />
+                            )}
+                        </Box>
+                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                            {/* Campo de Descrição da Amostra */}
+                            <TextField
+                                label="Descrição da Amostra"
+                                required
+                                margin="normal"
+                                value={descricao}
+                                onChange={(e) => setDescricao(e.target.value)}
                                 style={{ width: '350px' }}
                                 multiline
                                 rows={6} // Deixa o campo de descrição mais alto
@@ -320,7 +366,28 @@ function AmostraCadastro() {
                             </Button>
                         </Box>
                     </form>
-
+                    {/* Message Box para feedback de sucesso ou erro */}
+                    <Modal open={messageBoxOpen} onClose={handleMessageBoxClose}>
+                        <Box
+                            sx={{
+                                backgroundColor: 'white',
+                                padding: '20px',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                maxWidth: '300px',
+                                margin: 'auto',
+                                marginTop: '150px',
+                                textAlign: 'center',
+                            }}
+                        >
+                            <Alert severity={messageBoxSeverity} sx={{ marginBottom: 2 }}>
+                                {messageBoxMessage}
+                            </Alert>
+                            <Button variant="contained" onClick={handleMessageBoxClose}>
+                                OK
+                            </Button>
+                        </Box>
+                    </Modal>
 
 
 

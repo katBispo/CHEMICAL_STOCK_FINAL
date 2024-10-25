@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/cadastroAnalitos")
+@RequestMapping(path = "/analito")
 public class AnalitoController {
 
     @Autowired
@@ -35,5 +35,24 @@ public class AnalitoController {
     public ResponseEntity<Analito> deletarAnalito(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Novo endpoint para buscar classificações, tipos e subtipos
+    @GetMapping("/classificacoes")
+    public ResponseEntity<List<String>> listarClassificacoes() {
+        List<String> classificacoes = service.buscarClassificacoesDistintas();
+        return ResponseEntity.ok(classificacoes);
+    }
+
+    @GetMapping("/tipos")
+    public ResponseEntity<List<String>> listarTipos() {
+        List<String> tipos = service.buscarTiposDistintos();
+        return ResponseEntity.ok(tipos);
+    }
+
+    @GetMapping("/subtipos")
+    public ResponseEntity<List<String>> listarSubtipos() {
+        List<String> subtipos = service.buscarSubtiposDistintos();
+        return ResponseEntity.ok(subtipos);
     }
 }

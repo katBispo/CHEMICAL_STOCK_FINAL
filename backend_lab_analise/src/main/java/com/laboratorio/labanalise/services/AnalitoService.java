@@ -28,4 +28,17 @@ public class AnalitoService {
     public List<Analito> buscarTodos() {
         return repository.findAll();
     }
+
+    // Métodos para buscar classificações, tipos e subtipos
+    public List<String> buscarClassificacoesDistintas() {
+        return repository.findDistinctClassificacoes();
+    }
+
+    public List<String> buscarTiposDistintos() {
+        return repository.findDistinctTipos();
+    }
+
+    public List<String> buscarSubtiposDistintos() {
+        return repository.findDistinctSubtipos();
+    }
 }

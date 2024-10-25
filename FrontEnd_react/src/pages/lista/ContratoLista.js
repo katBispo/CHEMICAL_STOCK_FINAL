@@ -41,7 +41,7 @@ const AnalysisTable = () => {
     // Função para buscar os contratos
     const fetchContratos = async () => {
         try {
-            const response = await fetch('http://localhost:8080/contratos');
+            const response = await fetch('http://localhost:8080/contrato');
             if (response.ok) {
                 const data = await response.json();
                 setContratos(data);

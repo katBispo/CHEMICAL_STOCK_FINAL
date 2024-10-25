@@ -1,22 +1,37 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Modal, Alert } from '@mui/material';
+import { Box, Button, TextField, Typography, Modal, IconButton } from '@mui/material';
+import { FaPlus } from 'react-icons/fa';
 
 const AnalitoCadastro = ({ open, handleClose }) => {
-    const [nomeAnalito, setNomeAnalito] = useState('');
+    const [classificacao, setClassificacao] = useState('');
+    const [tipoAnalito, setTipoAnalito] = useState('');
+    const [subtipoAnalito, setSubtipoAnalito] = useState(['']); // Inicia com um campo de subtipo
     const [messageBoxOpen, setMessageBoxOpen] = useState(false);
     const [messageBoxMessage, setMessageBoxMessage] = useState('');
     const [messageBoxSeverity, setMessageBoxSeverity] = useState('success');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Tentando enviar:', nomeAnalito);
+    
+        console.log('Tentando enviar:', {
+            nome: classificacao,  // Aqui estamos usando `classificacao` como exemplo, mas substitua pelo valor correto
+            classificacao,
+            tipoAnalito,
+            subtipoAnalito,
+        });
     
         try {
-            const response = await fetch('http://localhost:8080/cadastroAnalitos', {
+            const response = await fetch('http://localhost:8080/analito', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ nome: nomeAnalito }), // Ajuste aqui para enviar "nome"
+                body: JSON.stringify({
+                    nome: classificacao,  // Confirme se `classificacao` é o valor correto para `nome`
+                    classificacao,
+                    tipoAnalito,
+                    subtipoAnalito,
+                }),
             });
     
             if (!response.ok) {
@@ -25,7 +40,6 @@ const AnalitoCadastro = ({ open, handleClose }) => {
     
             const data = await response.json();
             console.log('Analito cadastrado:', data);
-            setNomeAnalito('');
             setMessageBoxMessage('Analito cadastrado com sucesso!');
             setMessageBoxSeverity('success');
             setMessageBoxOpen(true);
@@ -38,6 +52,15 @@ const AnalitoCadastro = ({ open, handleClose }) => {
         }
     };
     
+    const handleAddSubtipo = () => {
+        setSubtipoAnalito([...subtipoAnalito, '']);
+    };
+
+    const handleSubtipoChange = (index, value) => {
+        const updatedSubtipoAnalito = [...subtipoAnalito];
+        updatedSubtipoAnalito[index] = value;
+        setSubtipoAnalito(updatedSubtipoAnalito);
+    };
 
     const handleMessageBoxClose = () => {
         setMessageBoxOpen(false);
@@ -52,23 +75,47 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                         padding: '30px',
                         borderRadius: '8px',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        maxWidth: '400px',
+                        maxWidth: '500px',
                         margin: 'auto',
                         marginTop: '100px',
                     }}
                 >
                     <Typography variant="h4" gutterBottom>
-                        Cadastro de Analito
+                        Cadastro de Classificação de Analito
                     </Typography>
                     <form onSubmit={handleSubmit}>
                         <TextField
-                            label="Nome do Analito"
-                            value={nomeAnalito}
-                            onChange={(e) => setNomeAnalito(e.target.value)}
+                            label="Classificação"
+                            value={classificacao}
+                            onChange={(e) => setClassificacao(e.target.value)}
                             required
+                            fullWidth
                             margin="normal"
-                            style={{ width: '100%' }}
                         />
+                        <TextField
+                            label="Tipo de Analito"
+                            value={tipoAnalito}
+                            onChange={(e) => setTipoAnalito(e.target.value)}
+                            required
+                            fullWidth
+                            margin="normal"
+                        />
+
+                        {subtipoAnalito.map((subtipo, index) => (
+                            <Box key={index} display="flex" alignItems="center" marginBottom={1}>
+                                <TextField
+                                    label={`Subtipo ${index + 1}`}
+                                    value={subtipo}
+                                    onChange={(e) => handleSubtipoChange(index, e.target.value)}
+                                    required
+                                    fullWidth
+                                />
+                                <IconButton onClick={handleAddSubtipo} color="primary" sx={{ ml: 1 }}>
+                                    <FaPlus />
+                                </IconButton>
+                            </Box>
+                        ))}
+                        
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button variant="contained" type="submit">
                                 Salvar
@@ -78,7 +125,7 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                 </Box>
             </Modal>
 
-            {/* Message Box para feedback de sucesso ou erro */}
+            {/* Mensagem de feedback */}
             <Modal open={messageBoxOpen} onClose={handleMessageBoxClose}>
                 <Box
                     sx={{
@@ -92,10 +139,10 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                         textAlign: 'center',
                     }}
                 >
-                    <Alert severity={messageBoxSeverity} sx={{ marginBottom: 2 }}>
+                    <Typography variant="body1" color={messageBoxSeverity === 'success' ? 'green' : 'red'}>
                         {messageBoxMessage}
-                    </Alert>
-                    <Button variant="contained" onClick={handleMessageBoxClose}>
+                    </Typography>
+                    <Button variant="contained" onClick={handleMessageBoxClose} sx={{ marginTop: 2 }}>
                         OK
                     </Button>
                 </Box>

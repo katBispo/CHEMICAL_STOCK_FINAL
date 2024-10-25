@@ -19,12 +19,15 @@ public class Amostra implements Serializable {
 
     @Column(nullable = false)
     private String nome;
+    
     private String enderecoColeta;
+    
     private LocalDateTime dataColeta;
+    
     private String coordenadaColeta;
 
-    // Nova variável para data limite de finalização
-    private LocalDateTime dataLimiteFinalizacao;
+    // Nova variável para data limite de finalização (prazo)
+    private LocalDateTime prazoFinalizacao;
 
     // Adicionando o status da amostra
     @Enumerated(EnumType.STRING)
@@ -50,12 +53,12 @@ public class Amostra implements Serializable {
     @JoinColumn(name = "ID_ANALISE", nullable = false)
     private Analise analise;
 
-    public Amostra(String nome, String enderecoColeta, LocalDateTime dataColeta, String coordenadaColeta, LocalDateTime dataLimiteFinalizacao, StatusAmostra status, String descricao) {
+    public Amostra(String nome, String enderecoColeta, LocalDateTime dataColeta, String coordenadaColeta, LocalDateTime prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
         this.coordenadaColeta = coordenadaColeta;
-        this.dataLimiteFinalizacao = dataLimiteFinalizacao;
+        this.prazoFinalizacao = prazoFinalizacao;
         this.status = status;
         this.descricao = descricao;
     }
@@ -106,12 +109,12 @@ public class Amostra implements Serializable {
         this.coordenadaColeta = coordenadaColeta;
     }
 
-    public LocalDateTime getDataLimiteFinalizacao() {
-        return dataLimiteFinalizacao;
+    public LocalDateTime getPrazoFinalizacao() {
+        return prazoFinalizacao;
     }
 
-    public void setDataLimiteFinalizacao(LocalDateTime dataLimiteFinalizacao) {
-        this.dataLimiteFinalizacao = dataLimiteFinalizacao;
+    public void setPrazoFinalizacao(LocalDateTime prazoFinalizacao) {
+        this.prazoFinalizacao = prazoFinalizacao;
     }
 
     public StatusAmostra getStatus() {

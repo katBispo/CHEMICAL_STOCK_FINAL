@@ -120,17 +120,7 @@ const AnaliseLista = () => {
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
                         onClick={() => navigate('/analiseCadastro')}
                     >
-                        Cadastrar Análise
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        color="success"
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
-                        startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={() => navigate('/analiseCadastro')}
-                    >
-                         Gerar
+                        Cadastrar Cliente
                     </Button>
                 </Box>
 
