@@ -4,25 +4,44 @@ import { FaTimes } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
 const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
-    const [showLabelField, setShowLabelField] = useState(false);
-    const [labelCount, setLabelCount] = useState(1);
+    const [quantidadeEtiquetas, setQuantidadeEtiquetas] = useState(1);
 
-    // Função para gerar o PDF com etiquetas duplicadas
-    const handleDownloadLabels = () => {
+    // Função para gerar o PDF com as etiquetas
+    const handleDownloadPDF = () => {
         const doc = new jsPDF();
-        for (let i = 0; i < labelCount; i++) {
-            doc.setFontSize(12);
-            doc.text(`Nome: ${analise.nome}`, 10, 10 + i * 30);
-            doc.text(`Data: ${analise.prazoFinalizacao}`, 10, 20 + i * 30);
-            doc.text(`Cliente: ${analise.contrato ? analise.contrato.nomeContrato : ''}`, 10, 30 + i * 30);
-            doc.text(`Matriz: ${analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}`, 10, 40 + i * 30);
-            doc.text(`Analito: ${analise.analito}`, 10, 50 + i * 30);
-            doc.text(`Quantidade de Amostras: ${analise.qtdAmostras}`, 10, 60 + i * 30);
-            doc.text(`Status: ${analise.status}`, 10, 70 + i * 30);
-            
-            // Adiciona uma nova página se não for a última etiqueta
-            if (i < labelCount - 1) doc.addPage();
+
+        // Margens e dimensões para o quadrado da etiqueta
+        const squareWidth = 80;
+        const squareHeight = 60;
+        const margin = 10;
+        let x = 10;
+        let y = 10;
+
+        for (let i = 0; i < quantidadeEtiquetas; i++) {
+            // Desenha o quadrado
+            doc.rect(x, y, squareWidth, squareHeight);
+
+            // Adiciona informações dentro do quadrado
+            doc.text(`Nome: ${analise.nome}`, x + 5, y + 10);
+            doc.text(`Data: ${analise.prazoFinalizacao}`, x + 5, y + 20);
+            doc.text(`Cliente: ${analise.contrato ? analise.contrato.nomeContrato : ''}`, x + 5, y + 30);
+            doc.text(`Matriz: ${analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}`, x + 5, y + 40);
+            doc.text(`Analito: ${analise.analito}`, x + 5, y + 50);
+            doc.text(`Qtd Amostras: ${analise.qtdAmostras}`, x + 5, y + 60);
+
+            // Ajuste para criar uma nova linha de etiquetas
+            x += squareWidth + margin;
+            if (x + squareWidth > doc.internal.pageSize.width) {
+                x = 10;
+                y += squareHeight + margin;
+                if (y + squareHeight > doc.internal.pageSize.height) {
+                    doc.addPage();  // Adiciona uma nova página se não houver mais espaço
+                    x = 10;
+                    y = 10;
+                }
+            }
         }
+
         doc.save('etiquetas.pdf');
     };
 
@@ -74,32 +93,18 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
                     <strong>Status:</strong> {analise.status}
                 </Typography>
 
-                {/* Botão para abrir o campo de quantidade de etiquetas */}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setShowLabelField(!showLabelField)}
-                    sx={{ mt: 2 }}
-                >
-                    Baixar Etiquetas
-                </Button>
-
-                {/* Campo para escolher a quantidade de etiquetas */}
-                {showLabelField && (
-                    <Box mt={2} display="flex" alignItems="center">
-                        <TextField
-                            label="Quantidade de Etiquetas"
-                            type="number"
-                            value={labelCount}
-                            onChange={(e) => setLabelCount(e.target.value)}
-                            InputProps={{ inputProps: { min: 1 } }}
-                            sx={{ mr: 2 }}
-                        />
-                        <Button variant="contained" color="secondary" onClick={handleDownloadLabels}>
-                            Gerar PDF
-                        </Button>
-                    </Box>
-                )}
+                <Box mt={3} display="flex" alignItems="center">
+                    <TextField
+                        label="Quantidade de Etiquetas"
+                        type="number"
+                        value={quantidadeEtiquetas}
+                        onChange={(e) => setQuantidadeEtiquetas(parseInt(e.target.value) || 1)}
+                        sx={{ mr: 2 }}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleDownloadPDF}>
+                        Baixar Etiquetas
+                    </Button>
+                </Box>
             </Box>
         </Modal>
     );

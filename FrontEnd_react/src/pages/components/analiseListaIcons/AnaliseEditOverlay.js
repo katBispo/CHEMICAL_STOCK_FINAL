@@ -10,28 +10,26 @@ const AnaliseEditOverlay = ({ open, onClose, analise, onSave }) => {
 
     const [selectedMatriz, setSelectedMatriz] = useState(analise ? analise.matriz : null);
     const [matrizes, setMatrizes] = useState([]); // Para armazenar as matrizes
+
+    // Verifica se `analise` está definido e, em caso afirmativo, popula `editAnalise` com os dados
     const [editAnalise, setEditAnalise] = useState({
-        nome: '',
-        prazoFinalizacao: '',
-        status: 'EM_ANDAMENTO', // Defina um valor padrão para o status
-        id: analise ? analise.id : null, // Certifique-se de que o ID está definido
+        nome: analise?.nome || '', // Utiliza valor de analise se existir
+        prazoFinalizacao: analise?.prazoFinalizacao || '',
+        status: analise?.status || 'EM_ANDAMENTO',
+        id: analise?.id || null, // Certifique-se de que o ID está definido
     });
+
     const [message, setMessage] = useState(''); // Estado para mensagem de erro/sucesso
 
+    // Função para buscar as matrizes
     const fetchMatrizes = async () => {
-        console.log("Buscando matrizes...");
         try {
             const response = await fetch('http://localhost:8080/matriz');
-            console.log("Status da resposta:", response.status);
-            const responseText = await response.text();
-            console.log("Conteúdo da resposta:", responseText);
-
             if (response.ok) {
-                const data = JSON.parse(responseText);
-                console.log("Dados das matrizes:", data);
+                const data = await response.json();
                 setMatrizes(data);
             } else {
-                console.error('Erro ao buscar matrizes:', responseText);
+                console.error('Erro ao buscar matrizes:', response.statusText);
             }
         } catch (error) {
             console.error('Erro ao conectar ao backend:', error);
@@ -42,6 +40,20 @@ const AnaliseEditOverlay = ({ open, onClose, analise, onSave }) => {
         fetchMatrizes();
     }, []);
 
+    // Atualiza o estado quando o componente recebe uma nova `analise` como prop
+    useEffect(() => {
+        if (analise) {
+            setEditAnalise({
+                nome: analise.nome || '',
+                prazoFinalizacao: analise.prazoFinalizacao || '',
+                status: analise.status || 'EM_ANDAMENTO',
+                id: analise.id,
+            });
+            setSelectedMatriz(analise.matriz || null); // Adicione aqui
+        }
+    }, [analise]);
+
+
     const handleChange = (event) => {
         const { name, value } = event.target;
         setEditAnalise((prev) => ({
@@ -49,39 +61,79 @@ const AnaliseEditOverlay = ({ open, onClose, analise, onSave }) => {
             [name]: value || '', // Define um valor padrão para evitar undefined
         }));
     };
-
     const handleSave = async () => {
         try {
-            if (!editAnalise.id) {
-                console.error('ID da análise não definido');
+            if (!editAnalise || !editAnalise.id) {
+                console.error('ID da análise não está definido');
+                setMessage('ID da análise não está definido.');
                 return;
             }
-
+    
+            // Comece a construir o objeto de dados atualizado
+            const updatedData = {};
+    
+            // Adicione apenas os campos que foram modificados
+            if (editAnalise.nome) {
+                updatedData.nome = editAnalise.nome;
+            }
+    
+            if (editAnalise.prazoFinalizacao) {
+                updatedData.prazoFinalizacao = editAnalise.prazoFinalizacao;
+            }
+    
+            // Mude 'status' para 'statusAnalise'
+            if (editAnalise.status) {
+                updatedData.statusAnalise = editAnalise.status; // Alterado para statusAnalise
+            }
+    
+            // Inclua a matriz se ela foi selecionada
+            if (selectedMatriz && selectedMatriz.id) {
+                updatedData.matriz = { id: selectedMatriz.id };
+            }
+    
+            // Adicione os campos do contrato e procedimento se eles já existem
+            if (editAnalise.contrato && editAnalise.contrato.id) {
+                updatedData.contrato = { id: editAnalise.contrato.id };
+            }
+    
+            if (editAnalise.procedimento && editAnalise.procedimento.id) {
+                updatedData.procedimento = { id: editAnalise.procedimento.id };
+            }
+    
+            console.log("Dados que serão enviados:", updatedData);
+    
             const response = await fetch(`http://localhost:8080/analise/${editAnalise.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editAnalise),
+                body: JSON.stringify(updatedData),
             });
-
-            console.log("Status da resposta:", response.status); // Log do status da resposta
-
+    
             if (response.ok) {
                 const updatedAnalise = await response.json();
-                onSave(updatedAnalise);
-                setMessage('Análise atualizada com sucesso!'); // Mensagem de sucesso
+                if (typeof onSave === 'function') {
+                    onSave(updatedAnalise);
+                } else {
+                    console.warn("Função onSave não foi passada para o componente AnaliseEditOverlay");
+                }
+    
+                setMessage('Análise atualizada com sucesso!');
+                setTimeout(() => setMessage(''), 3000);
                 onClose();
             } else {
                 const errorText = await response.text();
                 console.error('Erro ao atualizar análise:', errorText);
-                setMessage('Erro ao atualizar análise: ' + errorText); // Mensagem de erro
+                setMessage('Erro ao atualizar análise: ' + errorText);
             }
         } catch (error) {
             console.error('Erro ao fazer requisição:', error);
-            setMessage('Erro ao fazer requisição: ' + error.message); // Mensagem de erro
+            setMessage('Erro ao fazer requisição: ' + error.message);
         }
     };
+    
+    
+
 
     return (
         <Modal open={open} onClose={onClose}>

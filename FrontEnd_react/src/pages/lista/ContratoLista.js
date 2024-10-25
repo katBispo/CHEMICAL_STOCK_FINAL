@@ -152,7 +152,7 @@ const AnalysisTable = () => {
                         <Table>
                             <TableHead>
                                 <TableRow style={{ backgroundColor: '#4CAF50' }}>
-                                    {['Nome Contrato', 'Número Contrato', 'Quantidade de Análises', 'Data de Entrega', 'Nome Cliente, Status'].map((header) => (
+                                    {['Nome Contrato', 'Número Contrato', 'Quantidade de Análises', 'Data de Entrega', 'Nome Cliente', 'Status','Ações'].map((header) => (
                                         <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
                                             {header}
                                         </TableCell>
@@ -172,6 +172,8 @@ const AnalysisTable = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.quantidadeAnalises}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{new Date(contrato.dataEntrega).toLocaleDateString()}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.nomeCliente}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.statusContrato}</TableCell>
+
                                         <TableCell>
                                             <Box
                                                 sx={{

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
 import AnaliseDetailOverlay from '../components/analiseListaIcons/AnaliseDetailOverlay';
 import AnaliseEditOverlay from '../components/analiseListaIcons/AnaliseEditOverlay';
+import AnaliseExcluirOverlay from '../components/analiseListaIcons/AnaliseExcluirOverlay';
+
 
 
 
@@ -27,15 +29,54 @@ import {
 const AnaliseLista = () => {
     const [analise, setAnalise] = useState([]);
 
+    const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
+    const [selectedAnalise, setSelectedAnalise] = useState(null);
+
+    const handleOpenDeleteOverlay = (analise) => {
+        setSelectedAnalise(analise);
+        setOpenDeleteOverlay(true);
+    };
+
+    const handleCloseDeleteOverlay = () => {
+        setOpenDeleteOverlay(false);
+        setSelectedAnalise(null);
+    };
+
+    const handleDeleteAnalise = async (id) => {
+        // Faz a requisição para deletar a análise
+        const response = await fetch(`http://localhost:8080/analise/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            console.log('Análise excluída com sucesso');
+            // Aqui você pode atualizar a lista de análises, se necessário
+            // Ex: atualizar o estado que mantém a lista de análises
+            // setAnalises(prev => prev.filter(analise => analise.id !== id));
+        } else {
+            console.error('Erro ao excluir a análise');
+        }
+
+        // Fecha o overlay após a exclusão ou erro
+        handleCloseDeleteOverlay();
+    };
 
 
-
-    const [selectedAnalise, setSelectedAnalise] = useState(null); // Contrato selecionado
     const [open, setOpen] = useState(false);
 
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [analiseToEdit, setAnaliseToEdit] = useState(null);
 
+    // Função para abrir o overlay de edição com a análise selecionada
+    const handleEditClick = (analise) => {
+        setAnaliseToEdit(analise);
+        setEditOverlayOpen(true);
+    };
+    const handleSave = (updatedAnalise) => {
+        console.log("Análise salva:", updatedAnalise);
+        setEditOverlayOpen(false);
+        // Aqui você pode atualizar a lista de análises com os novos dados
+    };
 
 
     // Função para abrir o modal
@@ -44,10 +85,7 @@ const AnaliseLista = () => {
     // Função para fechar o modal
     const handleClose = () => setOpen(false);
 
-    const handleEditClick = (analise) => {
-        setAnaliseToEdit(analise);
-        setEditOverlayOpen(true);
-    };
+    // Função para abrir o overlay de edição com a análise selecionada
 
 
 
@@ -130,7 +168,7 @@ const AnaliseLista = () => {
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
                         onClick={() => navigate('/analiseCadastro')}
                     >
-                         Gerar
+                        Gerar
                     </Button>
                 </Box>
 
@@ -184,7 +222,7 @@ const AnaliseLista = () => {
                                             <IconButton onClick={() => { handleEditClick(analise); }}>
                                                 <FaEdit style={{ color: '#4CAF50', fontSize: '18px' }} />
                                             </IconButton>
-                                            <IconButton>
+                                            <IconButton onClick={() => handleOpenDeleteOverlay(analise)}>
                                                 <FaTrashAlt style={{ color: '#e74c3c', fontSize: '18px' }} />
                                             </IconButton>
                                         </TableCell>
@@ -205,7 +243,18 @@ const AnaliseLista = () => {
                                     open={editOverlayOpen}
                                     onClose={() => setEditOverlayOpen(false)}
                                     analise={analiseToEdit}
+                                    onSave={handleSave} // Passando handleSave como onSave
                                 />
+
+                                {selectedAnalise && (
+                                    <AnaliseExcluirOverlay
+                                        open={openDeleteOverlay}
+                                        onClose={handleCloseDeleteOverlay}
+                                        onDelete={handleDeleteAnalise}
+                                        analise={selectedAnalise}
+                                    />
+                                )}
+                                
                             </TableBody>
                         </Table>
                     </TableContainer>

@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
 
 import java.net.URI;
 import java.util.List;
@@ -78,6 +76,9 @@ public ResponseEntity<?> atualizarParcialAnalise(@PathVariable Long id, @Request
     }
 
     // Atualizar apenas os campos fornecidos no request
+    if (analiseAtualizada.getNome() != null) {
+        analiseExistente.setNome(analiseAtualizada.getNome());
+    }
     if (analiseAtualizada.getContrato() != null) {
         analiseExistente.setContrato(analiseAtualizada.getContrato());
     }
@@ -102,6 +103,7 @@ public ResponseEntity<?> atualizarParcialAnalise(@PathVariable Long id, @Request
 
     return ResponseEntity.ok(analiseExistente);
 }
+
 
 
     @GetMapping
