@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     AppBar,
@@ -58,6 +58,45 @@ function ContCadastroAnalise() {
         setDrawerOpen((prev) => !prev);
     };
 
+    const fetchMatrizes = async () => {
+        console.log("Buscando matrizes...");
+        try {
+            const response = await fetch('http://localhost:8080/matriz');
+            console.log("Status da resposta:", response.status);
+            const responseText = await response.text(); // Captura a resposta como texto
+            console.log("Conteúdo da resposta:", responseText); // Log do conteúdo
+    
+            if (response.ok) {
+                const data = JSON.parse(responseText); // Tenta parsear para JSON
+                console.log("Dados das matrizes:", data);
+                setMatrizes(data);
+            } else {
+                console.error('Erro ao buscar matrizes:', responseText);
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+    
+    
+
+    const fetchProcedures = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/procedimento'); // Endpoint que retorna todos os procedimentos
+            if (response.ok) {
+                const data = await response.json();
+                setProcedures(data); // Armazena a lista de procedimentos no estado
+            } else {
+                console.error('Erro ao buscar procedimentos');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
+    useEffect(() => {
+        fetchMatrizes(); // Chama a função para buscar matrizes
+        fetchProcedures(); // Chama a função para buscar procedimentos
+    }, []);
 
 
     const handleSubmit = async (event) => {
@@ -207,10 +246,10 @@ function ContCadastroAnalise() {
                         </Box>
 
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <Autocomplete
+                        <Autocomplete
                                 options={procedures}
-                                getOptionLabel={(option) => option.label}
-                                onChange={(event, value) => setSelectedProcedure(value)}
+                                getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
+                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}

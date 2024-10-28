@@ -1,25 +1,46 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Modal, IconButton } from '@mui/material';
 import { FaPlus } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
+import AnalitoExistenteCadastro from './AnalitoExistenteCadastro'; // Certifique-se de importar corretamente
 
 const AnalitoCadastro = ({ open, handleClose }) => {
+    const navigate = useNavigate(); // Crie uma instância do hook de navegação
+    const [showInitialScreen, setShowInitialScreen] = useState(true);
     const [classificacao, setClassificacao] = useState('');
     const [tipoAnalito, setTipoAnalito] = useState('');
-    const [subtipoAnalito, setSubtipoAnalito] = useState(['']); // Inicia com um campo de subtipo
+    const [subtipoAnalito, setSubtipoAnalito] = useState(['']);
     const [messageBoxOpen, setMessageBoxOpen] = useState(false);
     const [messageBoxMessage, setMessageBoxMessage] = useState('');
     const [messageBoxSeverity, setMessageBoxSeverity] = useState('success');
+    const [isAnalitoExistenteOpen, setIsAnalitoExistenteOpen] = useState(false);
+
+    const openAnalitoExistente = () => {
+        setIsAnalitoExistenteOpen(true);
+    };
+
+    const closeAnalitoExistente = () => {
+        setIsAnalitoExistenteOpen(false);
+    };
+
+    const handleOptionSelect = (option) => {
+        if (option === 'classificacaoAnalito') {
+            openAnalitoExistente();
+        } else {
+            // Adicione outras ações se necessário
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         console.log('Tentando enviar:', {
-            nome: classificacao,  // Aqui estamos usando `classificacao` como exemplo, mas substitua pelo valor correto
+            nome: classificacao,
             classificacao,
             tipoAnalito,
             subtipoAnalito,
         });
-    
+
         try {
             const response = await fetch('http://localhost:8080/analito', {
                 method: 'POST',
@@ -27,17 +48,17 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    nome: classificacao,  // Confirme se `classificacao` é o valor correto para `nome`
+                    nome: classificacao,
                     classificacao,
                     tipoAnalito,
                     subtipoAnalito,
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Erro ao cadastrar analito');
             }
-    
+
             const data = await response.json();
             console.log('Analito cadastrado:', data);
             setMessageBoxMessage('Analito cadastrado com sucesso!');
@@ -51,7 +72,7 @@ const AnalitoCadastro = ({ open, handleClose }) => {
             setMessageBoxOpen(true);
         }
     };
-    
+
     const handleAddSubtipo = () => {
         setSubtipoAnalito([...subtipoAnalito, '']);
     };
@@ -80,52 +101,76 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                         marginTop: '100px',
                     }}
                 >
-                    <Typography variant="h4" gutterBottom>
-                        Cadastro de Classificação de Analito
-                    </Typography>
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            label="Classificação"
-                            value={classificacao}
-                            onChange={(e) => setClassificacao(e.target.value)}
-                            required
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            label="Tipo de Analito"
-                            value={tipoAnalito}
-                            onChange={(e) => setTipoAnalito(e.target.value)}
-                            required
-                            fullWidth
-                            margin="normal"
-                        />
-
-                        {subtipoAnalito.map((subtipo, index) => (
-                            <Box key={index} display="flex" alignItems="center" marginBottom={1}>
+                    {showInitialScreen ? (
+                        <Box sx={{ padding: '20px', textAlign: 'center' }}>
+                            <Typography variant="h5" gutterBottom>
+                                Escolha uma ação
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleOptionSelect('novoAnalito')}
+                                sx={{ m: 1, width: '80%' }} // Ajuste a largura conforme necessário
+                            >
+                                Cadastrar Novo Analito
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => handleOptionSelect('classificacaoAnalito')}
+                                sx={{ m: 1, width: '80%' }} // Ajuste a largura conforme necessário
+                            >
+                                Adicionar Classificação em um Analito
+                            </Button>
+                            <AnalitoExistenteCadastro open={isAnalitoExistenteOpen} handleClose={closeAnalitoExistente} />
+                        </Box>
+                    ) : (
+                        <>
+                            <Typography variant="h4" gutterBottom>
+                                Cadastro de Analito
+                            </Typography>
+                            <form onSubmit={handleSubmit}>
                                 <TextField
-                                    label={`Subtipo ${index + 1}`}
-                                    value={subtipo}
-                                    onChange={(e) => handleSubtipoChange(index, e.target.value)}
+                                    label="Classificação"
+                                    value={classificacao}
+                                    onChange={(e) => setClassificacao(e.target.value)}
                                     required
                                     fullWidth
+                                    margin="normal"
                                 />
-                                <IconButton onClick={handleAddSubtipo} color="primary" sx={{ ml: 1 }}>
-                                    <FaPlus />
-                                </IconButton>
-                            </Box>
-                        ))}
-                        
-                        <Box display="flex" justifyContent="center" marginTop={2}>
-                            <Button variant="contained" type="submit">
-                                Salvar
-                            </Button>
-                        </Box>
-                    </form>
+                                <TextField
+                                    label="Tipo de Analito"
+                                    value={tipoAnalito}
+                                    onChange={(e) => setTipoAnalito(e.target.value)}
+                                    required
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                {subtipoAnalito.map((subtipo, index) => (
+                                    <Box key={index} display="flex" alignItems="center" marginBottom={1}>
+                                        <TextField
+                                            label={`Subtipo ${index + 1}`}
+                                            value={subtipo}
+                                            onChange={(e) => handleSubtipoChange(index, e.target.value)}
+                                            required
+                                            fullWidth
+                                        />
+                                        <IconButton onClick={handleAddSubtipo} color="primary" sx={{ ml: 1 }}>
+                                            <FaPlus />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                                <Box display="flex" justifyContent="center" marginTop={2}>
+                                    <Button variant="contained" type="submit">
+                                        Salvar
+                                    </Button>
+                                </Box>
+                            </form>
+                        </>
+                    )}
                 </Box>
             </Modal>
 
-            {/* Mensagem de feedback */}
             <Modal open={messageBoxOpen} onClose={handleMessageBoxClose}>
                 <Box
                     sx={{

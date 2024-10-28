@@ -34,6 +34,8 @@ public class Analito implements Serializable {
     )
     private List<Amostra> amostras = new ArrayList<>();
 
+    public Analito() {}
+
     public Analito(Long id, String nome) {
         this.id = id;
         this.nome = nome;
@@ -43,10 +45,7 @@ public class Analito implements Serializable {
         this.nome = nome;
     }
 
-    public Analito() {
-    }
-
-    // Getters e setters para id e nome
+    // Getters e setters para id, nome, classificacao, tipoAnalito e subtipoAnalito
     public Long getId() {
         return id;
     }
@@ -93,6 +92,12 @@ public class Analito implements Serializable {
 
     public void setAmostras(List<Amostra> amostras) {
         this.amostras = amostras;
+    }
+
+    // Método para adicionar tipo e subtipos ao Analito
+    public void adicionarTipo(String tipo, List<String> subtipos) {
+        this.tipoAnalito = tipo;
+        this.subtipoAnalito.addAll(subtipos); // Adiciona a lista de subtipos ao existente
     }
 
     @Override

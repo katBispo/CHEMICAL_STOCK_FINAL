@@ -171,7 +171,7 @@ const AnalysisTable = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.numeroContrato}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.quantidadeAnalises}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{new Date(contrato.dataEntrega).toLocaleDateString()}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.nomeCliente}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.cliente ? contrato.cliente.nome : ''}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.statusContrato}</TableCell>
 
                                         <TableCell>

@@ -16,109 +16,86 @@ import {
 
 const AnalitoSelector = ({ onClose }) => {
     const [selectedProcedure, setSelectedProcedure] = useState(null);
-    const [checkboxSections, setCheckboxSections] = useState([]);
     const [procedures, setProcedures] = useState([]);
-    const [classificacoes, setClassificacoes] = useState([]);
-    const [tipos, setTipos] = useState([]);
-    const [subtipos, setSubtipos] = useState([]);
-    const [selectedOptions, setSelectedOptions] = useState({}); // Para armazenar as opções selecionadas
+    const [tiposESubtipos, setTiposESubtipos] = useState([]);
+    const [showTiposESubtipos, setShowTiposESubtipos] = useState(false); // Controle da exibição dos tipos e subtipos
+    const [selectedOptions, setSelectedOptions] = useState({}); 
 
     useEffect(() => {
-        // Chamada à API para obter procedimentos
+        // Função para buscar procedimentos
         const fetchProcedures = async () => {
             try {
-                const response = await fetch('http://localhost:8080/analito'); // Endpoint para obter analitos
+                const response = await fetch('http://localhost:8080/analito');
                 if (!response.ok) {
-                    throw new Error('Erro ao buscar procedimentos');
+                    throw new Error('Erro ao buscar analitos');
                 }
                 const data = await response.json();
-                setProcedures(data); // Ajustar a estrutura de dados conforme necessário
-            } catch (error) {
-                console.error(error);
-            }
-        };
+                setProcedures(data);
 
-        const fetchClassificacoes = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analito/classificacoes'); // Endpoint para obter classificações
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar classificações');
-                }
-                const data = await response.json();
-                setClassificacoes(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
+                // Organiza os dados em tipos e subtipos por classificação
+                const tiposMap = {};
+                data.forEach(item => {
+                    if (item.classificacao && item.tipoAnalito && item.subtipoAnalito) {
+                        if (!tiposMap[item.classificacao]) {
+                            tiposMap[item.classificacao] = [];
+                        }
+                        tiposMap[item.classificacao].push({
+                            tipo: item.tipoAnalito,
+                            subtipos: item.subtipoAnalito
+                        });
+                    }
+                });
 
-        const fetchTipos = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analito/tipos'); // Endpoint para obter tipos
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar tipos');
-                }
-                const data = await response.json();
-                setTipos(data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        const fetchSubtipos = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analito/subtipos'); // Endpoint para obter subtipos
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar subtipos');
-                }
-                const data = await response.json();
-                setSubtipos(data);
+                setTiposESubtipos(Object.entries(tiposMap).map(([classificacao, tipos]) => ({
+                    classificacao,
+                    tipos
+                })));
             } catch (error) {
                 console.error(error);
             }
         };
 
         fetchProcedures();
-        fetchClassificacoes();
-        fetchTipos();
-        fetchSubtipos();
     }, []);
 
     const handleAnalitoSelection = (event, value) => {
         setSelectedProcedure(value);
-        if (value) {
-            // Use as listas obtidas para criar seções de checkbox
-            setCheckboxSections([
-                { title: 'Classificações', options: classificacoes },
-                { title: 'Tipos', options: tipos },
-                { title: 'Subtipos', options: subtipos }
-            ]);
-        }
+        setShowTiposESubtipos(true); // Mostrar a próxima etapa após a seleção
     };
 
-    const handleOptionChange = (sectionTitle, option, checked) => {
+    const handleOptionChange = (classificacao, tipo, subtipo, checked) => {
         setSelectedOptions((prev) => ({
             ...prev,
-            [sectionTitle]: {
-                ...prev[sectionTitle],
-                [option]: checked
+            [classificacao]: {
+                ...prev[classificacao],
+                [tipo]: {
+                    ...prev[classificacao]?.[tipo],
+                    [subtipo]: checked
+                }
             }
         }));
     };
 
     const handleSave = async () => {
-        const selectedClassificacoes = selectedOptions['Classificações'] || {};
-        const selectedTipos = selectedOptions['Tipos'] || {};
-        const selectedSubtipos = selectedOptions['Subtipos'] || {};
-        
-        // Formato dos dados a serem enviados
+        const selectedData = Object.entries(selectedOptions).reduce((acc, [classificacao, tipos]) => {
+            const selectedTipos = Object.entries(tipos).reduce((tiposAcc, [tipo, subtipos]) => {
+                const selectedSubtipos = Object.keys(subtipos).filter(subtipo => subtipos[subtipo]);
+                if (selectedSubtipos.length) {
+                    tiposAcc.push({ tipo, subtipos: selectedSubtipos });
+                }
+                return tiposAcc;
+            }, []);
+            if (selectedTipos.length) {
+                acc.push({ classificacao, tipos: selectedTipos });
+            }
+            return acc;
+        }, []);
+
         const dataToSave = {
-            analito: selectedProcedure, // Use a estrutura correta para o analito
-            classificacoes: Object.keys(selectedClassificacoes).filter(key => selectedClassificacoes[key]),
-            tipos: Object.keys(selectedTipos).filter(key => selectedTipos[key]),
-            subtipos: Object.keys(selectedSubtipos).filter(key => selectedSubtipos[key]),
+            analito: selectedProcedure, 
+            selecoes: selectedData,
         };
 
-        // Chamada à API para salvar os dados
         try {
             const response = await fetch('http://localhost:8080/analito', {
                 method: 'POST',
@@ -131,7 +108,7 @@ const AnalitoSelector = ({ onClose }) => {
                 throw new Error('Erro ao salvar analito');
             }
             console.log('Analito salvo com sucesso!');
-            onClose(); // Fecha o diálogo após salvar
+            onClose();
         } catch (error) {
             console.error(error);
         }
@@ -141,10 +118,10 @@ const AnalitoSelector = ({ onClose }) => {
         <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Escolha o Analito</DialogTitle>
             <DialogContent>
-                {/* Campo de Autocomplete para Analitos */}
+                {/* Primeiro passo: seleção de classificação */}
                 <Autocomplete
                     options={procedures}
-                    getOptionLabel={(option) => option.nome || ""} // Use a propriedade 'nome' para o Autocomplete
+                    getOptionLabel={(option) => option.nome || ""}
                     onChange={handleAnalitoSelection}
                     renderInput={(params) => (
                         <TextField
@@ -157,35 +134,44 @@ const AnalitoSelector = ({ onClose }) => {
                     )}
                 />
 
-                {/* Exibir checkboxes conforme a escolha do analito */}
-                {checkboxSections.map((section, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            backgroundColor: 'white',
-                            padding: '20px',
-                            marginTop: '10px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        }}
-                    >
-                        <Typography variant="h6">{section.title}</Typography>
-                        <FormGroup>
-                            {section.options.map((option, idx) => (
-                                <FormControlLabel
-                                    key={idx}
-                                    control={
-                                        <Checkbox
-                                            checked={selectedOptions[section.title]?.[option] || false}
-                                            onChange={(e) => handleOptionChange(section.title, option, e.target.checked)}
-                                        />
-                                    }
-                                    label={option}
-                                />
-                            ))}
-                        </FormGroup>
-                    </Box>
-                ))}
+                {/* Segundo passo: exibição dos tipos e subtipos apenas após seleção de classificação */}
+                {showTiposESubtipos && selectedProcedure && (
+                    tiposESubtipos
+                        .filter(item => item.classificacao === selectedProcedure.classificacao)
+                        .map((classObj, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    backgroundColor: 'white',
+                                    padding: '20px',
+                                    marginTop: '10px',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                }}
+                            >
+                                <Typography variant="h6">{classObj.classificacao}</Typography>
+                                {classObj.tipos.map((tipoObj, idx) => (
+                                    <Box key={idx} sx={{ marginLeft: '10px' }}>
+                                        <Typography variant="subtitle1">{tipoObj.tipo}</Typography>
+                                        <FormGroup>
+                                            {tipoObj.subtipos.map((subtipo, sIdx) => (
+                                                <FormControlLabel
+                                                    key={sIdx}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo] || false}
+                                                            onChange={(e) => handleOptionChange(classObj.classificacao, tipoObj.tipo, subtipo, e.target.checked)}
+                                                        />
+                                                    }
+                                                    label={subtipo}
+                                                />
+                                            ))}
+                                        </FormGroup>
+                                    </Box>
+                                ))}
+                            </Box>
+                        ))
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Fechar</Button>

@@ -18,6 +18,7 @@ import ClienteCadastro from './pages/cadastro/ClienteCadastro';
 import ContAnaliseCadastro from './pages/cadastro/ContAnaliseCadastro';
 import AmostraCadastro from './pages/cadastro/AmostraCadastro';
 import ReagenteCadastro from './pages/cadastro/ReagenteCadastro';
+import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro';
 
 
 import { Link } from 'react-router-dom';
@@ -47,6 +48,7 @@ function App() {
         <Route path="/contrato-cadastrar-analises" element={<ContAnaliseCadastro />} />
         <Route path="/amostraCadastro" element={<AmostraCadastro />} />
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
+        <Route path="/analitoExistenteCadastro" element={<AnalitoExistenteCadastro />} />
 
         
 
