@@ -119,10 +119,6 @@ function AnaliseCadastro() {
         event.preventDefault();
         console.log("Contrato selecionado:", selectedContract); // Adicione isso antes do envio
 
-
-
-
-
         // Certifique-se de que um contrato foi selecionado
         if (!selectedContract || !selectedContract.id) { // Verifique se selectedContract.id não é nulo
             console.error('Nenhum contrato selecionado ou ID do contrato está faltando');

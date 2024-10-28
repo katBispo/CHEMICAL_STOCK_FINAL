@@ -8,6 +8,7 @@ import {
     Button,
     TextField,
     Autocomplete,
+    Stepper, Step, StepLabel,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -26,10 +27,12 @@ function ContCadastroAnalise() {
     const [clientes, setClientes] = useState([]); // Para armazenar os clientes
     const navigate = useNavigate();
 
+
     const location = useLocation();
-    const { quantidadeAnalises, contratoNome } = location.state;
+    const { quantidadeAnalises, contratoNome } = location.state || {};
 
-
+    const [selectedMatriz, setSelectedMatriz] = useState(null); // Matriz selecionada
+    const [descricaoGeral, setDescricaoGeral] = useState(''); // Descrição geral da análise
 
     const [selectedContracts, setSelectedContracts] = useState({ label: contratoNome }); // Define o valor inicial como um objeto
     const [nome, setNome] = useState(''); // Ajustado para nome
@@ -42,6 +45,7 @@ function ContCadastroAnalise() {
     const [selectedProcedure, setSelectedProcedure] = useState(null);
     const [matrizes, setMatrizes] = useState([]);
     const [selectedMatrizes, setSelectedMatrizes] = useState(null);
+    const [dataCadastro, setDataCadastro] = useState(''); // Data de início da análise
 
     const [progress, setProgress] = useState(0); // Estado para controlar o progresso
     const [isLoading, setIsLoading] = useState(false); // Estado para controle de loading
@@ -65,7 +69,7 @@ function ContCadastroAnalise() {
             console.log("Status da resposta:", response.status);
             const responseText = await response.text(); // Captura a resposta como texto
             console.log("Conteúdo da resposta:", responseText); // Log do conteúdo
-    
+
             if (response.ok) {
                 const data = JSON.parse(responseText); // Tenta parsear para JSON
                 console.log("Dados das matrizes:", data);
@@ -77,8 +81,8 @@ function ContCadastroAnalise() {
             console.error('Erro ao conectar ao backend:', error);
         }
     };
-    
-    
+
+
 
     const fetchProcedures = async () => {
         try {
@@ -99,53 +103,50 @@ function ContCadastroAnalise() {
     }, []);
 
 
+    const [currentStep, setCurrentStep] = useState(0);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
-        const totalAnalises = quantidadeAnalises; // Armazena a quantidade total de análises
-        setProgress(0); // Resetando o progresso
-
-        for (let i = 0; i < quantidadeAmostras; i++) {
-            const data = {
-                nome,
-                contratos: selectedContracts,
-                matriz: selectedMatrizes,
-                procedimento: selectedProcedure,
-                quantidade: quantidadeAmostras,
-                descricao: observacao,
-                dataInicio,
-                prazoFinalizacao,
-            };
-
-            try {
-                const response = await fetch('http://localhost:8080/analise', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                if (response.ok) {
-                    setDialogMessage(`Análise ${i + 1} cadastrada com sucesso!`);
-                    console.log(`Análise ${i + 1} salva com sucesso`);
-                } else {
-                    const errorData = await response.json();
-                    console.error('Erro ao salvar a análise:', errorData);
-                    setDialogMessage('Erro ao cadastrar a análise.');
-                }
-            } catch (error) {
-                console.error('Erro ao enviar dados:', error);
-                setDialogMessage('Erro ao salvar a análise no banco de dados.');
+    
+        const data = {
+            contratoAssociado: selectedContracts?.label,
+            nome,
+            descricaoGeral,
+            statusAnalise: "EM_ANDAMENTO",
+            matriz: selectedMatriz ? { id: selectedMatriz.id } : null,
+            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null,
+            quantidadeAmostras,
+            prazoFinalizacao,
+            dataCadastro: dataInicio, // Presume-se que dataInicio seja o campo de data de cadastro
+        };
+    
+        try {
+            const response = await fetch("http://localhost:8080/analise", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Análise cadastrada com sucesso:", result);
+                setDialogMessage("Análise cadastrada com sucesso!");
+                setDialogOpen(true);
+            } else {
+                throw new Error("Erro ao cadastrar análise");
             }
-
-            // Atualizando o progresso
-            setProgress(((i + 1) / quantidadeAmostras) * 100);
+        } catch (error) {
+            console.error("Erro:", error);
+            setDialogMessage("Erro ao cadastrar análise. Tente novamente.");
+            setDialogOpen(true);
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false);
-        setDialogOpen(true);
     };
+    
+
+
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -185,127 +186,133 @@ function ContCadastroAnalise() {
 
                     {quantidadeAnalises > 0 && (
                         <Box mt={6}>
-                            <LinearProgress variant="determinate" value={progress} />
-                            <Typography variant="caption" align="center">{`Cadastrando: ${Math.round(progress)}%`}</Typography>
+                            {/* Novo Stepper para exibir o progresso das etapas */}
+                            <Stepper activeStep={currentStep} alternativeLabel>
+                                {Array.from({ length: quantidadeAnalises }, (_, index) => (
+                                    <Step key={index}>
+                                        <StepLabel>{`Análise ${index + 1}`}</StepLabel>
+                                    </Step>
+                                ))}
+                            </Stepper>
+                            <Typography variant="caption" align="center">{`Etapa: ${currentStep + 1} de ${quantidadeAnalises}`}</Typography>
                         </Box>
                     )}
 
-                    {console.log('Total Análises:', totalAnalises)}
-                    {console.log('Progress:', progress)}
+<form onSubmit={handleSubmit}>
+    <Box display="flex" justifyContent="flex-start" gap={2}>
+        <TextField
+            label="Nome"
+            required
+            margin="normal"
+            style={{ width: '350px' }}
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+        />
+        <Autocomplete
+            options={[{ label: contratoNome }]}
+            getOptionLabel={(option) => option.label}
+            value={selectedContracts}
+            onChange={(event, value) => setSelectedContracts(value)}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label="Contrato Associado"
+                    required
+                    margin="normal"
+                    style={{ width: '300px' }}
+                    disabled
+                />
+            )}
+        />
+    </Box>
 
-                    <form onSubmit={handleSubmit}>
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Nome"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={nome}
-                                onChange={(e) => setNome(e.target.value)}
-                            />
-                            <Autocomplete
-                                options={[{ label: contratoNome }]} // Passa um array com um único objeto
-                                getOptionLabel={(option) => option.label}
-                                value={selectedContracts} // Define o valor atual
-                                onChange={(event, value) => setSelectedContracts(value)} // Atualiza o estado
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Contratos Associados"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '300px' }}
-                                        disabled // Torna o campo não editável
-                                    />
-                                )}
-                            />
+    <Box display="flex" justifyContent="flex-start" gap={2}>
+        <TextField
+            label="Data de Início"
+            type="date"
+            required
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+            style={{ width: '350px' }}
+            value={dataInicio}
+            onChange={(e) => setDataInicio(e.target.value)}
+        />
+        <TextField
+            label="Prazo de Finalização"
+            type="date"
+            required
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+            style={{ width: '300px' }}
+            value={prazoFinalizacao}
+            onChange={(e) => setPrazoFinalizacao(e.target.value)}
+        />
+    </Box>
 
-                        </Box>
+    <Box display="flex" justifyContent="flex-start" gap={2}>
+        <Autocomplete
+            options={procedures}
+            getOptionLabel={(option) => option.nomeProcedimento}
+            value={selectedProcedure}
+            onChange={(event, value) => setSelectedProcedure(value)}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label="Procedimento Associado"
+                    required
+                    margin="normal"
+                    style={{ width: '350px' }}
+                />
+            )}
+        />
+        <TextField
+            label="Quantidade de Amostras"
+            required
+            margin="normal"
+            style={{ width: '300px' }}
+            value={quantidadeAmostras}
+            onChange={(e) => setQuantidadeAmostras(e.target.value)}
+        />
+    </Box>
 
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Data de Início"
-                                type="date"
-                                required
-                                margin="normal"
-                                InputLabelProps={{ shrink: true }}
-                                style={{ width: '350px' }}
-                                value={dataInicio}
-                                onChange={(e) => setDataInicio(e.target.value)}
-                            />
-                            <TextField
-                                label="Prazo de finalização"
-                                type="date"
-                                required
-                                margin="normal"
-                                InputLabelProps={{ shrink: true }}
-                                style={{ width: '300px' }}
-                                value={prazoFinalizacao}
-                                onChange={(e) => setPrazoFinalizacao(e.target.value)}
-                            />
-                        </Box>
+    <Autocomplete
+        options={matrizes}
+        getOptionLabel={(option) => option.nomeMatriz}
+        value={selectedMatriz}
+        onChange={(event, value) => setSelectedMatriz(value)}
+        renderInput={(params) => (
+            <TextField
+                {...params}
+                label="Matriz"
+                required
+                margin="normal"
+                style={{ width: '350px' }}
+            />
+        )}
+    />
 
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                        <Autocomplete
-                                options={procedures}
-                                getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
-                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Procedimentos Associados"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '350px' }}
-                                    />
-                                )}
-                            />
-                            <TextField
-                                label="Quantidade de Amostras"
-                                required
-                                margin="normal"
-                                style={{ width: '300px' }}
-                                value={quantidadeAmostras}
-                                onChange={(e) => setQuantidadeAmostras(e.target.value)}
-                            />
-                        </Box>
+    <TextField
+        label="Descrição Geral"
+        required
+        margin="normal"
+        style={{ width: '350px' }}
+        InputProps={{ style: { height: '100px' } }}
+        value={descricaoGeral}
+        onChange={(e) => setDescricaoGeral(e.target.value)}
+    />
 
-                        <Autocomplete
-                            options={matrizes}
-                            getOptionLabel={(option) => option.label}
-                            onChange={(event, value) => setSelectedMatrizes(value)}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Matriz"
-                                    required
-                                    margin="normal"
-                                    style={{ width: '350px' }}
-                                />
-                            )}
-                        />
+    <Box display="flex" justifyContent="center" marginTop={2}>
+        <Button variant="contained" type="submit" disabled={isLoading}>
+            {isLoading ? 'Cadastrando...' : 'Salvar'}
+        </Button>
+    </Box>
+</form>
 
-                        <TextField
-                            label="Descrição da Análise"
-                            required
-                            margin="normal"
-                            style={{ width: '350px' }}
-                            InputProps={{ style: { height: '100px' } }}
-                            value={observacao}
-                            onChange={(e) => setObservacao(e.target.value)}
-                        />
-
-                        <Box display="flex" justifyContent="center" marginTop={2}>
-                            <Button variant="contained" type="submit" disabled={isLoading}>
-                                {isLoading ? 'Cadastrando...' : 'Salvar'}
-                            </Button>
-                        </Box>
-                    </form>
                 </Box>
-                {/* Usando o novo componente FeedbackDialog */}
                 <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
             </Box>
         </Box>
+
     );
 }
 
