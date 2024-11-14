@@ -2,7 +2,7 @@ package com.laboratorio.labanalise.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,15 +19,17 @@ public class Amostra implements Serializable {
 
     @Column(nullable = false)
     private String nome;
-    
+
     private String enderecoColeta;
-    
-    private LocalDateTime dataColeta;
-    
+
+    @Column(nullable = false)  // Adicionando a anotação nullable se necessário
+    private LocalDate dataColeta;  // Alterado para LocalDate
+
     private String coordenadaColeta;
 
     // Nova variável para data limite de finalização (prazo)
-    private LocalDateTime prazoFinalizacao;
+    @Column(nullable = false)  // Adicionando a anotação nullable se necessário
+    private LocalDate prazoFinalizacao; // Alterado para LocalDate
 
     // Adicionando o status da amostra
     @Enumerated(EnumType.STRING)
@@ -53,7 +55,8 @@ public class Amostra implements Serializable {
     @JoinColumn(name = "ID_ANALISE", nullable = false)
     private Analise analise;
 
-    public Amostra(String nome, String enderecoColeta, LocalDateTime dataColeta, String coordenadaColeta, LocalDateTime prazoFinalizacao, StatusAmostra status, String descricao) {
+    // Construtor com todos os parâmetros
+    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta, LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
@@ -63,6 +66,7 @@ public class Amostra implements Serializable {
         this.descricao = descricao;
     }
 
+    // Construtor padrão
     public Amostra() {
         // Definindo um status padrão, se necessário
         this.status = StatusAmostra.EM_ANDAMENTO;
@@ -93,11 +97,11 @@ public class Amostra implements Serializable {
         this.enderecoColeta = enderecoColeta;
     }
 
-    public LocalDateTime getDataColeta() {
+    public LocalDate getDataColeta() {
         return dataColeta;
     }
 
-    public void setDataColeta(LocalDateTime dataColeta) {
+    public void setDataColeta(LocalDate dataColeta) {
         this.dataColeta = dataColeta;
     }
 
@@ -109,11 +113,11 @@ public class Amostra implements Serializable {
         this.coordenadaColeta = coordenadaColeta;
     }
 
-    public LocalDateTime getPrazoFinalizacao() {
+    public LocalDate getPrazoFinalizacao() {
         return prazoFinalizacao;
     }
 
-    public void setPrazoFinalizacao(LocalDateTime prazoFinalizacao) {
+    public void setPrazoFinalizacao(LocalDate prazoFinalizacao) {
         this.prazoFinalizacao = prazoFinalizacao;
     }
 
@@ -141,6 +145,22 @@ public class Amostra implements Serializable {
         this.procedimentos = procedimentos;
     }
 
+    public Analise getAnalise() {
+        return analise;
+    }
+
+    public void setAnalise(Analise analise) {
+        this.analise = analise;
+    }
+
+    public List<Analito> getAnalitos() {
+        return analitos;
+    }
+
+    public void setAnalitos(List<Analito> analitos) {
+        this.analitos = analitos;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,6 +171,6 @@ public class Amostra implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }

@@ -8,79 +8,62 @@ import {
     Button,
     TextField,
     Autocomplete,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
     Dialog,
-    DialogTitle,
+    DialogActions,
     DialogContent,
     DialogContentText,
-    DialogActions,
+    DialogTitle,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
-import FeedbackDialog from '../components/FeedbackDialog'; // Importe o novo componente
-
 import { useNavigate } from 'react-router-dom';
 
-function ContratoCadastro() {
+function ReagenteCadastro() {
+    const [dialogOpen, setDialogOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [clientes, setClientes] = useState([]); // Para armazenar os clientes
+    const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
 
-
-    const [selectedContracts, setSelectedContracts] = useState(null);
-    const [SelectedClientes, setSelectedClientes] = useState(null);
-
-    const [nomeContrato, setNomeContrato] = useState(''); // Alterado
-    const [quantidadeAnalises, setQuantidadeAnalises] = useState(''); // Alterado
-    const [numeroContrato, setNumeroContrato] = useState('');
-    const [observacao, setObservacao] = useState('');
-    const [dataContrato, setDataContrato] = useState(''); // Alterado
-    const [dataEntrega, setDataEntrega] = useState(''); // Alterado
-
-    // Dialog states
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [dialogMessage, setDialogMessage] = useState('');
-
-
-    const toggleDrawer = () => {
-        setDrawerOpen((prev) => !prev);
-    };
-
-    // Função para buscar clientes
-    const fetchClientes = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/cliente'); // Endpoint que retorna todos os clientes
-            if (response.ok) {
-                const data = await response.json();
-                setClientes(data); // Armazena a lista de clientes no estado
-
-            } else {
-                console.error('Erro ao buscar clientes');
-            }
-        } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
-        }
-    };
+    const [nome, setNome] = useState('');
+    const [marca, setMarca] = useState('');
+    const [lote, setLote] = useState('');
+    const [controlado, setControlado] = useState('não');
+    const [numeroControlado, setNumeroControlado] = useState('');
+    const [dataValidade, setDataValidade] = useState('');
+    const [tiposReagentes, setTiposReagentes] = useState([]);
+    const [selectedTipoReagente, setSelectedTipoReagente] = useState('');
 
     useEffect(() => {
-        fetchClientes(); // Chama a função ao montar o componente
+        const fetchTiposReagentes = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/reagente/tipos');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setTiposReagentes(data);
+            } catch (error) {
+                console.error('Erro ao buscar tipos de reagentes:', error);
+            }
+        };
+
+        fetchTiposReagentes();
     }, []);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         const data = {
-            nomeContrato, // Alterado para corresponder ao modelo
-            clientes: SelectedClientes ? SelectedClientes.label : null, // Se houver seleção, pega o label do contrato
-            quantidadeAnalises, // Alterado para corresponder ao modelo
-            descricao: observacao,
-            dataContrato, // Alterado para corresponder ao modelo
-            dataEntrega, // Alterado para corresponder ao modelo
-            numeroContrato, // Mantido
-            statusContrato: "ATIVO", 
+            nome,
+            marca,
+            lote,
+            dataValidade,
+            controlado: controlado === 'sim',
+            numeroControlado: controlado === 'sim' ? numeroControlado : null,
+            tipo: selectedTipoReagente
         };
 
         try {
-            const response = await fetch('http://localhost:8080/contrato', {
+            const response = await fetch('http://localhost:8080/reagente', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,38 +72,18 @@ function ContratoCadastro() {
             });
 
             if (response.ok) {
-                setDialogMessage('contrato cadastrado com sucesso!');
-
-                console.log('Contrato salvo com sucesso');
-                setOpenConfirm(true);
+                setDialogOpen(true); // Abre o diálogo de sucesso
             } else {
-                const errorData = await response.json();
-                console.error('Erro ao salvar o contrato:', errorData);
-                setDialogMessage('Erro ao cadastrar o contrato.');
-
+                console.error('Erro ao salvar reagente');
             }
         } catch (error) {
-            console.error('Erro ao enviar dados:', error);
-            setDialogMessage('Erro ao salvar o contrato no banco de dados.');
-
+            console.error('Erro:', error);
         }
-        setDialogOpen(true);
-
     };
 
     const handleDialogClose = () => {
         setDialogOpen(false);
-    };
-
-
-    const handleConfirmYes = () => {
-        setOpenConfirm(false);
-        navigate('/contrato-cadastrar-analises', { state: { quantidadeAnalises, contratoNome: nomeContrato } });
-    };
-    
-    
-    const handleConfirmNo = () => {
-        setOpenConfirm(false);
+        navigate('/'); // Redireciona para a rota '/'
     };
 
     return (
@@ -131,7 +94,7 @@ function ContratoCadastro() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Cadastro de Contratos
+                        Cadastro de Reagentes
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -151,113 +114,116 @@ function ContratoCadastro() {
                     }}
                 >
                     <Typography variant="h4" gutterBottom>
-                        Cadastrar Contrato
+                        Cadastrar Reagente
                     </Typography>
-                    <form onSubmit={handleSubmit}>
+
+                    <Box
+                        sx={{
+                            backgroundColor: 'white',
+                            padding: '30px',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                            maxWidth: '800px',
+                            width: '100%',
+                        }}
+                    >
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
-                                label="Nome"
+                                label="Nome do Reagente"
                                 required
                                 margin="normal"
                                 style={{ width: '350px' }}
-                                value={nomeContrato}
-                                onChange={(e) => setNomeContrato(e.target.value)}
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
                             />
+                            <TextField
+                                label="Marca do Reagente"
+                                required
+                                margin="normal"
+                                style={{ width: '350px' }}
+                                value={marca}
+                                onChange={(e) => setMarca(e.target.value)}
+                            />
+                        </Box>
+
+                        <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                            <Box display="flex" justifyContent="flex-start" gap={2}>
+                                <TextField
+                                    label="Lote"
+                                    required
+                                    margin="normal"
+                                    style={{ width: '350px' }}
+                                    value={lote}
+                                    onChange={(e) => setLote(e.target.value)}
+                                />
+
+                                <TextField
+                                    label="Data de Validade"
+                                    type="date"
+                                    required
+                                    margin="normal"
+                                    InputLabelProps={{ shrink: true }}
+                                    style={{ width: '350px' }}
+                                    value={dataValidade}
+                                    onChange={(e) => setDataValidade(e.target.value)}
+                                />
+                            </Box>
+
                             <Autocomplete
-                                options={clientes} // Usando a lista de clientes
-                                getOptionLabel={(option) => option.nome} // Ajuste conforme a estrutura do seu cliente
-                                onChange={(event, value) => setSelectedClientes(value)}
+                                options={tiposReagentes}
+                                getOptionLabel={(option) => option.toString()}
                                 renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Clientes Associados"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '300px' }}
-                                    />
+                                    <TextField {...params} label="Selecione o Tipo de Reagente" variant="outlined" />
                                 )}
+                                onChange={(event, newValue) => setSelectedTipoReagente(newValue)}
                             />
+
+                            <Typography variant="h6">Reagente Controlado</Typography>
+                            <RadioGroup
+                                row
+                                value={controlado}
+                                onChange={(e) => setControlado(e.target.value)}
+                            >
+                                <FormControlLabel value="sim" control={<Radio />} label="Sim" />
+                                <FormControlLabel value="não" control={<Radio />} label="Não" />
+                            </RadioGroup>
+
+                            {controlado === 'sim' && (
+                                <TextField
+                                    label="Número do Reagente Controlado"
+                                    required
+                                    margin="normal"
+                                    style={{ width: '350px' }}
+                                    value={numeroControlado}
+                                    onChange={(e) => setNumeroControlado(e.target.value)}
+                                />
+                            )}
                         </Box>
-
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Data de Assinatura"
-                                type="date"
-                                required
-                                margin="normal"
-                                InputLabelProps={{ shrink: true }}
-                                style={{ width: '350px' }}
-                                value={dataContrato}
-                                onChange={(e) => setDataContrato(e.target.value)}
-                            />
-                            <TextField
-                                label="Prazo de finalização"
-                                type="date"
-                                required
-                                margin="normal"
-                                InputLabelProps={{ shrink: true }}
-                                style={{ width: '300px' }}
-                                value={dataEntrega}
-                                onChange={(e) => setDataEntrega(e.target.value)}
-                            />
-                        </Box>
-
-                        <Box display="flex" gap={2}>
-                            <TextField
-                                label="Quantidade de Análises"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={quantidadeAnalises}
-                                onChange={(e) => setQuantidadeAnalises(e.target.value)}
-                            />
-
-                            <TextField
-                                label="Número do Contrato"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={numeroContrato}
-                                onChange={(e) => setNumeroContrato(e.target.value)}
-                            />
-                        </Box>
-
-                        <TextField
-                            label="Observação"
-                            required
-                            margin="normal"
-                            style={{ width: '350px' }}
-                            multiline
-                            rows={4}
-                            value={observacao}
-                            onChange={(e) => setObservacao(e.target.value)}
-                        />
 
                         <Box display="flex" justifyContent="center" marginTop={2}>
-                            <Button variant="contained" type="submit">
+                            <Button variant="contained" onClick={handleSubmit}>
                                 Salvar
                             </Button>
                         </Box>
-
-                        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-                            <DialogTitle>Contrato cadastrado com sucesso!</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Deseja cadastrar as {quantidadeAnalises} análises agora?
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleConfirmYes}>Sim</Button>
-                                <Button onClick={handleConfirmNo}>Não</Button>
-                            </DialogActions>
-                        </Dialog>
-                    </form>
+                    </Box>
                 </Box>
-                {/* Usando o novo componente FeedbackDialog */}
-                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
             </Box>
+
+            <Dialog open={dialogOpen} onClose={handleDialogClose}>
+                <DialogTitle>Sucesso</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Dados salvos com sucesso!
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose} color="primary">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
 
-export default ContratoCadastro;
+export default ReagenteCadastro;

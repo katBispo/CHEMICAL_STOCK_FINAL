@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
     Box,
@@ -8,50 +7,33 @@ import {
     Typography,
     Button,
     TextField,
-    Autocomplete,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    sampleId,
-    openAlertDialog,
-    setOpenAlertDialog,
-    handleAlertOk,
-
     Input,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js'; // Importe o novo componente
 import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-
 
 function ProcedimentoCadastro() {
-
-
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const [openConfirm, setOpenConfirm] = useState(false); // Estado para controle do diálogo
-    const [dialogMessage, setDialogMessage] = useState(''); // Mensagem do diálogo
-
-
-    const navigate = useNavigate();
-
     const [nomeProcedimento, setNomeProcedimento] = useState('');
     const [descricao, setDescricao] = useState('');
     const [pdfFile, setPdfFile] = useState(null);
-
+    const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]); // Definir data de cadastro como a data atual (em formato YYYY-MM-DD)
+    
+    const navigate = useNavigate();
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
     
         const formData = new FormData();
-        formData.append('nomeProcedimento', nomeProcedimento); // Substitua pelas variáveis corretas
+        formData.append('nomeProcedimento', nomeProcedimento);
         formData.append('descricaoProcedimento', descricao);
-        formData.append('pdfFile', pdfFile); // Arquivo PDF
+        formData.append('pdfFile', pdfFile);
+        formData.append('dataCadastro', dataCadastro); // Enviar a dataCadastro
     
         try {
             const response = await fetch('http://localhost:8080/procedimento', {
@@ -70,10 +52,6 @@ function ProcedimentoCadastro() {
             console.error('Erro:', error);
         }
     };
-    
-    
-
-
 
     return (
         <Box display="flex" justifyContent="flex-start" gap={2}>
@@ -99,7 +77,6 @@ function ProcedimentoCadastro() {
                     maxWidth: '800px',
                     marginLeft: '200px',
                     marginTop: '90px', // Ajuste este valor conforme necessário
-
                 }}
             >
                 <Typography variant="h4" gutterBottom>
@@ -110,12 +87,11 @@ function ProcedimentoCadastro() {
                     <TextField
                         label="Nome do Procedimento"
                         value={nomeProcedimento}
-                        onChange={(e) => setNomeProcedimento(e.target.value)} // Atualizando o valor no estado
+                        onChange={(e) => setNomeProcedimento(e.target.value)}
                         required
                         margin="normal"
                         fullWidth
                     />
-
 
                     {/* Descrição */}
                     <TextField
@@ -147,10 +123,7 @@ function ProcedimentoCadastro() {
                 </form>
 
             </Box>
-
         </Box>
-
-
     );
 }
 

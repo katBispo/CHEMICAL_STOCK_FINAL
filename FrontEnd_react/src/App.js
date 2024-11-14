@@ -21,6 +21,8 @@ import ReagenteCadastro from './pages/cadastro/ReagenteCadastro';
 import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro';
 
 
+import Perfil from './pages/Perfil';
+
 import { Link } from 'react-router-dom';
 import { MdArtTrack } from 'react-icons/md';
 
@@ -50,7 +52,8 @@ function App() {
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
         <Route path="/analitoExistenteCadastro" element={<AnalitoExistenteCadastro />} />
 
-        
+        <Route path="/perfil" element={<Perfil/>} />
+
 
 
       </Routes>

@@ -14,15 +14,15 @@ import {
     Typography
 } from '@mui/material';
 
-const AnalitoSelector = ({ onClose }) => {
+const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => {
     const [selectedProcedure, setSelectedProcedure] = useState(null);
     const [procedures, setProcedures] = useState([]);
     const [tiposESubtipos, setTiposESubtipos] = useState([]);
-    const [showTiposESubtipos, setShowTiposESubtipos] = useState(false); // Controle da exibição dos tipos e subtipos
-    const [selectedOptions, setSelectedOptions] = useState({}); 
+    const [showTiposESubtipos, setShowTiposESubtipos] = useState(false);
+    const [selectedOptions, setSelectedOptions] = useState({});
 
     useEffect(() => {
-        // Função para buscar procedimentos
+        // Função para buscar analitos
         const fetchProcedures = async () => {
             try {
                 const response = await fetch('http://localhost:8080/analito');
@@ -76,46 +76,25 @@ const AnalitoSelector = ({ onClose }) => {
         }));
     };
 
-    const handleSave = async () => {
-        const selectedData = Object.entries(selectedOptions).reduce((acc, [classificacao, tipos]) => {
-            const selectedTipos = Object.entries(tipos).reduce((tiposAcc, [tipo, subtipos]) => {
-                const selectedSubtipos = Object.keys(subtipos).filter(subtipo => subtipos[subtipo]);
-                if (selectedSubtipos.length) {
-                    tiposAcc.push({ tipo, subtipos: selectedSubtipos });
-                }
-                return tiposAcc;
-            }, []);
-            if (selectedTipos.length) {
-                acc.push({ classificacao, tipos: selectedTipos });
-            }
-            return acc;
-        }, []);
-
-        const dataToSave = {
-            analito: selectedProcedure, 
-            selecoes: selectedData,
-        };
-
-        try {
-            const response = await fetch('http://localhost:8080/analito', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSave),
-            });
-            if (!response.ok) {
-                throw new Error('Erro ao salvar analito');
-            }
-            console.log('Analito salvo com sucesso!');
-            onClose();
-        } catch (error) {
-            console.error(error);
-        }
+    const handleSave = () => {
+        const analitosSelecionados = Object.keys(selectedOptions).map((classificacao) => {
+            return {
+                classificacao,
+                tipos: Object.keys(selectedOptions[classificacao]).map((tipo) => ({
+                    tipo,
+                    subtipos: Object.keys(selectedOptions[classificacao][tipo]).filter(
+                        (subtipo) => selectedOptions[classificacao][tipo][subtipo]
+                    ),
+                })),
+            };
+        });
+        
+        onAnalitoSelect(analitosSelecionados); // Envia os analitos selecionados para o componente pai
+        handleClose(); // Fecha o diálogo
     };
 
     return (
-        <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
+        <Dialog open={true} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>Escolha o Analito</DialogTitle>
             <DialogContent>
                 {/* Primeiro passo: seleção de classificação */}
@@ -174,7 +153,7 @@ const AnalitoSelector = ({ onClose }) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Fechar</Button>
+                <Button onClick={handleClose} color="secondary">Fechar</Button>
                 <Button onClick={handleSave} color="primary">Salvar</Button>
             </DialogActions>
         </Dialog>

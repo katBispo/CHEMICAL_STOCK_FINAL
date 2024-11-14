@@ -50,9 +50,7 @@ const AnaliseLista = () => {
 
         if (response.ok) {
             console.log('Análise excluída com sucesso');
-            // Aqui você pode atualizar a lista de análises, se necessário
-            // Ex: atualizar o estado que mantém a lista de análises
-            // setAnalises(prev => prev.filter(analise => analise.id !== id));
+            
         } else {
             console.error('Erro ao excluir a análise');
         }
@@ -88,21 +86,26 @@ const AnaliseLista = () => {
     // Função para abrir o overlay de edição com a análise selecionada
 
 
-
-    useEffect(() => {
-        // Função para buscar os clientes do backend
-        const fetchAnalises = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analise'); // Certifique-se de que a URL está correta
+    // Função para buscar os análises
+    const fetchAnalises = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/analise');
+            if (response.ok) {
                 const data = await response.json();
                 setAnalise(data);
-            } catch (error) {
-                console.error('Erro ao buscar analises:', error);
+            } else {
+                console.error('Erro ao buscar análsies');
             }
-        };
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchAnalises();
     }, []);
+
+
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();

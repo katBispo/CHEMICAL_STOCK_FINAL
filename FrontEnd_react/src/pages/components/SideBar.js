@@ -119,6 +119,8 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                         </ListItemIcon>
                         <ListItemText primary="Home" />
                     </ListItem>
+
+
                     <ListItem button onClick={handleListasClick}>
                         <ListItemIcon>
                             <DescriptionIcon sx={{ color: 'white' }} />
@@ -390,6 +392,24 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
                         </List>
                     </Collapse>
+                    <ListItem
+                        button
+                        component={Link}
+                        to="/perfil"
+                        onClick={() => setSelectedItem('/perfil')}
+                        selected={selectedItem === '/perfil'}
+                        sx={{
+                            bgcolor: selectedItem === '/perfil' ? '#8BC34A' : 'transparent',
+                            textDecoration: 'none',
+                            color: 'white',
+                        }}
+                    >
+                        <ListItemIcon>
+                            <HomeIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Perfil" />
+                    </ListItem>
+
                 </List>
             </Drawer >
 

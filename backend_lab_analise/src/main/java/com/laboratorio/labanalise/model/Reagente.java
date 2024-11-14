@@ -30,6 +30,9 @@ public class Reagente implements Serializable {
     @Column(nullable = false)
     private boolean controlado;
 
+    @Column(nullable = true)
+    private String numeroControlado; // Novo campo opcional para número controlado
+
     @Column(nullable = false)
     private LocalDate dataValidade;
 
@@ -38,7 +41,7 @@ public class Reagente implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoReagente tipo;  // Campo para tipo de reagente (enum)
+    private TipoReagente tipo;
 
     // Construtores
     public Reagente(String nome) {
@@ -87,6 +90,14 @@ public class Reagente implements Serializable {
 
     public void setControlado(boolean controlado) {
         this.controlado = controlado;
+    }
+
+    public String getNumeroControlado() {
+        return numeroControlado;
+    }
+
+    public void setNumeroControlado(String numeroControlado) {
+        this.numeroControlado = numeroControlado;
     }
 
     public LocalDate getDataValidade() {
