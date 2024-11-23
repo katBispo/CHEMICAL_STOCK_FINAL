@@ -38,6 +38,62 @@ const AnalysisTable = () => {
     const [showFilter, setShowFilter] = useState(false);
     const navigate = useNavigate();
 
+
+    const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
+    const [selectedContrato, setSelectedContrato] = useState(null);
+
+    const handleOpenDeleteOverlay = (contratos) => {
+        setSelectedContrato(contratos);
+        setOpenDeleteOverlay(true);
+    };
+
+    const handleCloseDeleteOverlay = () => {
+        setOpenDeleteOverlay(false);
+        setSelectedContrato(null);
+    };
+
+    const handleDeleteContrato = async (id) => {
+        // Faz a requisição para deletar a análise
+        const response = await fetch(`http://localhost:8080/contrato/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            console.log('Contrato excluído com sucesso');
+            
+        } else {
+            console.error('Erro ao excluir a contrato');
+        }
+
+        // Fecha o overlay após a exclusão ou erro
+        handleCloseDeleteOverlay();
+    };
+
+
+    const [open, setOpen] = useState(false);
+
+    const [editOverlayOpen, setEditOverlayOpen] = useState(false);
+    const [contratoToEdit, setContratoToEdit] = useState(null);
+
+    // Função para abrir o overlay de edição com a análise selecionada
+    const handleEditClick = (contratos) => {
+        setContratoToEdit(contratos);
+        setEditOverlayOpen(true);
+    };
+    const handleSave = (updatedContratos) => {
+        console.log("contrato salvo:", updatedContratos);
+        setEditOverlayOpen(false);
+        // Aqui você pode atualizar a lista de análises com os novos dados
+    };
+
+
+    // Função para abrir o modal
+    const handleOpen = () => setOpen(true);
+
+    // Função para fechar o modal
+    const handleClose = () => setOpen(false);
+
+
     // Função para buscar os contratos
     const fetchContratos = async () => {
         try {
@@ -172,12 +228,11 @@ const AnalysisTable = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.quantidadeAnalises}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{new Date(contrato.dataEntrega).toLocaleDateString()}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.cliente ? contrato.cliente.nome : ''}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{contrato.statusContrato}</TableCell>
 
                                         <TableCell>
                                             <Box
                                                 sx={{
-                                                    ...getStatusColor(contrato.status),
+                                                    ...getStatusColor(contrato.statusContrato),
                                                     padding: '5px',
                                                     borderRadius: '15px',
                                                     textAlign: 'center',
@@ -188,22 +243,47 @@ const AnalysisTable = () => {
                                                     fontWeight: 'bold',
                                                 }}
                                             >
-                                                {contrato.status}
+                                                {contrato.statusContrato}
                                             </Box>
                                         </TableCell>
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                                            <IconButton>
+                                            <IconButton onClick={() => { handleOpen(); setSelectedContratos(contratos); }}>
                                                 <FaEye style={{ color: '#666', fontSize: '18px' }} />
                                             </IconButton>
-                                            <IconButton>
+                                            <IconButton onClick={() => { handleEditClick(contratos); }}>
                                                 <FaEdit style={{ color: '#4CAF50', fontSize: '18px' }} />
                                             </IconButton>
-                                            <IconButton>
+                                            <IconButton onClick={() => handleOpenDeleteOverlay(contratos)}>
                                                 <FaTrashAlt style={{ color: '#e74c3c', fontSize: '18px' }} />
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
+                                {/* Verifique se `selectedAnalise` está definido antes de renderizar o modal */}
+                                {setSelectedContrato && (
+                                    <ContratoDetailOverlay
+                                        open={open}
+                                        onClose={handleClose}
+                                        contratos={selectedContrato} // Passa a análise selecionada para o modal
+                                    />
+
+                                )}
+
+                                <ContratoEditOverlay
+                                    open={editOverlayOpen}
+                                    onClose={() => setEditOverlayOpen(false)}
+                                    contratos={contratoToEdit}
+                                    onSave={handleSave} // Passando handleSave como onSave
+                                />
+
+                                {selectedContrato && (
+                                    <ContratoExcluirOverlay
+                                        open={openDeleteOverlay}
+                                        onClose={handleCloseDeleteOverlay}
+                                        onDelete={handleDeleteContrato}
+                                        contratos={selectedContrato}
+                                    />
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>

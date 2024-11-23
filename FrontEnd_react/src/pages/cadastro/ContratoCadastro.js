@@ -7,63 +7,69 @@ import {
     Typography,
     Button,
     TextField,
-    Autocomplete,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
     Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
     DialogTitle,
+    DialogContent,
+    DialogActions,
+    Autocomplete,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
 import { useNavigate } from 'react-router-dom';
 
-function ReagenteCadastro() {
+function ContratoCadastro() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
 
-    const [nome, setNome] = useState('');
-    const [marca, setMarca] = useState('');
-    const [lote, setLote] = useState('');
-    const [controlado, setControlado] = useState('não');
-    const [numeroControlado, setNumeroControlado] = useState('');
-    const [dataValidade, setDataValidade] = useState('');
-    const [tiposReagentes, setTiposReagentes] = useState([]);
-    const [selectedTipoReagente, setSelectedTipoReagente] = useState('');
+    // Estados do formulário
+    const [numeroContrato, setNumeroContrato] = useState('');
+    const [nomeContrato, setNomeContrato] = useState('');
+    const [dataContrato, setDataContrato] = useState('');
+    const [dataEntrega, setDataEntrega] = useState('');
+    const [quantidadeAnalises, setQuantidadeAnalises] = useState('');
+    const [observacao, setObservacao] = useState('');
+    const [clientes, setClientes] = useState([]); // Para armazenar os clientes
+    const [selectedCliente, setSelectedCliente] = useState(null); // Para armazenar o cliente selecionado
+
+    const fetchClientes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/cliente');
+            if (response.ok) {
+                const data = await response.json();
+                setClientes(data.clientes || data); // Acessa a lista de clientes dentro de "clientes", se necessário
+            } else {
+                console.error('Erro ao buscar clientes');
+            }
+        } catch (error) {
+            console.error('Erro ao conectar ao backend:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchTiposReagentes = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/reagente/tipos');
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-                setTiposReagentes(data);
-            } catch (error) {
-                console.error('Erro ao buscar tipos de reagentes:', error);
-            }
-        };
-
-        fetchTiposReagentes();
+        fetchClientes();
     }, []);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event) => {
+        // Previne o comportamento padrão do formulário
+        event.preventDefault();
+
         const data = {
-            nome,
-            marca,
-            lote,
-            dataValidade,
-            controlado: controlado === 'sim',
-            numeroControlado: controlado === 'sim' ? numeroControlado : null,
-            tipo: selectedTipoReagente
+            numeroContrato,
+            nomeContrato,
+            dataContrato,
+            dataEntrega,
+            quantidadeAnalises: parseInt(quantidadeAnalises, 10),
+            observacao,
+            statusContrato: "ATIVO", // Setando o status padrão
+            cliente: selectedCliente ? { id: selectedCliente.id } : null, // Inclui o cliente selecionado
         };
 
+        console.log("Dados enviados:", data); // Log para verificar os dados antes do envio
+
         try {
-            const response = await fetch('http://localhost:8080/reagente', {
+            const response = await fetch('http://localhost:8080/contrato', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,14 +80,14 @@ function ReagenteCadastro() {
             if (response.ok) {
                 setDialogOpen(true); // Abre o diálogo de sucesso
             } else {
-                console.error('Erro ao salvar reagente');
+                console.error('Erro ao salvar contrato');
             }
         } catch (error) {
             console.error('Erro:', error);
         }
     };
 
-    const handleDialogClose = () => {
+    const handleCloseDialog = () => {
         setDialogOpen(false);
         navigate('/'); // Redireciona para a rota '/'
     };
@@ -94,14 +100,14 @@ function ReagenteCadastro() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Cadastro de Reagentes
+                        Cadastro de Contratos
                     </Typography>
                 </Toolbar>
             </AppBar>
 
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4, ml:-15}}>
                 <Toolbar />
                 <Box
                     sx={{
@@ -114,116 +120,102 @@ function ReagenteCadastro() {
                     }}
                 >
                     <Typography variant="h4" gutterBottom>
-                        Cadastrar Reagente
+                        Cadastrar Contrato
                     </Typography>
 
-                    <Box
-                        sx={{
-                            backgroundColor: 'white',
-                            padding: '30px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                            maxWidth: '800px',
-                            width: '100%',
-                        }}
-                    >
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Nome do Reagente"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={nome}
-                                onChange={(e) => setNome(e.target.value)}
-                            />
-                            <TextField
-                                label="Marca do Reagente"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={marca}
-                                onChange={(e) => setMarca(e.target.value)}
-                            />
-                        </Box>
-
-                        <Box display="flex" flexDirection="column" gap={2} mt={2}>
-                            <Box display="flex" justifyContent="flex-start" gap={2}>
+                    {/* Formulário */}
+                    <form onSubmit={handleSubmit}>
+                        <Box display="flex" flexDirection="column" gap={2}>
+                            {/* Número e Nome do Contrato */}
+                            <Box display="flex" gap={2}>
                                 <TextField
-                                    label="Lote"
+                                    label="Número do Contrato"
                                     required
                                     margin="normal"
-                                    style={{ width: '350px' }}
-                                    value={lote}
-                                    onChange={(e) => setLote(e.target.value)}
+                                    value={numeroContrato}
+                                    onChange={(e) => setNumeroContrato(e.target.value)}
+                                    sx={{ flex: 1 }}
                                 />
-
                                 <TextField
-                                    label="Data de Validade"
-                                    type="date"
+                                    label="Nome do Contrato"
                                     required
                                     margin="normal"
-                                    InputLabelProps={{ shrink: true }}
-                                    style={{ width: '350px' }}
-                                    value={dataValidade}
-                                    onChange={(e) => setDataValidade(e.target.value)}
+                                    value={nomeContrato}
+                                    onChange={(e) => setNomeContrato(e.target.value)}
+                                    sx={{ flex: 2 }}
                                 />
                             </Box>
 
-                            <Autocomplete
-                                options={tiposReagentes}
-                                getOptionLabel={(option) => option.toString()}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Selecione o Tipo de Reagente" variant="outlined" />
-                                )}
-                                onChange={(event, newValue) => setSelectedTipoReagente(newValue)}
-                            />
-
-                            <Typography variant="h6">Reagente Controlado</Typography>
-                            <RadioGroup
-                                row
-                                value={controlado}
-                                onChange={(e) => setControlado(e.target.value)}
-                            >
-                                <FormControlLabel value="sim" control={<Radio />} label="Sim" />
-                                <FormControlLabel value="não" control={<Radio />} label="Não" />
-                            </RadioGroup>
-
-                            {controlado === 'sim' && (
+                            {/* Cliente e Quantidade de Análises */}
+                            <Box display="flex" gap={2}>
+                                <Autocomplete
+                                    options={clientes} // Passa a lista de clientes para o componente
+                                    getOptionLabel={(option) => option.nome} // Define o nome a ser exibido na lista de opções
+                                    onChange={(event, value) => setSelectedCliente(value)} // Atualiza o cliente selecionado
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Cliente Associado"
+                                            required
+                                            margin="normal"
+                                            style={{ width: '300px' }}
+                                        />
+                                    )}
+                                />
                                 <TextField
-                                    label="Número do Reagente Controlado"
+                                    label="Quantidade de Análises"
                                     required
                                     margin="normal"
-                                    style={{ width: '350px' }}
-                                    value={numeroControlado}
-                                    onChange={(e) => setNumeroControlado(e.target.value)}
+                                    type="number"
+                                    value={quantidadeAnalises}
+                                    onChange={(e) => setQuantidadeAnalises(e.target.value)}
+                                    sx={{ flex: 1 }}
                                 />
-                            )}
+                            </Box>
+
+                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                            <TextField
+                                label="Data de Contratação"
+                                type="date"
+                                required
+                                margin="normal"
+                                InputLabelProps={{ shrink: true }}
+                                style={{ width: '350px' }}
+                                value={dataContrato}
+                                onChange={(e) => setDataContrato(e.target.value)}
+                            />
+                            <TextField
+                                label="Prazo de finalização"
+                                type="date"
+                                required
+                                margin="normal"
+                                InputLabelProps={{ shrink: true }}
+                                style={{ width: '300px' }}
+                                value={dataEntrega}
+                                onChange={(e) => setDataEntrega(e.target.value)}
+                            />
                         </Box>
 
-                        <Box display="flex" justifyContent="center" marginTop={2}>
-                            <Button variant="contained" onClick={handleSubmit}>
-                                Salvar
+                            {/* Observação */}
+                            <TextField
+                                label="Observação"
+                                margin="normal"
+                                value={observacao}
+                                onChange={(e) => setObservacao(e.target.value)}
+                                multiline
+                                rows={4}
+                            />
+
+                            {/* Botão de Enviar */}
+                            <Button variant="contained" color="primary" type="submit">
+                                Cadastrar Contrato
                             </Button>
                         </Box>
-                    </Box>
+                    </form>
                 </Box>
             </Box>
-
-            <Dialog open={dialogOpen} onClose={handleDialogClose}>
-                <DialogTitle>Sucesso</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Dados salvos com sucesso!
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDialogClose} color="primary">
-                        OK
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 }
 
-export default ReagenteCadastro;
+export default ContratoCadastro;

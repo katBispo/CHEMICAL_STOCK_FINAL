@@ -147,7 +147,7 @@ const ProcedimentoLista = () => {
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
                                     >
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{procedimento.nome}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{procedimento.nomeProcedimento}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{procedimento.dataCadastro}</TableCell>
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
                                             <IconButton onClick={() => { handleOpen(); setSelectedProcedimento(procedimento); }}>

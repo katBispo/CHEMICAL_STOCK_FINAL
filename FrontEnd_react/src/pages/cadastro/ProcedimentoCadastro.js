@@ -28,19 +28,19 @@ function ProcedimentoCadastro() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+        
         const formData = new FormData();
         formData.append('nomeProcedimento', nomeProcedimento);
         formData.append('descricaoProcedimento', descricao);
         formData.append('pdfFile', pdfFile);
         formData.append('dataCadastro', dataCadastro); // Enviar a dataCadastro
-    
+        
         try {
             const response = await fetch('http://localhost:8080/procedimento', {
                 method: 'POST',
                 body: formData,
             });
-    
+            
             if (response.ok) {
                 console.log('Procedimento salvo com sucesso');
             } else {
@@ -52,6 +52,7 @@ function ProcedimentoCadastro() {
             console.error('Erro:', error);
         }
     };
+    
 
     return (
         <Box display="flex" justifyContent="flex-start" gap={2}>

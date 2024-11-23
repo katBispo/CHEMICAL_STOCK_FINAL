@@ -1,4 +1,3 @@
-// AnaliseExcluirOverlay.js
 import React from 'react';
 import { Box, Button, Modal, Typography } from '@mui/material';
 
@@ -8,6 +7,7 @@ const AnaliseExcluirOverlay = ({ open, onClose, onDelete, analise }) => {
             onDelete(analise.id); // Passa o ID da análise para a função de delete
         }
         onClose(); // Fecha o overlay após a exclusão
+        window.location.reload(); // Recarrega a página para refletir as mudanças
     };
 
     return (

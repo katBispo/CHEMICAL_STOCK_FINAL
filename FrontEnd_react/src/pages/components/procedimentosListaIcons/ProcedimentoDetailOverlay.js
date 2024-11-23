@@ -7,7 +7,19 @@ const ProcedimentoDetailOverlay = ({ open, onClose, procedimento }) => {
 
     useEffect(() => {
         if (procedimento && procedimento.pdfData) {
-            const blob = new Blob([new Uint8Array(procedimento.pdfData)], { type: 'application/pdf' });
+            // Decodifica a string Base64 para binário
+            const base64ToArrayBuffer = (base64) => {
+                const binaryString = atob(base64); // Decodifica Base64 para string binária
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer; // Retorna um ArrayBuffer
+            };
+
+            const arrayBuffer = base64ToArrayBuffer(procedimento.pdfData);
+            const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             setPdfUrl(url);
         }
@@ -52,7 +64,7 @@ const ProcedimentoDetailOverlay = ({ open, onClose, procedimento }) => {
                 </Typography>
                 
                 {/* Exibição do PDF */}
-                {pdfUrl && (
+                {pdfUrl ? (
                     <Box mt={2}>
                         <iframe
                             src={pdfUrl}
@@ -62,6 +74,8 @@ const ProcedimentoDetailOverlay = ({ open, onClose, procedimento }) => {
                             title="PDF do Procedimento"
                         />
                     </Box>
+                ) : (
+                    <Typography variant="body1" color="error">Erro ao carregar o PDF.</Typography>
                 )}
 
                 <Box mt={3}>
