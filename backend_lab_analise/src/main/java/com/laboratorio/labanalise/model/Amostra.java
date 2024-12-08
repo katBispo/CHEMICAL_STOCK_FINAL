@@ -15,6 +15,7 @@ public class Amostra implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para geração de IDs automáticos
     private Long id;
 
     @Column(nullable = false)
@@ -22,22 +23,19 @@ public class Amostra implements Serializable {
 
     private String enderecoColeta;
 
-    @Column(nullable = false)  // Adicionando a anotação nullable se necessário
-    private LocalDate dataColeta;  // Alterado para LocalDate
+    @Column(nullable = false)
+    private LocalDate dataColeta;
 
     private String coordenadaColeta;
 
-    // Nova variável para data limite de finalização (prazo)
-    @Column(nullable = false)  // Adicionando a anotação nullable se necessário
-    private LocalDate prazoFinalizacao; // Alterado para LocalDate
+    @Column(nullable = false)
+    private LocalDate prazoFinalizacao;
 
-    // Adicionando o status da amostra
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusAmostra status;
 
-    // Nova variável para descrição da amostra
-    @Column(nullable = true, length = 500) // O tamanho do campo pode ser ajustado conforme necessário
+    @Column(length = 500)
     private String descricao;
 
     @ManyToMany(mappedBy = "amostras")
@@ -56,7 +54,8 @@ public class Amostra implements Serializable {
     private Analise analise;
 
     // Construtor com todos os parâmetros
-    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta, LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
+    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
+                   LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
@@ -68,8 +67,7 @@ public class Amostra implements Serializable {
 
     // Construtor padrão
     public Amostra() {
-        // Definindo um status padrão, se necessário
-        this.status = StatusAmostra.EM_ANDAMENTO;
+        this.status = StatusAmostra.EM_ANDAMENTO; // Status padrão
     }
 
     // Getters e Setters

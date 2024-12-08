@@ -100,7 +100,7 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => 
                 {/* Primeiro passo: seleção de classificação */}
                 <Autocomplete
                     options={procedures}
-                    getOptionLabel={(option) => option.nome || ""}
+                    getOptionLabel={(option) => option.classificacao || ""}
                     onChange={handleAnalitoSelection}
                     renderInput={(params) => (
                         <TextField

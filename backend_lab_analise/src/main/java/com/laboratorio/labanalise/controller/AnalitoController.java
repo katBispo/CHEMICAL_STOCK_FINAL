@@ -3,11 +3,14 @@ package com.laboratorio.labanalise.controller;
 import com.laboratorio.labanalise.model.Analito;
 import com.laboratorio.labanalise.DTO.TipoAnalitoDto; // Certifique-se de que você tenha esse DTO criado
 import com.laboratorio.labanalise.services.AnalitoService;
+import com.laboratorio.labanalise.request.*;
+import com.laboratorio.labanalise.repositories.AnalitoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
+import java.util.Optional;
 
 
 import java.net.URI;
@@ -35,7 +38,7 @@ public class AnalitoController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Analito> deletarAnalito(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarAnalito(@PathVariable Long id) {
         service.remover(id);
         return ResponseEntity.noContent().build();
     }
@@ -58,28 +61,36 @@ public class AnalitoController {
         List<String> subtipos = service.buscarSubtiposDistintos();
         return ResponseEntity.ok(subtipos);
     }
+
     @GetMapping("/buscar-id")
-public ResponseEntity<Long> buscarIdPorNome(@RequestParam String classificacao) {
-    Long id = service.buscarIdPorNome(classificacao);
-    if (id != null) {
-        return ResponseEntity.ok(id);
-    } else {
-        return ResponseEntity.notFound().build();
-    }
-}
-
-
-    // Novo endpoint para adicionar tipoAnalito
-    @PostMapping("/{classificacaoId}/adicionar")
-    public ResponseEntity<Void> adicionarTipoAnalito(
-            @PathVariable Long classificacaoId,
-            @RequestBody TipoAnalitoDto tipoAnalitoDto) {
-        try {
-            service.adicionarTipoAnalito(classificacaoId, tipoAnalitoDto);
-            return ResponseEntity.ok().build(); // Retorna 200 OK
-        } catch (Exception e) {
-            e.printStackTrace(); // Log de erro no servidor
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Retorna 500 em caso de erro
+    public ResponseEntity<Long> buscarIdPorClassificacao(@RequestParam String classificacao) {
+        Long id = service.buscarIdPorClassificacao(classificacao);
+        if (id != null) {
+            return ResponseEntity.ok(id);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
+    private final AnalitoRepository analitoRepository;
+
+    public AnalitoController(AnalitoRepository analitoRepository) {
+        this.analitoRepository = analitoRepository;
+    }
+
+    @PostMapping("/{id}/adicionar")
+    public ResponseEntity<Analito> adicionarTipoEsubtipo(
+            @PathVariable Long id,
+            @RequestBody TipoESubtiposRequest request) {
+        Optional<Analito> analitoOpt = analitoRepository.findById(id);
+        if (analitoOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    
+        Analito analito = analitoOpt.get();
+        analito.adicionarTipo(request.getTipoAnalito(), request.getSubtipoAnalito());
+        analitoRepository.save(analito); // Persistir as alterações no banco
+    
+        return ResponseEntity.ok(analito);
+    }
+    
 }

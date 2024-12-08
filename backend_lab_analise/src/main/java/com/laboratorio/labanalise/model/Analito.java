@@ -15,9 +15,6 @@ public class Analito implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
-    
     private String classificacao;
     private String tipoAnalito;
 
@@ -36,30 +33,18 @@ public class Analito implements Serializable {
 
     public Analito() {}
 
-    public Analito(Long id, String nome) {
+    public Analito(Long id, String classificacao) {
         this.id = id;
-        this.nome = nome;
+        this.classificacao = classificacao;
     }
 
-    public Analito(String nome) {
-        this.nome = nome;
-    }
-
-    // Getters e setters para id, nome, classificacao, tipoAnalito e subtipoAnalito
+    // Getters e setters para id, classificacao, tipoAnalito e subtipoAnalito
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getClassificacao() {
@@ -105,11 +90,11 @@ public class Analito implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Analito analito = (Analito) o;
-        return Objects.equals(id, analito.id) && Objects.equals(nome, analito.nome);
+        return Objects.equals(id, analito.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome);
+        return Objects.hash(id);
     }
 }

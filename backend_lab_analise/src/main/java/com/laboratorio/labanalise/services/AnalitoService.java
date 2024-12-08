@@ -43,10 +43,15 @@ public class AnalitoService {
     public List<String> buscarSubtiposDistintos() {
         return repository.findDistinctSubtipos();
     }
-    public Long buscarIdPorNome(String classificacao) {
+    
+    public Long buscarIdPorClassificacao(String classificacao) {
         return repository.findIdByClassificacao(classificacao);
     }
-    
+
+    public List<Analito> buscarAnalitosPorIds(List<Long> ids) {
+        return repository.findAllById(ids);
+    }
+
     // Novo método para adicionar tipoAnalito a uma classificação existente
     public void adicionarTipoAnalito(Long classificacaoId, TipoAnalitoDto tipoAnalitoDto) {
         Optional<Analito> analitoOptional = repository.findById(classificacaoId);

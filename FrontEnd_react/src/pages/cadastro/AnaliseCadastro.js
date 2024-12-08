@@ -77,7 +77,7 @@ function AnaliseCadastro() {
             console.log("Status da resposta:", response.status);
             const responseText = await response.text(); // Captura a resposta como texto
             console.log("Conteúdo da resposta:", responseText); // Log do conteúdo
-    
+
             if (response.ok) {
                 const data = JSON.parse(responseText); // Tenta parsear para JSON
                 console.log("Dados das matrizes:", data);
@@ -89,8 +89,8 @@ function AnaliseCadastro() {
             console.error('Erro ao conectar ao backend:', error);
         }
     };
-    
-    
+
+
 
     const fetchProcedures = async () => {
         try {
@@ -147,7 +147,7 @@ function AnaliseCadastro() {
             });
 
             if (response.ok) {
-                setOpenConfirm(true); // Abre o diálogo de confirmação
+                setDialogOpen(true); // Abre o diálogo de confirmação
             } else {
                 console.error('Erro ao salvar a análise');
             }
@@ -161,9 +161,11 @@ function AnaliseCadastro() {
         navigate('/home');
     };
 
-    const handleDialogClose = () => {
+    const handleCloseDialog = () => {
         setDialogOpen(false);
+        navigate('/'); // Redireciona para a rota '/'
     };
+
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -319,8 +321,15 @@ function AnaliseCadastro() {
                         </Dialog>
                     </form>
                 </Box>
-                {/* Usando o novo componente FeedbackDialog */}
-                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+                <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+                    <DialogTitle>Sucesso</DialogTitle>
+                    <DialogContent>Dados salvos com sucesso!</DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDialog} color="primary">
+                            OK
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </Box>
     );

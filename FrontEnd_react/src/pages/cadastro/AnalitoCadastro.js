@@ -26,21 +26,21 @@ const AnalitoCadastro = ({ open, handleClose }) => {
     const handleOptionSelect = (option) => {
         if (option === 'classificacaoAnalito') {
             openAnalitoExistente();
-        } else {
-            // Adicione outras ações se necessário
+        } else if (option === 'novoAnalito') {
+            setShowInitialScreen(false); // Atualiza para exibir o formulário de cadastro
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         console.log('Tentando enviar:', {
-            nome: classificacao,
             classificacao,
             tipoAnalito,
             subtipoAnalito,
         });
-
+    
         try {
             const response = await fetch('http://localhost:8080/analito', {
                 method: 'POST',
@@ -48,17 +48,16 @@ const AnalitoCadastro = ({ open, handleClose }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    nome: classificacao,
-                    classificacao,
+                    classificacao, // O campo 'nome' foi removido
                     tipoAnalito,
                     subtipoAnalito,
                 }),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Erro ao cadastrar analito');
             }
-
+    
             const data = await response.json();
             console.log('Analito cadastrado:', data);
             setMessageBoxMessage('Analito cadastrado com sucesso!');
@@ -72,6 +71,7 @@ const AnalitoCadastro = ({ open, handleClose }) => {
             setMessageBoxOpen(true);
         }
     };
+    
 
     const handleAddSubtipo = () => {
         setSubtipoAnalito([...subtipoAnalito, '']);

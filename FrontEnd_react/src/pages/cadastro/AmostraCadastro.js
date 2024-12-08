@@ -8,6 +8,9 @@ import {
     Button,
     TextField,
     Autocomplete,
+    List,
+    ListItem
+
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar';
@@ -15,6 +18,8 @@ import AnalitoSelector from '../components/AnalitoSelector';
 import { useNavigate } from 'react-router-dom';
 
 function AmostraCadastro({ open, handleClose }) {
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     const [procedures, setProcedures] = useState([]);
     const [analise, setAnalise] = useState([]);
     const [selectedProcedure, setSelectedProcedure] = useState(null);
@@ -211,14 +216,39 @@ function AmostraCadastro({ open, handleClose }) {
                             >
                                 Selecionar Analitos
                             </Button>
-                            <TextField
-                                label="Endereço"
-                                required
-                                margin="normal"
-                                value={enderecoColeta}
-                                onChange={(e) => setEnderecoColeta(e.target.value)}
-                                sx={{ width: '350px' }}
-                            />
+                            {/* Exibe os analitos selecionados */}
+                            {selectedAnalitos.length > 0 && (
+                                <Box
+                                    sx={{
+                                        backgroundColor: '#f9f9f9',
+                                        padding: '10px',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        marginTop: '16px',
+                                        width: '350px',
+                                    }}
+                                >
+                                    <Typography variant="subtitle1">Analitos Selecionados:</Typography>
+                                    <List>
+                                        {selectedAnalitos.map((analito, index) => (
+                                            <ListItem key={index}>
+                                                <Typography variant="body2">
+                                                    {analito.classificacao} - {analito.tipos.map(tipo => tipo.tipo).join(', ')}
+                                                </Typography>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+
+                                    <TextField
+                                        label="Endereço"
+                                        required
+                                        margin="normal"
+                                        value={enderecoColeta}
+                                        onChange={(e) => setEnderecoColeta(e.target.value)}
+                                        sx={{ width: '350px' }}
+                                    />
+                                </Box>
+                            )}
                         </Box>
 
                         {showAnalitoSelector && (
@@ -248,6 +278,7 @@ function AmostraCadastro({ open, handleClose }) {
                             </Button>
                         </Box>
                     </form>
+
                 </Box>
             </Box>
         </Box>
