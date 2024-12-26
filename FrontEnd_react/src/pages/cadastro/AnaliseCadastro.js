@@ -36,6 +36,8 @@ function AnaliseCadastro() {
     const [quantidadeAmostras, setQuantidadeAmostras] = useState(''); // Quantidade de amostras
     const [descricao, setDescricao] = useState(''); // Descrição da análise
     const [dataCadastro, setDataCadastro] = useState(''); // Data de início da análise
+    const [dataInicio, setDataInicio] = useState(''); // Data de início da análise
+
     const [prazoFinalizacao, setPrazoFinalizacao] = useState(''); // Prazo de finalização
     const [dialogOpen, setDialogOpen] = useState(false); // Estado para controle do diálogo
     const [dialogMessage, setDialogMessage] = useState(''); // Mensagem do diálogo
@@ -117,26 +119,36 @@ function AnaliseCadastro() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Contrato selecionado:", selectedContract); // Adicione isso antes do envio
-
-        // Certifique-se de que um contrato foi selecionado
-        if (!selectedContract || !selectedContract.id) { // Verifique se selectedContract.id não é nulo
+        console.log("Contrato selecionado:", selectedContract);
+    
+        const dataCadastro = new Date().toLocaleDateString('en-CA'); // Formata como "YYYY-MM-DD"
+    
+        if (!selectedContract || !selectedContract.id) {
             console.error('Nenhum contrato selecionado ou ID do contrato está faltando');
-            return; // Impede o envio se nenhum contrato estiver selecionado
+            return;
         }
+    
+        // Verifica se o prazoFinalizacao está atrasado
+        let statusAnalise = "EM_ANDAMENTO"; // Valor padrão para o status
+        if (new Date(prazoFinalizacao) < new Date(dataCadastro)) {
+            statusAnalise = "ATRASADA"; // Define o status como "EM_ATRASO" se estiver atrasado
+        }
+    
         const data = {
-            nome: nome, // Outros campos da análise
+            nome: nome,
             descricaoGeral: descricaoGeral,
-            statusAnalise: "EM_ANDAMENTO", // Status default para a análise
-            contrato: selectedContract ? { id: selectedContract.id } : null, // Inclua o contrato aqui (atenção ao singular)
-            matriz: selectedMatriz ? { id: selectedMatriz.id } : null, // Inclua a matriz aqui
-            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null, // Inclua o procedimento aqui
-            quantidadeAmostras: quantidadeAmostras, // Ajuste conforme os campos do formulário
+            statusAnalise: statusAnalise, // Define o status com base na lógica
+            contrato: selectedContract ? { id: selectedContract.id } : null,
+            matriz: selectedMatriz ? { id: selectedMatriz.id } : null,
+            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null,
+            quantidadeAmostras: quantidadeAmostras,
             prazoFinalizacao: prazoFinalizacao,
             dataCadastro: dataCadastro,
+            dataInicio: dataInicio,
         };
-        console.log("Dados enviados:", data); // Verifique os dados antes de enviar
-
+    
+        console.log("Dados enviados:", data);
+    
         try {
             const response = await fetch('http://localhost:8080/analise', {
                 method: 'POST',
@@ -145,25 +157,25 @@ function AnaliseCadastro() {
                 },
                 body: JSON.stringify(data),
             });
-
+    
             if (response.ok) {
                 setDialogOpen(true); // Abre o diálogo de confirmação
+                setOpenAlertDialog(true); // Abre o alerta
             } else {
                 console.error('Erro ao salvar a análise');
             }
         } catch (error) {
             console.error('Erro:', error);
         }
-    }
+    };
 
     const handleAlertOk = () => {
         setOpenAlertDialog(false);
-        navigate('/home');
+        navigate('/');
     };
 
     const handleCloseDialog = () => {
         setDialogOpen(false);
-        navigate('/'); // Redireciona para a rota '/'
     };
 
     return (
@@ -234,8 +246,8 @@ function AnaliseCadastro() {
                                 margin="normal"
                                 InputLabelProps={{ shrink: true }}
                                 style={{ width: '350px' }}
-                                value={dataCadastro}
-                                onChange={(e) => setDataCadastro(e.target.value)}
+                                value={dataInicio}
+                                onChange={(e) => setDataInicio(e.target.value)}
                             />
                             <TextField
                                 label="Prazo de finalização"

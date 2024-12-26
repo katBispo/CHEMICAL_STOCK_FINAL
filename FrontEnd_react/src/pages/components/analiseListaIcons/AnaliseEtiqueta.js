@@ -32,7 +32,7 @@ const AnaliseEtiqueta = ({ analise }) => {
                 <strong>Nome:</strong> {analise.nome}
             </Typography>
             <Typography variant="body2">
-                <strong>Data:</strong> {analise.prazoFinalizacao}
+                <strong>Data Final:</strong> {analise.prazoFinalizacao}
             </Typography>
             <Typography variant="body2">
                 <strong>Cliente:</strong> {analise.contrato ? analise.contrato.nomeContrato : 'N/A'}

@@ -13,7 +13,7 @@ const MatrizCadastro = ({ open, handleClose }) => {
 
         
         try {
-            const response = await fetch('http://localhost:8080/cadastroMatrizes', {
+            const response = await fetch('http://localhost:8080/matriz', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

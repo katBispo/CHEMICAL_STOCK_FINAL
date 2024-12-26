@@ -105,7 +105,7 @@ const ClienteTable = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.id}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.nome}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.email}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.CNPJ}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.cnpj}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.telefone}</TableCell>
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
                                             <IconButton>

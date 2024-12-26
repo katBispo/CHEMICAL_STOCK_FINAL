@@ -77,22 +77,38 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => 
     };
 
     const handleSave = () => {
-        const analitosSelecionados = Object.keys(selectedOptions).map((classificacao) => {
-            return {
-                classificacao,
-                tipos: Object.keys(selectedOptions[classificacao]).map((tipo) => ({
-                    tipo,
-                    subtipos: Object.keys(selectedOptions[classificacao][tipo]).filter(
-                        (subtipo) => selectedOptions[classificacao][tipo][subtipo]
-                    ),
-                })),
-            };
-        });
-        
-        onAnalitoSelect(analitosSelecionados); // Envia os analitos selecionados para o componente pai
-        handleClose(); // Fecha o diálogo
+        // Construindo a estrutura dos analitos selecionados
+        const analitosSelecionados = tiposESubtipos.map((classObj) => {
+            const tiposSelecionados = classObj.tipos.map((tipoObj) => {
+                const subtiposSelecionados = tipoObj.subtipos.filter(
+                    (subtipo) => selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo]
+                );
+    
+                if (subtiposSelecionados.length > 0) {
+                    return {
+                        id: tipoObj.id, // Adiciona o ID do analito aqui
+                        tipo: tipoObj.tipo,
+                        subtipos: subtiposSelecionados,
+                    };
+                }
+    
+                return null;
+            }).filter(Boolean); // Remove os nulos
+    
+            if (tiposSelecionados.length > 0) {
+                return {
+                    classificacao: classObj.classificacao,
+                    tipos: tiposSelecionados,
+                };
+            }
+    
+            return null;
+        }).filter(Boolean); // Remove os nulos
+    
+        onAnalitoSelect(analitosSelecionados); // Envia os dados para o componente pai
+        handleClose(); // Fecha o modal
     };
-
+    
     return (
         <Dialog open={true} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>Escolha o Analito</DialogTitle>

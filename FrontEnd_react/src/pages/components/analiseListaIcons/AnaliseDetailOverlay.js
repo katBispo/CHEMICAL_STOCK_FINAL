@@ -23,7 +23,7 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
 
             // Adiciona informações dentro do quadrado
             doc.text(`Nome: ${analise.nome}`, x + 5, y + 10);
-            doc.text(`Data: ${analise.prazoFinalizacao}`, x + 5, y + 20);
+            doc.text(`Data Cadastro: ${analise.dataCadastro}`, x + 5, y + 20);
             doc.text(`Cliente: ${analise.contrato ? analise.contrato.nomeContrato : ''}`, x + 5, y + 30);
             doc.text(`Matriz: ${analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}`, x + 5, y + 40);
             doc.text(`Analito: ${analise.analito}`, x + 5, y + 50);
@@ -75,7 +75,7 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
                     <strong>Nome:</strong> {analise.nome}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Data:</strong> {analise.prazoFinalizacao}
+                    <strong>Data de Cadastro:</strong> {analise.dataCadastro}
                 </Typography>
                 <Typography variant="body1">
                     <strong>Cliente:</strong> {analise.contrato ? analise.contrato.nomeContrato : ''}

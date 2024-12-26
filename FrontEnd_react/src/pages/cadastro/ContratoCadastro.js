@@ -15,10 +15,12 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
+import FeedbackDialog from '../components/FeedbackDialog'; // Importe o novo componente
+
 import { useNavigate } from 'react-router-dom';
 
 function ContratoCadastro() {
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
@@ -32,6 +34,7 @@ function ContratoCadastro() {
     const [observacao, setObservacao] = useState('');
     const [clientes, setClientes] = useState([]); // Para armazenar os clientes
     const [selectedCliente, setSelectedCliente] = useState(null); // Para armazenar o cliente selecionado
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const fetchClientes = async () => {
         try {
@@ -78,18 +81,19 @@ function ContratoCadastro() {
             });
 
             if (response.ok) {
-                setDialogOpen(true); // Abre o diálogo de sucesso
+                setDialogMessage('Contrato cadastrado com sucesso!');
             } else {
-                console.error('Erro ao salvar contrato');
+                setDialogMessage('Erro ao cadastrar o contrato.');
             }
         } catch (error) {
-            console.error('Erro:', error);
+            setDialogMessage('Erro ao salvar o Contrato no banco de dados.');
         }
     };
 
-    const handleCloseDialog = () => {
+    const handleDialogClose = () => {
         setDialogOpen(false);
-        navigate('/'); // Redireciona para a rota '/'
+        navigate('/'); 
+
     };
 
     return (
@@ -214,6 +218,9 @@ function ContratoCadastro() {
                     </form>
                 </Box>
             </Box>
+
+            <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+
         </Box>
     );
 }

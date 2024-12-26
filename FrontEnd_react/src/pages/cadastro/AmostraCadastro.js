@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar';
+import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra'
 import AnalitoSelector from '../components/AnalitoSelector';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,6 +34,7 @@ function AmostraCadastro({ open, handleClose }) {
     const [enderecoColeta, setEnderecoColeta] = useState('');
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [selectedAnalitos, setSelectedAnalitos] = useState([]);
+    const [showOverlay, setShowOverlay] = useState(true); // Controle do overlay
 
     const navigate = useNavigate();
 
@@ -69,47 +71,85 @@ function AmostraCadastro({ open, handleClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const [latitude, longitude] = coordenadaColeta.split(';').map(coord => coord.trim());
-
-        const data = {
+          // Verificar se os objetos necessários estão definidos
+    if (!selectedProcedure || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
+        console.error("Por favor, selecione todos os campos necessários.");
+        return;
+    }
+        console.log("Selected Analitos:", selectedAnalitos); // Verifique se os analitos estão sendo corretamente selecionados
+    
+        // Montar o payload completo com os analitos
+        const payload = {
             nome,
             dataColeta,
             prazoFinalizacao,
             enderecoColeta,
             descricao,
-            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null,
-            analise: selectedAnalise ? { id: selectedAnalise.id } : null, // Mudança para objeto
-            coordenadaColeta: { latitude, longitude },
-            analitos: selectedAnalitos.map(analito => ({ id: analito.id })),
+            procedimento: { id: selectedProcedure.id },
+            analise: { id: selectedAnalise.id },
+            coordenadaColeta, // Usar diretamente a string "latitude;longitude"
+            analitos: selectedAnalitos.map((analito) => ({
+                id: analito.id,
+                classificacao: analito.classificacao,
+                tipos: analito.tipos.map((tipo) => ({
+                    tipo: tipo.tipo,
+                    subtipos: tipo.subtipos, // Mapeando subtipos
+                })),
+            })),
         };
-
+    
+        console.log("Payload enviado ao backend:", JSON.stringify(payload, null, 2));
+    
         try {
-            const response = await fetch('http://localhost:8080/amostra', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+            const response = await fetch("http://localhost:8080/amostra", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
             });
-
-            if (response.ok) {
-                setNome('');
-                setDescricao('');
-                setSelectedAnalitos([]);
-                handleClose();
-            } else {
-                console.error('Erro ao cadastrar amostra');
+    
+            if (!response.ok) {
+                throw new Error("Erro ao salvar a amostra");
             }
+    
+            console.log("Amostra salva com sucesso!");
+    
+            // Limpar formulário após sucesso
+            setNome("");
+            setDescricao("");
+            setCoordenadaColeta("");
+            setSelectedProcedure(null);
+            setSelectedAnalise(null);
+            setSelectedAnalitos([]);
+            handleClose(); // Fechar modal ou interface
         } catch (error) {
-            console.error('Erro ao conectar com o backend:', error);
+            console.error("Erro ao conectar com o backend:", error);
         }
     };
+    
 
-    const handleAnalitoSelect = (selected) => {
-        setSelectedAnalitos(selected);
+    const handleOverlayClose = () => {
+        setShowOverlay(false); // Fecha o overlay
     };
+    const handleAnalitoSelection = (analitosSelecionados) => {
+        setSelectedAnalitos(analitosSelecionados);
+    };
+ 
 
     const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
     return (
+        
+
+
+        <>
+        {/* Overlay para selecionar análise */}
+        {showOverlay ? (
+            <SelectAnaliseDaAmostra
+                onCloseOverlay={() => setShowOverlay(false)} // Callback para fechar o overlay
+            />
+        ) : (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: theme => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
@@ -217,7 +257,7 @@ function AmostraCadastro({ open, handleClose }) {
                                 Selecionar Analitos
                             </Button>
                             {/* Exibe os analitos selecionados */}
-                            {selectedAnalitos.length > 0 && (
+                            {selectedAnalitos?.length > 0 && (
                                 <Box
                                     sx={{
                                         backgroundColor: '#f9f9f9',
@@ -233,29 +273,41 @@ function AmostraCadastro({ open, handleClose }) {
                                         {selectedAnalitos.map((analito, index) => (
                                             <ListItem key={index}>
                                                 <Typography variant="body2">
-                                                    {analito.classificacao} - {analito.tipos.map(tipo => tipo.tipo).join(', ')}
+                                                    {analito.classificacao || "Classificação não disponível"} -{" "}
+                                                    {analito.tipos?.length > 0
+                                                        ? analito.tipos
+                                                            .map(
+                                                                (tipo) =>
+                                                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"
+                                                                    })`
+                                                            )
+                                                            .join("; ")
+                                                        : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>
                                         ))}
                                     </List>
-
-                                    <TextField
-                                        label="Endereço"
-                                        required
-                                        margin="normal"
-                                        value={enderecoColeta}
-                                        onChange={(e) => setEnderecoColeta(e.target.value)}
-                                        sx={{ width: '350px' }}
-                                    />
                                 </Box>
                             )}
+
+
+
+
+                            <TextField
+                                label="Endereço"
+                                required
+                                margin="normal"
+                                value={enderecoColeta}
+                                onChange={(e) => setEnderecoColeta(e.target.value)}
+                                sx={{ width: '350px' }}
+                            />
                         </Box>
 
                         {showAnalitoSelector && (
                             <AnalitoSelector
                                 selectedAnalitos={selectedAnalitos}
                                 handleClose={() => setShowAnalitoSelector(false)}
-                                onAnalitoSelect={handleAnalitoSelect}
+                                onAnalitoSelect={handleAnalitoSelection}
                             />
                         )}
 
@@ -282,6 +334,8 @@ function AmostraCadastro({ open, handleClose }) {
                 </Box>
             </Box>
         </Box>
+           )}
+        </>
     );
 }
 

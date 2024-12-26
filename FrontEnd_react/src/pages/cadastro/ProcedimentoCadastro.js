@@ -10,7 +10,8 @@ import {
     Input,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SideBar from '../components/SideBar.js'; // Importe o novo componente
+import FeedbackDialog from '../components/FeedbackDialog'; 
+import SideBar from '../components/SideBar.js'; 
 import { useNavigate } from 'react-router-dom';
 
 function ProcedimentoCadastro() {
@@ -19,7 +20,8 @@ function ProcedimentoCadastro() {
     const [descricao, setDescricao] = useState('');
     const [pdfFile, setPdfFile] = useState(null);
     const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]); // Definir data de cadastro como a data atual (em formato YYYY-MM-DD)
-    
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
     const navigate = useNavigate();
 
     const toggleDrawer = () => {
@@ -42,17 +44,26 @@ function ProcedimentoCadastro() {
             });
             
             if (response.ok) {
+                setDialogMessage('Procedimento cadastrado com sucesso!');
                 console.log('Procedimento salvo com sucesso');
             } else {
+                setDialogMessage('Erro ao cadastrar procedimento.');
                 console.error('Erro ao salvar o procedimento');
                 const errorData = await response.json();
                 console.error('Detalhes do erro:', errorData);
             }
         } catch (error) {
+            setDialogMessage('Erro ao salvar o procedimento no banco de dados.');
             console.error('Erro:', error);
         }
+        setDialogOpen(true);
+
     };
-    
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        navigate('/'); 
+
+    };
 
     return (
         <Box display="flex" justifyContent="flex-start" gap={2}>
@@ -118,13 +129,16 @@ function ProcedimentoCadastro() {
                     {/* Botão de Salvar */}
                     <Box display="flex" justifyContent="center" marginTop={2}>
                         <Button variant="contained" type="submit">
-                            Salvar
+                            Salvar Procedimento
                         </Button>
                     </Box>
                 </form>
 
             </Box>
+            <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+
         </Box>
+        
     );
 }
 

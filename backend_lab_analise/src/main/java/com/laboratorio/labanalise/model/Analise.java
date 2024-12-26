@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.cglib.core.Local;
+
 @Entity
 @Table(name = "ANALISE")
 public class Analise implements Serializable {
@@ -23,6 +25,8 @@ public class Analise implements Serializable {
     private String nome;
 
     private LocalDate dataCadastro;
+
+    private LocalDate dataInicio;
 
     private String descricaoGeral;
 
@@ -51,11 +55,12 @@ public class Analise implements Serializable {
     public Analise() {
     }
 
-    public Analise(String nome, LocalDate dataCadastro, String descricaoGeral, StatusAnalise statusAnalise, 
+    public Analise(String nome, LocalDate dataCadastro, LocalDate dataInicio, String descricaoGeral, StatusAnalise statusAnalise, 
                    Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, 
                    Procedimento procedimento, Contrato contrato) {
         this.nome = nome;
         this.dataCadastro = dataCadastro;
+        this.dataInicio = dataInicio;
         this.descricaoGeral = descricaoGeral;
         this.statusAnalise = statusAnalise;
         this.quantidadeAmostras = quantidadeAmostras;
@@ -89,6 +94,14 @@ public class Analise implements Serializable {
         this.dataCadastro = dataCadastro;
     }
 
+
+    public LocalDate getDataInicio() {
+        return dataInicio;
+    }
+
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
+    }
     public String getDescricaoGeral() {
         return descricaoGeral;
     }
