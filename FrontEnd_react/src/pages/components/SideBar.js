@@ -1,40 +1,50 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import MatrizCadastro from '../cadastro/MatrizCadastro';
 import AnalitoCadastro from '../cadastro/AnalitoCadastro';
-import ClienteCadastro from '../cadastro/ClienteCadastro';
-
+import MatrizCadastro from '../cadastro/MatrizCadastro';
+import SelectAnaliseDaAmostra from './SelectAnaliseDaAmostra';
 
 import {
+    ArrowForward as ArrowForwardIcon,
+    Description as DescriptionIcon,
+    ExpandLess,
+    ExpandMore,
+    Home as HomeIcon,
+    Inventory as InventoryIcon,
+    PersonAdd as PersonAddIcon
+} from '@mui/icons-material';
+import {
+    Avatar,
     Box,
+    Collapse,
     Drawer,
+    IconButton,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
-    Collapse,
-    Avatar,
     Typography,
-    IconButton,
 } from '@mui/material';
-import {
-    Home as HomeIcon,
-    Description as DescriptionIcon,
-    PersonAdd as PersonAddIcon,
-    Inventory as InventoryIcon,
-    ExpandLess,
-    ExpandMore,
-    ArrowForward as ArrowForwardIcon,
-    ArrowBack as ArrowBackIcon,
-} from '@mui/icons-material';
 
 const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
 
     const [openMatrizOverlay, setOpenMatrizOverlay] = useState(false); // Estado para controlar o overlay da Matriz
     const [openAnalitoOverlay, setOpenAnalitoOverlay] = useState(false); // Estado para controlar o overlay do Analito
+    const [openAmostraOverlay, setOpenAmostraOverlay] = useState(false); // Controla o modal
 
-    // Funções para abrir e fechar o overlay da Matriz
+
+
+    const handleCloseAmostraOverlay = () => {
+        setOpenAmostraOverlay(false);
+        //navigate("/amostraCadastro"); // Redireciona para a rota de cadastro
+    };
+
+
+    const handleOpenAmostraOverlay = () => {
+        setOpenAmostraOverlay(true); // Abre o overlay para selecionar a análise
+    };
+
     const handleOpenMatrizOverlay = () => {
         setOpenMatrizOverlay(true);
     };
@@ -239,7 +249,18 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
 
 
-                            <ListItem button onClick={() => setSelectedItem('/amostras')}>
+                            <ListItem
+                                button
+                                component={Link}
+                                to="/amostraLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/amostraLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/amostraLista'} // Condição para o estilo selecionado
+                                sx={{
+                                    bgcolor: selectedItem === '/amostraLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    textDecoration: 'none',
+                                    color: 'white',
+                                }}
+                            >
                                 <ListItemText primary="Amostras" />
                             </ListItem>
                         </List>
@@ -279,23 +300,25 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                             </ListItem>
 
 
-
                             <ListItem
                                 button
-                                component={Link}
-                                to="/amostraCadastro" // Define a nova rota
-                                onClick={() => setSelectedItem('/amostraCadastro')} // Atualiza o item selecionado
-                                selected={selectedItem === '/amostraCadastro'} // Condição para o estilo selecionado
+                                onClick={handleOpenAmostraOverlay}  // Agora apenas abre o overlay
+                                selected={selectedItem === "/amostraCadastro"}
                                 sx={{
                                     pl: 4,
-                                    bgcolor: selectedItem === '/amostraCadastro' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
-                                    textDecoration: 'none',
-                                    color: 'white',
+                                    bgcolor: selectedItem === "/amostraCadastro" ? "#8BC34A" : "transparent",
+                                    textDecoration: "none",
+                                    color: "white",
                                 }}
                             >
                                 <ListItemText primary="Amostras" />
                             </ListItem>
 
+                            <SelectAnaliseDaAmostra
+                                open={openAmostraOverlay}
+                                handleClose={handleCloseAmostraOverlay}  // Fecha o overlay quando necessário
+
+                            />
 
 
                             <ListItem

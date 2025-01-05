@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
-import AnaliseDetailOverlay from '../components/analiseListaIcons/AnaliseDetailOverlay';
-import AnaliseEditOverlay from '../components/analiseListaIcons/AnaliseEditOverlay';
+import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailOverlay';
+import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
+//import AmostraExcluirOverlay from '../components/analiseListaIcons/AmostraExcluirOverlay';
+
 
 
 
@@ -24,56 +26,48 @@ import {
     Paper,
 } from '@mui/material';
 
-const AnaliseLista = () => {
-    const [analise, setAnalise] = useState([]);
+const AmostraLista = () => {
+    const [amostras, setAmostras] = useState([]);
 
-
-
-
-    const [selectedAnalise, setSelectedAnalise] = useState(null); // Contrato selecionado
+    const [selectedAmostra, setSelectedAmostra] = useState(null); // Amostra selecionada
     const [open, setOpen] = useState(false);
-
+    
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
-    const [analiseToEdit, setAnaliseToEdit] = useState(null);
-
-
-
+    const [amostraToEdit, setAmostraToEdit] = useState(null);
+    
     // Função para abrir o modal
     const handleOpen = () => setOpen(true);
-
+    
     // Função para fechar o modal
     const handleClose = () => setOpen(false);
-
-    const handleEditClick = (analise) => {
-        setAnaliseToEdit(analise);
+    
+    const handleEditClick = (amostra) => {
+        setAmostraToEdit(amostra);
         setEditOverlayOpen(true);
     };
-
-
-
+    
     useEffect(() => {
-        // Função para buscar os clientes do backend
-        const fetchAnalises = async () => {
+        // Função para buscar as amostras do backend
+        const fetchAmostras = async () => {
             try {
-                const response = await fetch('http://localhost:8080/analise'); // Certifique-se de que a URL está correta
+                const response = await fetch('http://localhost:8080/amostra'); // Certifique-se de que a URL está correta
                 const data = await response.json();
-                setAnalise(data);
+                setAmostras(data);
             } catch (error) {
-                console.error('Erro ao buscar analises:', error);
+                console.error('Erro ao buscar amostras:', error);
             }
         };
-
-        fetchAnalises();
+    
+        fetchAmostras();
     }, []);
-
+    
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
-
+    
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
-
-
+    
     const getStatusColor = (status) => {
         switch (status) {
             case 'CONCLUIDA':
@@ -86,8 +80,7 @@ const AnaliseLista = () => {
                 return { backgroundColor: 'gray', color: '#fff' }; // Cor padrão para status desconhecido
         }
     };
-
-
+    
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -96,40 +89,40 @@ const AnaliseLista = () => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'left' }}>
-                        Lista de Análises
+                        Lista de Amostras
                     </Typography>
                 </Toolbar>
             </AppBar>
-
+    
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
-
+    
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
                 <Toolbar />
-
+    
                 <Box textAlign="center" mt={2} mb={2}>
                     <Typography variant="h4" component="h1" fontWeight="bold">
-                        Lista de Análises
+                        Lista de Amostras
                     </Typography>
                 </Box>
-
+    
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Button
                         variant="contained"
                         color="success"
                         style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={() => navigate('/analiseCadastro')}
+                        onClick={() => navigate('/amostraCadastro')}
                     >
-                        Cadastrar Cliente
+                        Cadastrar Amostra
                     </Button>
                 </Box>
-
+    
                 <Box display="flex" justifyContent="space-around" mt={2}>
                     <TableContainer component={Paper} style={{ marginTop: '20px', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
                         <Table>
                             <TableHead>
                                 <TableRow style={{ backgroundColor: '#4CAF50' }}>
-                                    {['Nome', 'Contrato', 'Matriz', 'Quantidade de Amostras', 'Prazo Final', 'status', 'Ações'].map((header) => (
+                                    {['Nome', 'Prazo Finalização', 'Endereço', 'Análise', 'Status', 'Ações'].map((header) => (
                                         <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
                                             {header}
                                         </TableCell>
@@ -137,22 +130,23 @@ const AnaliseLista = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {analise.map((analise) => (
+                                {amostras.map((amostra) => (
                                     <TableRow
-                                        key={analise.id}
+                                        key={amostra.id}
                                         style={{ backgroundColor: '#fff', transition: 'background-color 0.3s' }}
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
                                     >
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.nome}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.contrato ? analise.contrato.nomeContrato : ''}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.matriz ? analise.matriz.nomeMatriz : ''}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.quantidadeAmostras}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{analise.prazoFinalizacao}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.nome}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
+                                            {amostra.analise ? amostra.analise.nome : ''}
+                                        </TableCell>
                                         <TableCell>
                                             <Box
                                                 sx={{
-                                                    ...getStatusColor(analise.statusAnalise),
+                                                    ...getStatusColor(amostra.status),
                                                     padding: '5px',
                                                     borderRadius: '15px',
                                                     textAlign: 'center',
@@ -163,15 +157,15 @@ const AnaliseLista = () => {
                                                     fontWeight: 'bold',
                                                 }}
                                             >
-                                                {analise.statusAnalise}
+                                                {amostra.status}
                                             </Box>
                                         </TableCell>
-
+    
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                                            <IconButton onClick={() => { handleOpen(); setSelectedAnalise(analise); }}>
+                                            <IconButton onClick={() => { handleOpen(); setSelectedAmostra(amostra); }}>
                                                 <FaEye style={{ color: '#666', fontSize: '18px' }} />
                                             </IconButton>
-                                            <IconButton onClick={() => { handleEditClick(analise); }}>
+                                            <IconButton onClick={() => { handleEditClick(amostra); }}>
                                                 <FaEdit style={{ color: '#4CAF50', fontSize: '18px' }} />
                                             </IconButton>
                                             <IconButton>
@@ -180,31 +174,29 @@ const AnaliseLista = () => {
                                         </TableCell>
                                     </TableRow>
                                 ))}
-
-                                {/* Verifique se `selectedAnalise` está definido antes de renderizar o modal */}
-                                {selectedAnalise && (
-                                    <AnaliseDetailOverlay
+    
+                                {/* Verifique se `selectedAmostra` está definido antes de renderizar o modal */}
+                                {selectedAmostra && (
+                                    <AmostraDetailOverlay
                                         open={open}
                                         onClose={handleClose}
-                                        analise={selectedAnalise} // Passa a análise selecionada para o modal
+                                        amostra={selectedAmostra} // Passa a amostra selecionada para o modal
                                     />
-
                                 )}
-
-                                <AnaliseEditOverlay
+    
+                                <AmostraEditOverlay
                                     open={editOverlayOpen}
                                     onClose={() => setEditOverlayOpen(false)}
-                                    analise={analiseToEdit}
+                                    amostra={amostraToEdit}
                                 />
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Box>
-
-
             </Box>
         </Box>
     );
-};
-
-export default AnaliseLista;
+    };
+    
+    export default AmostraLista;
+    

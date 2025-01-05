@@ -8,6 +8,8 @@ import ProcedimentoLista from './pages/lista/ProcedimentoLista';
 import ClienteLista from './pages/lista/ClienteLista';
 import MatrizLista from './pages/lista/MatrizLista';
 import AnalitoLista from './pages/lista/AnalitoLista';
+import AmostraLista from './pages/lista/AmostraLista';
+
 
 import AnaliseCadastro from './pages/cadastro/AnaliseCadastro';
 import ContratoCadastro from './pages/cadastro/ContratoCadastro';
@@ -20,6 +22,8 @@ import AmostraCadastro from './pages/cadastro/AmostraCadastro';
 import ReagenteCadastro from './pages/cadastro/ReagenteCadastro';
 import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro';
 
+
+import SelectAnaliseDaAmostra from './pages/components/SelectAnaliseDaAmostra';
 
 import Perfil from './pages/Perfil';
 
@@ -38,6 +42,7 @@ function App() {
         <Route path="/clientesLista" element={<ClienteLista />} />
         <Route path="/matrizLista" element={<MatrizLista />} />
         <Route path="/analitoLista" element={<AnalitoLista />} />
+        <Route path="/amostraLista" element={<AmostraLista />} />
 
 
         <Route path="/analiseCadastro" element={<AnaliseCadastro />} />
@@ -51,6 +56,11 @@ function App() {
         <Route path="/amostraCadastro" element={<AmostraCadastro />} />
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
         <Route path="/analitoExistenteCadastro" element={<AnalitoExistenteCadastro />} />
+
+        <Route path="/analiseAmostra" element={<SelectAnaliseDaAmostra />} />
+
+
+
 
         <Route path="/perfil" element={<Perfil/>} />
 

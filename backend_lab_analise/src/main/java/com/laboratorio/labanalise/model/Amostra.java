@@ -41,6 +41,9 @@ public class Amostra implements Serializable {
     @ManyToMany(mappedBy = "amostras")
     private List<Analito> analitos = new ArrayList<>();
 
+    @Column(nullable = false, updatable = false)
+    private LocalDate dataCadastro; 
+
     @ManyToMany
     @JoinTable(
         name = "PROCEDIMENTO_AMOSTRA",
@@ -54,7 +57,7 @@ public class Amostra implements Serializable {
     private Analise analise;
 
     // Construtor com todos os parâmetros
-    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
+   public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
                    LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
@@ -63,10 +66,12 @@ public class Amostra implements Serializable {
         this.prazoFinalizacao = prazoFinalizacao;
         this.status = status;
         this.descricao = descricao;
+        this.dataCadastro = LocalDate.now(); // Define a data de cadastro
     }
 
     // Construtor padrão
     public Amostra() {
+        this.dataCadastro = LocalDate.now(); // Define a data de cadastro
         this.status = StatusAmostra.EM_ANDAMENTO; // Status padrão
     }
 
@@ -78,7 +83,13 @@ public class Amostra implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+    public LocalDate getDataCadastro() {
+        return dataCadastro;
+    }
 
+    public void setDataCadastro(LocalDate dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
     public String getNome() {
         return nome;
     }

@@ -16,15 +16,21 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar';
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra'
 import AnalitoSelector from '../components/AnalitoSelector';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function AmostraCadastro({ open, handleClose }) {
+function AmostraCadastro({ }) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(true);
+    const location = useLocation();
+    const { selectedAnalise } = location.state || {}; // Pegando a análise do estado
+
+    console.log("Análise selecionada:", selectedAnalise);
+
 
     const [procedures, setProcedures] = useState([]);
     const [analise, setAnalise] = useState([]);
     const [selectedProcedure, setSelectedProcedure] = useState(null);
-    const [selectedAnalise, setSelectedAnalise] = useState(null);
+    //const [selectedAnalise] = useState(location.state?.selectedAnalise || null);
     const [coordenadaColeta, setCoordenadaColeta] = useState('');
     const [showAnalitoSelector, setShowAnalitoSelector] = useState(false);
     const [nome, setNome] = useState('');
@@ -36,6 +42,7 @@ function AmostraCadastro({ open, handleClose }) {
     const [selectedAnalitos, setSelectedAnalitos] = useState([]);
     const [showOverlay, setShowOverlay] = useState(true); // Controle do overlay
 
+    
     const navigate = useNavigate();
 
     const fetchProcedures = async () => {
@@ -69,15 +76,23 @@ function AmostraCadastro({ open, handleClose }) {
         fetchProcedures();
     }, []);
 
+
+
+    const handleCloseOverlay = () => {
+        // Lógica para fechar o modal
+        setShowAnalitoSelector(false); // Exemplo
+    };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
-          // Verificar se os objetos necessários estão definidos
-    if (!selectedProcedure || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
-        console.error("Por favor, selecione todos os campos necessários.");
-        return;
-    }
+        // Verificar se os objetos necessários estão definidos
+        if (!selectedProcedure || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
+            console.error("Por favor, selecione todos os campos necessários.");
+            return;
+        }
         console.log("Selected Analitos:", selectedAnalitos); // Verifique se os analitos estão sendo corretamente selecionados
-    
+        const currentDate = new Date().toISOString().split("T")[0];
+
         // Montar o payload completo com os analitos
         const payload = {
             nome,
@@ -85,8 +100,9 @@ function AmostraCadastro({ open, handleClose }) {
             prazoFinalizacao,
             enderecoColeta,
             descricao,
+            dataCadastro: currentDate, // Adiciona a data atual
             procedimento: { id: selectedProcedure.id },
-            analise: { id: selectedAnalise.id },
+            analise: selectedAnalise,  // Passando o objeto completo da análise
             coordenadaColeta, // Usar diretamente a string "latitude;longitude"
             analitos: selectedAnalitos.map((analito) => ({
                 id: analito.id,
@@ -120,13 +136,16 @@ function AmostraCadastro({ open, handleClose }) {
             setDescricao("");
             setCoordenadaColeta("");
             setSelectedProcedure(null);
-            setSelectedAnalise(null);
             setSelectedAnalitos([]);
             handleClose(); // Fechar modal ou interface
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
         }
     };
+    const handleClose = () => {
+        setIsModalOpen(false);
+    };
+    
     
 
     const handleOverlayClose = () => {
@@ -140,18 +159,8 @@ function AmostraCadastro({ open, handleClose }) {
     const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
     return (
-        
-
-
-        <>
-        {/* Overlay para selecionar análise */}
-        {showOverlay ? (
-            <SelectAnaliseDaAmostra
-                onCloseOverlay={() => setShowOverlay(false)} // Callback para fechar o overlay
-            />
-        ) : (
         <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: theme => theme.zIndex.drawer + 1 }}>
+            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
                         <MenuIcon />
@@ -161,25 +170,36 @@ function AmostraCadastro({ open, handleClose }) {
                     </Typography>
                 </Toolbar>
             </AppBar>
-
+    
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
-
+    
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
-                <Toolbar />
-                <Box
-                    sx={{
-                        backgroundColor: 'white',
-                        padding: '30px',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        maxWidth: '800px',
-                        mx: 'auto',
-                    }}
-                >
-                    <Typography variant="h4" gutterBottom>
-                        Cadastrar Amostra
-                    </Typography>
+        <Toolbar />
+        
 
+
+        <Box
+            sx={{
+                backgroundColor: 'white',
+                padding: '30px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                maxWidth: '800px',
+                mx: 'auto',
+            }}
+        >
+            <Typography variant="h4" gutterBottom>
+                Cadastrar Amostra
+            </Typography>
+
+            {/* Exibe a análise selecionada */}
+            {selectedAnalise && (
+                <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                    <Typography variant="subtitle1">
+                        <strong>Análise selecionada:</strong> {selectedAnalise.nome}
+                    </Typography>
+                </Box>
+            )}
                     <form onSubmit={handleSubmit}>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
@@ -190,16 +210,16 @@ function AmostraCadastro({ open, handleClose }) {
                                 onChange={(e) => setNome(e.target.value)}
                                 sx={{ width: '350px' }}
                             />
-                            <Autocomplete
-                                options={analise}
-                                getOptionLabel={(option) => option.nome}
-                                onChange={(event, value) => setSelectedAnalise(value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Análise Associada" required margin="normal" sx={{ width: '300px' }} />
-                                )}
+                            <TextField
+                                label="Endereço"
+                                required
+                                margin="normal"
+                                value={enderecoColeta}
+                                onChange={(e) => setEnderecoColeta(e.target.value)}
+                                sx={{ width: '350px' }}
                             />
                         </Box>
-
+    
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
                                 label="Data de Início"
@@ -222,7 +242,7 @@ function AmostraCadastro({ open, handleClose }) {
                                 sx={{ width: '300px' }}
                             />
                         </Box>
-
+    
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <Autocomplete
                                 options={procedures}
@@ -241,7 +261,7 @@ function AmostraCadastro({ open, handleClose }) {
                                 sx={{ width: '350px' }}
                             />
                         </Box>
-
+    
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <Button
                                 onClick={() => setShowAnalitoSelector(true)}
@@ -256,7 +276,6 @@ function AmostraCadastro({ open, handleClose }) {
                             >
                                 Selecionar Analitos
                             </Button>
-                            {/* Exibe os analitos selecionados */}
                             {selectedAnalitos?.length > 0 && (
                                 <Box
                                     sx={{
@@ -278,8 +297,7 @@ function AmostraCadastro({ open, handleClose }) {
                                                         ? analito.tipos
                                                             .map(
                                                                 (tipo) =>
-                                                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"
-                                                                    })`
+                                                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
                                                             )
                                                             .join("; ")
                                                         : "Nenhum tipo disponível"}
@@ -289,20 +307,8 @@ function AmostraCadastro({ open, handleClose }) {
                                     </List>
                                 </Box>
                             )}
-
-
-
-
-                            <TextField
-                                label="Endereço"
-                                required
-                                margin="normal"
-                                value={enderecoColeta}
-                                onChange={(e) => setEnderecoColeta(e.target.value)}
-                                sx={{ width: '350px' }}
-                            />
                         </Box>
-
+    
                         {showAnalitoSelector && (
                             <AnalitoSelector
                                 selectedAnalitos={selectedAnalitos}
@@ -310,33 +316,17 @@ function AmostraCadastro({ open, handleClose }) {
                                 onAnalitoSelect={handleAnalitoSelection}
                             />
                         )}
-
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Descrição da Amostra"
-                                required
-                                margin="normal"
-                                value={descricao}
-                                onChange={(e) => setDescricao(e.target.value)}
-                                sx={{ width: '100%' }}
-                                multiline
-                                rows={6}
-                            />
-                        </Box>
-
+    
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button type="submit" variant="contained" color="primary">
                                 Cadastrar
                             </Button>
                         </Box>
                     </form>
-
                 </Box>
             </Box>
         </Box>
-           )}
-        </>
     );
-}
+}    
 
 export default AmostraCadastro;

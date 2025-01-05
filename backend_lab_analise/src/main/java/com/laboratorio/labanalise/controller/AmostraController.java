@@ -1,13 +1,17 @@
 package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Amostra;
+import com.laboratorio.labanalise.model.Analise;
 import com.laboratorio.labanalise.model.Analito;
 import com.laboratorio.labanalise.services.AmostraService;
+import com.laboratorio.labanalise.services.AnaliseService;
 import com.laboratorio.labanalise.services.AnalitoService; // Serviço para manipular Analitos
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.net.URI;
 import java.util.List;
@@ -22,25 +26,46 @@ public class AmostraController {
     @Autowired
     private AnalitoService analitoService;
 
+
+    @Autowired
+    private AnaliseService analiseService;
     @PostMapping
     public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
+        if (amostra.getAnalise() == null) {
+            // Retorne um ResponseEntity com status de erro (400 Bad Request) e uma mensagem explicativa
+            return ResponseEntity.badRequest().body(null); // Retorna 400 com corpo null
+        }
+    
+        // Verificar se a análise existe no banco
+        Analise analise = analiseService.buscarPorId(amostra.getAnalise().getId());
+        if (analise == null) {
+            // Se não encontrar, retorna erro com a análise não encontrada
+            return ResponseEntity.badRequest().body(null); // Retorna 400 com corpo null
+        }
+        
+        amostra.setAnalise(analise);  // Associar o objeto completo de 'analise'
+    
+        // Verificar e associar analitos
         if (amostra.getAnalitos() != null && !amostra.getAnalitos().isEmpty()) {
             List<Long> idsAnalitos = amostra.getAnalitos().stream()
                                             .map(Analito::getId)
                                             .collect(Collectors.toList());
-
             List<Analito> analitosAssociados = analitoService.buscarAnalitosPorIds(idsAnalitos);
             amostra.setAnalitos(analitosAssociados);
         }
-
+    
+        // Salva a amostra
         amostra = service.salvar(amostra);
-
+    
+        // Retorna a amostra criada com status 201 (Created)
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                                              .path("/{id}")
                                              .buildAndExpand(amostra.getId())
                                              .toUri();
-        return ResponseEntity.created(uri).body(amostra);
+        return ResponseEntity.created(uri).body(amostra); // Retorna a amostra com sucesso
     }
+    
+    
 
     @GetMapping
     public ResponseEntity<List<Amostra>> listarAmostras() {
