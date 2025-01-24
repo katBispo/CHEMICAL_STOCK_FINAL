@@ -15,7 +15,7 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
         doc.text(`Endereço de Coleta: ${amostra.enderecoColeta}`, 10, 50);
         doc.text(`Data de Coleta: ${amostra.dataColeta}`, 10, 60);
         doc.text(`Descrição: ${amostra.descricao}`, 10, 70);
-        doc.text(`Procedimento: ${amostra.procedimento?.nome || 'N/A'}`, 10, 80);
+        doc.text(`Procedimento: ${amostra.procedimento ? amostra.procedimento.nomeProcedimento : 'N/A'}`, 10, 80);
         doc.text(`Análise: ${amostra.analise?.nome || 'N/A'}`, 10, 90);
 
         doc.text(`Analitos Selecionados:`, 10, 100);

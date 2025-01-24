@@ -3,11 +3,15 @@ import { Box, Button, Modal, Typography } from '@mui/material';
 
 const AmostraExcluirOverlay = ({ open, onClose, onDelete, amostra }) => {
     const handleDelete = () => {
-        if (onDelete && typeof onDelete === 'function') {
-            onDelete(amostra.id); // Passa o ID da amostra para a função de delete
+        if (amostra && amostra.id) {
+            if (onDelete && typeof onDelete === 'function') {
+                onDelete(amostra.id); // Passa o ID da amostra para a função de delete
+            }
+            onClose(); // Fecha o overlay após a exclusão
+            window.location.reload(); // Recarrega a página para refletir as mudanças
+        } else {
+            console.error('Amostra inválida ou ID ausente.');
         }
-        onClose(); // Fecha o overlay após a exclusão
-        window.location.reload(); // Recarrega a página para refletir as mudanças
     };
 
     return (
@@ -29,13 +33,19 @@ const AmostraExcluirOverlay = ({ open, onClose, onDelete, amostra }) => {
                     Confirmar Exclusão
                 </Typography>
                 <Typography sx={{ mt: 2 }}>
-                    Você tem certeza que deseja excluir a amostra "{amostra.nome}"?
+                    {amostra ? `Você tem certeza que deseja excluir a amostra "${amostra.nome}"?` : 'Nenhuma amostra selecionada.'}
                 </Typography>
                 <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
                     <Button variant="outlined" color="primary" onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button variant="contained" color="error" onClick={handleDelete} sx={{ ml: 2 }}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleDelete}
+                        sx={{ ml: 2 }}
+                        disabled={!amostra || !amostra.id} // Desabilita se amostra for inválida
+                    >
                         Excluir
                     </Button>
                 </Box>

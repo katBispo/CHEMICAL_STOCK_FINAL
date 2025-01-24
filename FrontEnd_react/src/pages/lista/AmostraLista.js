@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
 import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailOverlay';
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
-//import AmostraExcluirOverlay from '../components/analiseListaIcons/AmostraExcluirOverlay';
+import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExcluirOverlay';
 
 
 
@@ -35,6 +35,36 @@ const AmostraLista = () => {
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [amostraToEdit, setAmostraToEdit] = useState(null);
     
+    const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
+
+    const handleOpenDeleteOverlay = (amostra) => {
+        setSelectedAmostra(amostra);
+        setOpenDeleteOverlay(true);
+    };
+
+    const handleCloseDeleteOverlay = () => {
+        setOpenDeleteOverlay(false);
+        setSelectedAmostra(null);
+    };
+
+    const handleDeleteAmostra = async (id) => {
+        // Faz a requisição para deletar a análise
+        const response = await fetch(`http://localhost:8080/amostra/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            console.log('Amostra excluída com sucesso');
+            
+        } else {
+            console.error('Erro ao excluir a amostra');
+        }
+
+        // Fecha o overlay após a exclusão ou erro
+        handleCloseDeleteOverlay();
+    };
+
+
     // Função para abrir o modal
     const handleOpen = () => setOpen(true);
     
@@ -168,7 +198,7 @@ const AmostraLista = () => {
                                             <IconButton onClick={() => { handleEditClick(amostra); }}>
                                                 <FaEdit style={{ color: '#4CAF50', fontSize: '18px' }} />
                                             </IconButton>
-                                            <IconButton>
+                                            <IconButton onClick={() => handleOpenDeleteOverlay(amostra)}>
                                                 <FaTrashAlt style={{ color: '#e74c3c', fontSize: '18px' }} />
                                             </IconButton>
                                         </TableCell>
@@ -189,6 +219,15 @@ const AmostraLista = () => {
                                     onClose={() => setEditOverlayOpen(false)}
                                     amostra={amostraToEdit}
                                 />
+                                    {selectedAmostra && (
+                                    <AmostraExcluirOverlay
+                                        open={openDeleteOverlay}
+                                        onClose={handleCloseDeleteOverlay}
+                                        onDelete={handleDeleteAmostra}
+                                        amostra={selectedAmostra}
+                                    />
+                                )}
+                                
                             </TableBody>
                         </Table>
                     </TableContainer>

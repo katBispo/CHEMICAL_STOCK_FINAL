@@ -16,6 +16,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar';
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra'
 import AnalitoSelector from '../components/AnalitoSelector';
+import ProcedimentoSelector from '../components/ProcedimentoSelector';
+
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function AmostraCadastro({ }) {
@@ -23,6 +25,15 @@ function AmostraCadastro({ }) {
     const [isModalOpen, setIsModalOpen] = useState(true);
     const location = useLocation();
     const { selectedAnalise } = location.state || {}; // Pegando a análise do estado
+
+    const [procedimentos, setProcedimentos] = useState([]);
+    const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+    const [selectedProcedimentos, setSelectedProcedimentos] = useState([]); // Definindo o estado para armazenar os procedimentos selecionados
+    const [showProcedureSelector, setShowProcedureSelector] = useState(false);
+    const [selectedProcedures, setSelectedProcedures] = useState([]);
+
+
+
 
     console.log("Análise selecionada:", selectedAnalise);
 
@@ -42,7 +53,7 @@ function AmostraCadastro({ }) {
     const [selectedAnalitos, setSelectedAnalitos] = useState([]);
     const [showOverlay, setShowOverlay] = useState(true); // Controle do overlay
 
-    
+
     const navigate = useNavigate();
 
     const fetchProcedures = async () => {
@@ -82,7 +93,7 @@ function AmostraCadastro({ }) {
         // Lógica para fechar o modal
         setShowAnalitoSelector(false); // Exemplo
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         // Verificar se os objetos necessários estão definidos
@@ -101,7 +112,15 @@ function AmostraCadastro({ }) {
             enderecoColeta,
             descricao,
             dataCadastro: currentDate, // Adiciona a data atual
-            procedimento: { id: selectedProcedure.id },
+            procedures: selectedProcedures.map((procedure) => ({
+                id: procedure.id,
+                classificacao: procedure.classificacao,
+                tipos: procedure.tipos.map((tipo) => ({
+                    tipo: tipo.tipo,
+                    subtipos: tipo.subtipos,
+                })),
+            })),
+
             analise: selectedAnalise,  // Passando o objeto completo da análise
             coordenadaColeta, // Usar diretamente a string "latitude;longitude"
             analitos: selectedAnalitos.map((analito) => ({
@@ -113,9 +132,9 @@ function AmostraCadastro({ }) {
                 })),
             })),
         };
-    
+
         console.log("Payload enviado ao backend:", JSON.stringify(payload, null, 2));
-    
+
         try {
             const response = await fetch("http://localhost:8080/amostra", {
                 method: "POST",
@@ -124,13 +143,13 @@ function AmostraCadastro({ }) {
                 },
                 body: JSON.stringify(payload),
             });
-    
+
             if (!response.ok) {
                 throw new Error("Erro ao salvar a amostra");
             }
-    
+
             console.log("Amostra salva com sucesso!");
-    
+
             // Limpar formulário após sucesso
             setNome("");
             setDescricao("");
@@ -145,8 +164,11 @@ function AmostraCadastro({ }) {
     const handleClose = () => {
         setIsModalOpen(false);
     };
-    
-    
+
+    const handleProcedureSelection = (procedimentosSelecionados) => {
+        setSelectedProcedures(procedimentosSelecionados);
+    };
+
 
     const handleOverlayClose = () => {
         setShowOverlay(false); // Fecha o overlay
@@ -154,7 +176,7 @@ function AmostraCadastro({ }) {
     const handleAnalitoSelection = (analitosSelecionados) => {
         setSelectedAnalitos(analitosSelecionados);
     };
- 
+
 
     const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
@@ -170,36 +192,36 @@ function AmostraCadastro({ }) {
                     </Typography>
                 </Toolbar>
             </AppBar>
-    
+
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
-    
+
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
-        <Toolbar />
-        
+                <Toolbar />
 
 
-        <Box
-            sx={{
-                backgroundColor: 'white',
-                padding: '30px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                maxWidth: '800px',
-                mx: 'auto',
-            }}
-        >
-            <Typography variant="h4" gutterBottom>
-                Cadastrar Amostra
-            </Typography>
 
-            {/* Exibe a análise selecionada */}
-            {selectedAnalise && (
-                <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-                    <Typography variant="subtitle1">
-                        <strong>Análise selecionada:</strong> {selectedAnalise.nome}
+                <Box
+                    sx={{
+                        backgroundColor: 'white',
+                        padding: '30px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        maxWidth: '800px',
+                        mx: 'auto',
+                    }}
+                >
+                    <Typography variant="h4" gutterBottom>
+                        Cadastrar Amostra
                     </Typography>
-                </Box>
-            )}
+
+                    {/* Exibe a análise selecionada */}
+                    {selectedAnalise && (
+                        <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                            <Typography variant="subtitle1">
+                                <strong>Análise selecionada:</strong> {selectedAnalise.nome}
+                            </Typography>
+                        </Box>
+                    )}
                     <form onSubmit={handleSubmit}>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
@@ -219,7 +241,7 @@ function AmostraCadastro({ }) {
                                 sx={{ width: '350px' }}
                             />
                         </Box>
-    
+
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
                                 label="Data de Início"
@@ -242,29 +264,11 @@ function AmostraCadastro({ }) {
                                 sx={{ width: '300px' }}
                             />
                         </Box>
-    
+
                         <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <Autocomplete
-                                options={procedures}
-                                getOptionLabel={(option) => option.nomeProcedimento}
-                                onChange={(event, value) => setSelectedProcedure(value)}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Procedimentos Associados" required margin="normal" sx={{ width: '350px' }} />
-                                )}
-                            />
-                            <TextField
-                                label="Coordenada de Coleta (Latitude;Longitude)"
-                                required
-                                margin="normal"
-                                value={coordenadaColeta}
-                                onChange={(e) => setCoordenadaColeta(e.target.value)}
-                                sx={{ width: '350px' }}
-                            />
-                        </Box>
-    
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                            {/* Botão para abrir o ProcedimentoSelector */}
                             <Button
-                                onClick={() => setShowAnalitoSelector(true)}
+                                onClick={() => setShowProcedureSelector(true)}
                                 sx={{
                                     width: '350px',
                                     height: '50px',
@@ -274,9 +278,9 @@ function AmostraCadastro({ }) {
                                     '&:hover': { backgroundColor: '#45a049' },
                                 }}
                             >
-                                Selecionar Analitos
+                                Selecionar Procedimentos
                             </Button>
-                            {selectedAnalitos?.length > 0 && (
+                            {selectedProcedures?.length > 0 && (
                                 <Box
                                     sx={{
                                         backgroundColor: '#f9f9f9',
@@ -287,14 +291,14 @@ function AmostraCadastro({ }) {
                                         width: '350px',
                                     }}
                                 >
-                                    <Typography variant="subtitle1">Analitos Selecionados:</Typography>
+                                    <Typography variant="subtitle1">Procedimentos Selecionados:</Typography>
                                     <List>
-                                        {selectedAnalitos.map((analito, index) => (
+                                        {selectedProcedures.map((procedure, index) => (
                                             <ListItem key={index}>
                                                 <Typography variant="body2">
-                                                    {analito.classificacao || "Classificação não disponível"} -{" "}
-                                                    {analito.tipos?.length > 0
-                                                        ? analito.tipos
+                                                    {procedure.classificacao || "Classificação não disponível"} -{" "}
+                                                    {procedure.tipos?.length > 0
+                                                        ? procedure.tipos
                                                             .map(
                                                                 (tipo) =>
                                                                     `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
@@ -308,15 +312,14 @@ function AmostraCadastro({ }) {
                                 </Box>
                             )}
                         </Box>
-    
-                        {showAnalitoSelector && (
-                            <AnalitoSelector
-                                selectedAnalitos={selectedAnalitos}
-                                handleClose={() => setShowAnalitoSelector(false)}
-                                onAnalitoSelect={handleAnalitoSelection}
+                        {showProcedureSelector && (
+                            <ProcedureSelector
+                                selectedProcedures={selectedProcedures}
+                                handleClose={() => setShowProcedureSelector(false)}
+                                onProcedureSelect={handleProcedureSelection}
                             />
                         )}
-    
+
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button type="submit" variant="contained" color="primary">
                                 Cadastrar
@@ -327,6 +330,6 @@ function AmostraCadastro({ }) {
             </Box>
         </Box>
     );
-}    
+}
 
 export default AmostraCadastro;

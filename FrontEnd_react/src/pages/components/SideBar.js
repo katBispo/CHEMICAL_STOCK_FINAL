@@ -202,16 +202,16 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                             <ListItem
                                 button
                                 component={Link}
-                                to="/contratoLista" // Define a nova rota
-                                onClick={() => setSelectedItem('/contratoLista')} // Atualiza o item selecionado
-                                selected={selectedItem === '/contratoLista'} // Condição para o estilo selecionado
+                                to="/analiseLista" // Define a nova rota
+                                onClick={() => setSelectedItem('/analiseLista')} // Atualiza o item selecionado
+                                selected={selectedItem === '/analiseLista'} // Condição para o estilo selecionado
                                 sx={{
-                                    bgcolor: selectedItem === '/contratoLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                                    bgcolor: selectedItem === '/analiseLista' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
                                     textDecoration: 'none',
                                     color: 'white',
                                 }}
                             >
-                                <ListItemText primary="Contratos" />
+                                <ListItemText primary="Análises" />
                             </ListItem>
 
 

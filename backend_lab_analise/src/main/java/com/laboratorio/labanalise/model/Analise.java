@@ -5,12 +5,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.springframework.cglib.core.Local;
 
 @Entity
 @Table(name = "ANALISE")
@@ -48,16 +45,11 @@ public class Analise implements Serializable {
     @JoinColumn(name = "ID_CONTRATO", nullable = false)
     private Contrato contrato;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_PROCEDIMENTO", nullable = false)
-    private Procedimento procedimento;
-
     public Analise() {
     }
 
     public Analise(String nome, LocalDate dataCadastro, LocalDate dataInicio, String descricaoGeral, StatusAnalise statusAnalise, 
-                   Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, 
-                   Procedimento procedimento, Contrato contrato) {
+                   Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, Contrato contrato) {
         this.nome = nome;
         this.dataCadastro = dataCadastro;
         this.dataInicio = dataInicio;
@@ -66,7 +58,6 @@ public class Analise implements Serializable {
         this.quantidadeAmostras = quantidadeAmostras;
         this.prazoFinalizacao = prazoFinalizacao;
         this.matriz = matriz;
-        this.procedimento = procedimento;
         this.contrato = contrato;
     }
 
@@ -94,7 +85,6 @@ public class Analise implements Serializable {
         this.dataCadastro = dataCadastro;
     }
 
-
     public LocalDate getDataInicio() {
         return dataInicio;
     }
@@ -102,6 +92,7 @@ public class Analise implements Serializable {
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
     }
+
     public String getDescricaoGeral() {
         return descricaoGeral;
     }
@@ -148,14 +139,6 @@ public class Analise implements Serializable {
 
     public void setContrato(Contrato contrato) {
         this.contrato = contrato;
-    }
-
-    public Procedimento getProcedimento() {
-        return procedimento;
-    }
-
-    public void setProcedimento(Procedimento procedimento) {
-        this.procedimento = procedimento;
     }
 
     @Override

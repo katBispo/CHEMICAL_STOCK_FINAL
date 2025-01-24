@@ -120,35 +120,35 @@ function AnaliseCadastro() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Contrato selecionado:", selectedContract);
-    
+
         const dataCadastro = new Date().toLocaleDateString('en-CA'); // Formata como "YYYY-MM-DD"
-    
+
         if (!selectedContract || !selectedContract.id) {
             console.error('Nenhum contrato selecionado ou ID do contrato está faltando');
             return;
         }
-    
+
         // Verifica se o prazoFinalizacao está atrasado
         let statusAnalise = "EM_ANDAMENTO"; // Valor padrão para o status
         if (new Date(prazoFinalizacao) < new Date(dataCadastro)) {
             statusAnalise = "ATRASADA"; // Define o status como "EM_ATRASO" se estiver atrasado
         }
-    
+
         const data = {
             nome: nome,
             descricaoGeral: descricaoGeral,
             statusAnalise: statusAnalise, // Define o status com base na lógica
             contrato: selectedContract ? { id: selectedContract.id } : null,
             matriz: selectedMatriz ? { id: selectedMatriz.id } : null,
-            procedimento: selectedProcedure ? { id: selectedProcedure.id } : null,
+            //procedimento: selectedProcedure ? { id: selectedProcedure.id } : null,
             quantidadeAmostras: quantidadeAmostras,
             prazoFinalizacao: prazoFinalizacao,
             dataCadastro: dataCadastro,
             dataInicio: dataInicio,
         };
-    
+
         console.log("Dados enviados:", data);
-    
+
         try {
             const response = await fetch('http://localhost:8080/analise', {
                 method: 'POST',
@@ -157,7 +157,7 @@ function AnaliseCadastro() {
                 },
                 body: JSON.stringify(data),
             });
-    
+
             if (response.ok) {
                 setDialogOpen(true); // Abre o diálogo de confirmação
                 setOpenAlertDialog(true); // Abre o alerta
@@ -263,20 +263,7 @@ function AnaliseCadastro() {
 
                         <Box display="flex" justifyContent="flex-start" gap={2}>
 
-                            <Autocomplete
-                                options={procedures}
-                                getOptionLabel={(option) => option.nomeProcedimento} // Ajusta conforme a estrutura do procedimento
-                                onChange={(event, value) => setSelectedProcedure(value)} // Atualiza o procedimento selecionado
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Procedimentos Associados"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '350px' }}
-                                    />
-                                )}
-                            />
+
                             <TextField
                                 label="Quantidade de Amostras"
                                 required
@@ -286,24 +273,21 @@ function AnaliseCadastro() {
                                 value={quantidadeAmostras}
                                 onChange={(e) => setQuantidadeAmostras(e.target.valueAsNumber)} // Use valueAsNumber para garantir que seja numérico
                             />
-
+                            <Autocomplete
+                                options={matrizes}
+                                getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta da matriz
+                                onChange={(event, value) => setSelectedMatriz(value)} // Atualiza a matriz selecionada
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Matriz"
+                                        required
+                                        margin="normal"
+                                        style={{ width: '350px' }}
+                                    />
+                                )}
+                            />
                         </Box>
-
-                        <Autocomplete
-                            options={matrizes}
-                            getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta da matriz
-                            onChange={(event, value) => setSelectedMatriz(value)} // Atualiza a matriz selecionada
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Matriz"
-                                    required
-                                    margin="normal"
-                                    style={{ width: '350px' }}
-                                />
-                            )}
-                        />
-
                         <TextField
                             label="Descrição da Análise"
                             required

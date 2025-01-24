@@ -31,80 +31,67 @@ public class AnaliseController {
             return ResponseEntity.badRequest().body("Matriz é obrigatória.");
         }
 
-        // Validação do procedimento
-        if (analise.getProcedimento() == null || analise.getProcedimento().getId() == null) {
-            return ResponseEntity.badRequest().body("Procedimento é obrigatório.");
-        }
-
         // Salvar a análise
         analise = service.salvar(analise);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(analise.getId()).toUri();
         return ResponseEntity.created(uri).body(analise);
     }
 
-
-
-    //ATUALIZANDO
+    // ATUALIZANDO
     @PutMapping("/{id}")
-public ResponseEntity<?> atualizarAnalise(@PathVariable Long id, @RequestBody Analise analiseAtualizada) {
-    // Verificar se a análise existe
-    Analise analiseExistente = service.buscarPorId(id);
-    if (analiseExistente == null) {
-        return ResponseEntity.notFound().build();
-    }
+    public ResponseEntity<?> atualizarAnalise(@PathVariable Long id, @RequestBody Analise analiseAtualizada) {
+        // Verificar se a análise existe
+        Analise analiseExistente = service.buscarPorId(id);
+        if (analiseExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-    // Atualizar os dados
-    analiseExistente.setContrato(analiseAtualizada.getContrato());
-    analiseExistente.setMatriz(analiseAtualizada.getMatriz());
-    analiseExistente.setProcedimento(analiseAtualizada.getProcedimento());
-    analiseExistente.setQuantidadeAmostras(analiseAtualizada.getQuantidadeAmostras());
-    analiseExistente.setPrazoFinalizacao(analiseAtualizada.getPrazoFinalizacao());
-    analiseExistente.setStatusAnalise(analiseAtualizada.getStatusAnalise());
-
-    // Salvar a análise atualizada
-    service.salvar(analiseExistente);
-
-    return ResponseEntity.ok(analiseExistente);
-}
-
-@PatchMapping("/{id}")
-public ResponseEntity<?> atualizarParcialAnalise(@PathVariable Long id, @RequestBody Analise analiseAtualizada) {
-    // Verificar se a análise existe
-    Analise analiseExistente = service.buscarPorId(id);
-    if (analiseExistente == null) {
-        return ResponseEntity.notFound().build();
-    }
-
-    // Atualizar apenas os campos fornecidos no request
-    if (analiseAtualizada.getNome() != null) {
-        analiseExistente.setNome(analiseAtualizada.getNome());
-    }
-    if (analiseAtualizada.getContrato() != null) {
+        // Atualizar os dados
         analiseExistente.setContrato(analiseAtualizada.getContrato());
-    }
-    if (analiseAtualizada.getMatriz() != null) {
         analiseExistente.setMatriz(analiseAtualizada.getMatriz());
-    }
-    if (analiseAtualizada.getProcedimento() != null) {
-        analiseExistente.setProcedimento(analiseAtualizada.getProcedimento());
-    }
-    if (analiseAtualizada.getQuantidadeAmostras() != null) {
         analiseExistente.setQuantidadeAmostras(analiseAtualizada.getQuantidadeAmostras());
-    }
-    if (analiseAtualizada.getPrazoFinalizacao() != null) {
         analiseExistente.setPrazoFinalizacao(analiseAtualizada.getPrazoFinalizacao());
-    }
-    if (analiseAtualizada.getStatusAnalise() != null) {
         analiseExistente.setStatusAnalise(analiseAtualizada.getStatusAnalise());
+
+        // Salvar a análise atualizada
+        service.salvar(analiseExistente);
+
+        return ResponseEntity.ok(analiseExistente);
     }
 
-    // Salvar a análise atualizada
-    service.salvar(analiseExistente);
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcialAnalise(@PathVariable Long id, @RequestBody Analise analiseAtualizada) {
+        // Verificar se a análise existe
+        Analise analiseExistente = service.buscarPorId(id);
+        if (analiseExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
 
-    return ResponseEntity.ok(analiseExistente);
-}
+        // Atualizar apenas os campos fornecidos no request
+        if (analiseAtualizada.getNome() != null) {
+            analiseExistente.setNome(analiseAtualizada.getNome());
+        }
+        if (analiseAtualizada.getContrato() != null) {
+            analiseExistente.setContrato(analiseAtualizada.getContrato());
+        }
+        if (analiseAtualizada.getMatriz() != null) {
+            analiseExistente.setMatriz(analiseAtualizada.getMatriz());
+        }
+        if (analiseAtualizada.getQuantidadeAmostras() != null) {
+            analiseExistente.setQuantidadeAmostras(analiseAtualizada.getQuantidadeAmostras());
+        }
+        if (analiseAtualizada.getPrazoFinalizacao() != null) {
+            analiseExistente.setPrazoFinalizacao(analiseAtualizada.getPrazoFinalizacao());
+        }
+        if (analiseAtualizada.getStatusAnalise() != null) {
+            analiseExistente.setStatusAnalise(analiseAtualizada.getStatusAnalise());
+        }
 
+        // Salvar a análise atualizada
+        service.salvar(analiseExistente);
 
+        return ResponseEntity.ok(analiseExistente);
+    }
 
     @GetMapping
     public ResponseEntity<List<Analise>> listarAnalise() {

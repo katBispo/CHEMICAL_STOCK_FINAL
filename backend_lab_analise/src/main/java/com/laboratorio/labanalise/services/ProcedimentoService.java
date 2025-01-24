@@ -22,7 +22,7 @@ public class ProcedimentoService {
     }
 
     public Procedimento buscarPorId(Long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElse(null); 
     }
 
     public Procedimento buscarPorNome(String nomeProcedimento) {
