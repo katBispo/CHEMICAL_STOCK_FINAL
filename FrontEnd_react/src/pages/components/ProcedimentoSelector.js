@@ -2,45 +2,45 @@ import React, { useState, useEffect } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 
 function ProcedimentoSelector({ onSave, onClose }) {
-  const [procedures, setProcedures] = useState([]); // Armazena os procedimentos carregados do backend
-  const [selectedProcedures, setSelectedProcedures] = useState([]);
+  const [procedures, setProcedures] = useState([]); // Lista de procedimentos carregados
+  const [selectedProcedures, setSelectedProcedures] = useState([]); // Lista de procedimentos selecionados
 
-  // Função para buscar os procedimentos do backend
-  const fetchProcedures = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/procedimento');
-      if (response.ok) {
-        const data = await response.json();
-        setProcedures(data); // Preenche o estado com os dados recebidos
-      } else {
-        console.error('Erro ao buscar procedimentos');
-      }
-    } catch (error) {
-      console.error('Erro ao conectar ao backend:', error);
-    }
-  };
-
+  // Busca os procedimentos do backend
   useEffect(() => {
-    fetchProcedures(); // Chama a função para buscar os procedimentos ao carregar o componente
-  }, []); // A dependência vazia garante que a requisição seja feita uma vez ao montar o componente
+    const fetchProcedures = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/procedimento");
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Procedimentos carregados:", data); // Debug
+          setProcedures(data);
+        } else {
+          console.error("Erro ao buscar procedimentos");
+        }
+      } catch (error) {
+        console.error("Erro ao conectar ao backend:", error);
+      }
+    };
 
-  // Função para adicionar um procedimento à lista de selecionados
+    fetchProcedures();
+  }, []);
+
+  // Atualiza a lista de procedimentos selecionados
   const handleSelect = (event, value) => {
-    if (value && !selectedProcedures.some((proc) => proc.id === value.id)) {
-      setSelectedProcedures([...selectedProcedures, value]);
-    }
+    console.log("Selecionado:", value); // Debug
+    setSelectedProcedures(value); // Como é `multiple`, o value já será um array
   };
 
-  // Função para remover um procedimento da lista de selecionados
+  // Remove um procedimento da lista de selecionados
   const handleRemove = (id) => {
-    setSelectedProcedures(
-      selectedProcedures.filter((procedure) => procedure.id !== id)
-    );
+    setSelectedProcedures((prev) => prev.filter((proc) => proc.id !== id));
   };
 
+  // Salva os procedimentos e fecha o modal
   const handleSave = () => {
-    onSave(selectedProcedures); // Envia os procedimentos selecionados para a tela de cadastro de amostra
-    onClose(); // Fecha o modal
+    console.log("Procedimentos salvos:", selectedProcedures); // Debug
+    onSave(selectedProcedures);
+    onClose();
   };
 
   return (
@@ -48,28 +48,30 @@ function ProcedimentoSelector({ onSave, onClose }) {
       <div style={styles.content}>
         <h2>Selecionar Procedimentos</h2>
 
-        {/* Campo de busca utilizando o Autocomplete */}
+        {/* Campo de busca com seleção múltipla */}
         <Autocomplete
-          options={procedures} // Procedimentos carregados do backend
-          getOptionLabel={(option) => option.nomeProcedimento || ""} // Ajuste para a propriedade correta
-          onChange={handleSelect} // Atualiza o procedimento selecionado
+          multiple
+          options={procedures}
+          getOptionLabel={(option) => option.nomeProcedimento || "Sem nome"}
+          onChange={handleSelect}
+          value={selectedProcedures} // Mantém o estado atualizado
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pesquisar Procedimentos"
               margin="normal"
-              style={{ width: '80%', marginBottom: '10px' }}
+              style={{ width: "80%", marginBottom: "10px" }}
             />
           )}
-          isOptionEqualToValue={(option, value) => option.id === value.id} // Compara corretamente pelo ID
+          isOptionEqualToValue={(option, value) => option.id === value.id}
         />
 
-        {/* Procedimentos selecionados */}
+        {/* Lista de procedimentos selecionados */}
         <h3>Procedimentos Selecionados</h3>
         <ul style={styles.list}>
           {selectedProcedures.map((proc) => (
             <li key={proc.id} style={styles.listItem}>
-              {proc.nomeProcedimento} {/* Corrigido para a propriedade correta */}
+              {proc.nomeProcedimento}
               <button
                 onClick={() => handleRemove(proc.id)}
                 style={styles.removeButton}
@@ -92,6 +94,7 @@ function ProcedimentoSelector({ onSave, onClose }) {
   );
 }
 
+// Estilos do componente
 const styles = {
   overlay: {
     position: "fixed",
@@ -103,49 +106,35 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 1000,
   },
   content: {
     backgroundColor: "#fff",
     padding: "20px",
-    borderRadius: "8px",
-    width: "400px",
+    borderRadius: "10px",
+    width: "50%",
     textAlign: "center",
-  },
-  button: {
-    padding: "10px 15px",
-    margin: "5px",
-    borderRadius: "4px",
-    border: "none",
-    backgroundColor: "#007BFF",
-    color: "#fff",
-    cursor: "pointer",
-  },
-  addButton: {
-    padding: "5px 10px",
-    marginLeft: "10px",
-    borderRadius: "4px",
-    border: "none",
-    backgroundColor: "#28a745",
-    color: "#fff",
-    cursor: "pointer",
-  },
-  removeButton: {
-    padding: "5px 10px",
-    marginLeft: "10px",
-    borderRadius: "4px",
-    border: "none",
-    backgroundColor: "#dc3545",
-    color: "#fff",
-    cursor: "pointer",
   },
   list: {
     listStyle: "none",
     padding: 0,
-    textAlign: "left",
   },
   listItem: {
-    marginBottom: "10px",
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "8px",
+    borderBottom: "1px solid #ddd",
+  },
+  removeButton: {
+    backgroundColor: "red",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    cursor: "pointer",
+  },
+  button: {
+    margin: "10px",
+    padding: "10px 15px",
+    cursor: "pointer",
   },
 };
 

@@ -37,21 +37,26 @@ public class Amostra implements Serializable {
 
     @Column(length = 500)
     private String descricao;
-
-    @ManyToMany(mappedBy = "amostras")
-    private List<Analito> analitos = new ArrayList<>();
-
+    
     @Column(nullable = false, updatable = false)
     private LocalDate dataCadastro; 
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
         name = "PROCEDIMENTO_AMOSTRA",
         joinColumns = @JoinColumn(name = "id_amostra"),
         inverseJoinColumns = @JoinColumn(name = "id_procedimento")
     )
     private List<Procedimento> procedimentos = new ArrayList<>();
-
+    
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "AMOSTRA_ANALITO",
+        joinColumns = @JoinColumn(name = "ID_AMOSTRA"),
+        inverseJoinColumns = @JoinColumn(name = "ID_ANALITO")
+    )
+    private List<Analito> analitos = new ArrayList<>();
+    
     @ManyToOne
     @JoinColumn(name = "ID_ANALISE", nullable = false)
     private Analise analise;

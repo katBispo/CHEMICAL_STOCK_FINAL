@@ -33,6 +33,7 @@ function AmostraCadastro({ }) {
     const [selectedProcedures, setSelectedProcedures] = useState([]);
 
 
+    console.log("Procedimentos recebidos na tela de amostra:", selectedProcedures); // Debug
 
 
     console.log("Análise selecionada:", selectedAnalise);
@@ -96,15 +97,21 @@ function AmostraCadastro({ }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         // Verificar se os objetos necessários estão definidos
-        if (!selectedProcedure || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
+        if (!selectedProcedures || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
             console.error("Por favor, selecione todos os campos necessários.");
             return;
         }
-        console.log("Selected Analitos:", selectedAnalitos); // Verifique se os analitos estão sendo corretamente selecionados
+
+        // Logs para depuração
+        console.log("Selected Procedures:", selectedProcedures);
+        console.log("Selected Analise:", selectedAnalise);
+        console.log("Selected Analitos:", selectedAnalitos);
+
         const currentDate = new Date().toISOString().split("T")[0];
 
-        // Montar o payload completo com os analitos
+        // Montar o payload completo
         const payload = {
             nome,
             dataColeta,
@@ -115,25 +122,27 @@ function AmostraCadastro({ }) {
             procedures: selectedProcedures.map((procedure) => ({
                 id: procedure.id,
                 classificacao: procedure.classificacao,
-                tipos: procedure.tipos.map((tipo) => ({
+                tipos: (procedure.tipos || []).map((tipo) => ({
                     tipo: tipo.tipo,
-                    subtipos: tipo.subtipos,
+                    subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
                 })),
             })),
-
             analise: selectedAnalise,  // Passando o objeto completo da análise
             coordenadaColeta, // Usar diretamente a string "latitude;longitude"
+
             analitos: selectedAnalitos.map((analito) => ({
                 id: analito.id,
                 classificacao: analito.classificacao,
-                tipos: analito.tipos.map((tipo) => ({
+                tipos: (analito.tipos || []).map((tipo) => ({
                     tipo: tipo.tipo,
-                    subtipos: tipo.subtipos, // Mapeando subtipos
+                    subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
                 })),
             })),
+    
         };
 
-        console.log("Payload enviado ao backend:", JSON.stringify(payload, null, 2));
+        // Exibir payload no console antes de enviar
+        console.log("Payload enviado:", JSON.stringify(payload, null, 2));
 
         try {
             const response = await fetch("http://localhost:8080/amostra", {
@@ -145,6 +154,8 @@ function AmostraCadastro({ }) {
             });
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Erro ao salvar a amostra:", errorText);
                 throw new Error("Erro ao salvar a amostra");
             }
 
@@ -154,13 +165,17 @@ function AmostraCadastro({ }) {
             setNome("");
             setDescricao("");
             setCoordenadaColeta("");
-            setSelectedProcedure(null);
+            setSelectedProcedures([]);
             setSelectedAnalitos([]);
             handleClose(); // Fechar modal ou interface
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
         }
     };
+
+
+
+
     const handleClose = () => {
         setIsModalOpen(false);
     };
@@ -174,7 +189,13 @@ function AmostraCadastro({ }) {
         setShowOverlay(false); // Fecha o overlay
     };
     const handleAnalitoSelection = (analitosSelecionados) => {
-        setSelectedAnalitos(analitosSelecionados);
+        console.log("Analitos recebidos:", analitosSelecionados);
+        setSelectedAnalitos(analitosSelecionados || []); // Garante que não seja undefined
+    };
+    
+    const handleSaveProcedures = (procedures) => {
+        console.log("Procedimentos recebidos:", procedures);
+        setSelectedProcedures(procedures || []); // Garante que não seja undefined
     };
 
 
@@ -265,7 +286,7 @@ function AmostraCadastro({ }) {
                             />
                         </Box>
 
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                        <Box display="flex" flexDirection="column" gap={2}>
                             {/* Botão para abrir o ProcedimentoSelector */}
                             <Button
                                 onClick={() => setShowProcedureSelector(true)}
@@ -274,12 +295,13 @@ function AmostraCadastro({ }) {
                                     height: '50px',
                                     backgroundColor: '#4caf50',
                                     color: 'white',
-                                    mt: '16px',
                                     '&:hover': { backgroundColor: '#45a049' },
                                 }}
                             >
                                 Selecionar Procedimentos
                             </Button>
+
+                            {/* Lista de Procedimentos Selecionados*/}
                             {selectedProcedures?.length > 0 && (
                                 <Box
                                     sx={{
@@ -287,13 +309,12 @@ function AmostraCadastro({ }) {
                                         padding: '10px',
                                         borderRadius: '8px',
                                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                        marginTop: '16px',
                                         width: '350px',
                                     }}
                                 >
                                     <Typography variant="subtitle1">Procedimentos Selecionados:</Typography>
                                     <List>
-                                        {selectedProcedures.map((procedure, index) => (
+                                        {selectedProcedures?.map((procedure, index) => (
                                             <ListItem key={index}>
                                                 <Typography variant="body2">
                                                     {procedure.classificacao || "Classificação não disponível"} -{" "}
@@ -311,14 +332,67 @@ function AmostraCadastro({ }) {
                                     </List>
                                 </Box>
                             )}
+
+                 {/* Botão para abrir o AnalitoSelector */}
+<Button
+    onClick={() => setShowAnalitoSelector(true)}
+    sx={{
+        width: '350px',
+        height: '50px',
+        backgroundColor: '#4caf50',
+        color: 'white',
+        '&:hover': { backgroundColor: '#45a049' },
+    }}
+>
+    Selecionar Analitos
+</Button>
+
+{/* Lista de Analitos Selecionados */}
+{selectedAnalitos?.length > 0 && (
+    <Box
+        sx={{
+            backgroundColor: '#f9f9f9',
+            padding: '10px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            width: '350px',
+        }}
+    >
+        <Typography variant="subtitle1">Analitos Selecionados:</Typography>
+        <List>
+            {selectedAnalitos.map((analito, index) => (
+                <ListItem key={index}>
+                    <Typography variant="body2">
+                        {analito.classificacao || "Classificação não disponível"} -{" "}
+                        {analito.tipos?.length > 0
+                            ? analito.tipos.map(
+                                (tipo) =>
+                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                            ).join("; ")
+                            : "Nenhum tipo disponível"}
+                                                </Typography>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Box>
+                            )}
+
+                            {/* Modais de Seleção */}
+                            {showProcedureSelector && (
+                                <ProcedimentoSelector
+                                    onSave={handleSaveProcedures}
+                                    onClose={() => setShowProcedureSelector(false)}
+                                />
+                            )}
+                            {showAnalitoSelector && (
+                               <AnalitoSelector
+                               selectedAnalitos={selectedAnalitos}
+                               handleClose={() => setShowAnalitoSelector(false)}
+                               onAnalitoSelect={handleAnalitoSelection}
+                           />
+                            )}
                         </Box>
-                        {showProcedureSelector && (
-                            <ProcedureSelector
-                                selectedProcedures={selectedProcedures}
-                                handleClose={() => setShowProcedureSelector(false)}
-                                onProcedureSelect={handleProcedureSelection}
-                            />
-                        )}
+
 
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button type="submit" variant="contained" color="primary">

@@ -21,10 +21,10 @@ public class ProcedimentoService {
         repository.deleteById(id);
     }
 
-    public Procedimento buscarPorId(Long id) {
-        return repository.findById(id).orElse(null); 
+    public List<Procedimento> buscarPorIds(List<Long> ids) {
+        return repository.findAllById(ids);
     }
-
+    
     public Procedimento buscarPorNome(String nomeProcedimento) {
         return repository.findByNomeProcedimento(nomeProcedimento);
     }
