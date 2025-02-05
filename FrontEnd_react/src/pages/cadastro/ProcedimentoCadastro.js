@@ -1,100 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, List, ListItem, Checkbox, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Typography,
+    Button,
+    TextField,
+    Input,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import FeedbackDialog from '../components/FeedbackDialog'; 
+import SideBar from '../components/SideBar.js'; 
+import { useNavigate } from 'react-router-dom';
 
-const ProcedimentoSelector = ({ onSave, onClose }) => {
-  const [procedures, setProcedures] = useState([]);
-  const [selectedProcedures, setSelectedProcedures] = useState([]);
+function ProcedimentoCadastro() {
+    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [nomeProcedimento, setNomeProcedimento] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [pdfFile, setPdfFile] = useState(null);
+    const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]); // Definir data de cadastro como a data atual (em formato YYYY-MM-DD)
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const navigate = useNavigate();
 
-  // Função para buscar procedimentos
-  const fetchProcedures = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/procedimento');
-      if (response.ok) {
-        const data = await response.json();
-        setProcedures(data);
-      } else {
-        console.error('Erro ao buscar procedimentos');
-      }
-    } catch (error) {
-      console.error('Erro ao conectar ao backend:', error);
-    }
-  };
+    const toggleDrawer = () => {
+        setDrawerOpen((prev) => !prev);
+    };
 
-  // Carregar procedimentos ao montar o componente
-  useEffect(() => {
-    fetchProcedures();
-  }, []);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('nomeProcedimento', nomeProcedimento);
+        formData.append('descricaoProcedimento', descricao);
+        formData.append('pdfFile', pdfFile);
+        formData.append('dataCadastro', dataCadastro); // Enviar a dataCadastro
+        
+        try {
+            const response = await fetch('http://localhost:8080/procedimento', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            if (response.ok) {
+                setDialogMessage('Procedimento cadastrado com sucesso!');
+                console.log('Procedimento salvo com sucesso');
+            } else {
+                setDialogMessage('Erro ao cadastrar procedimento.');
+                console.error('Erro ao salvar o procedimento');
+                const errorData = await response.json();
+                console.error('Detalhes do erro:', errorData);
+            }
+        } catch (error) {
+            setDialogMessage('Erro ao salvar o procedimento no banco de dados.');
+            console.error('Erro:', error);
+        }
+        setDialogOpen(true);
 
-  // Função para lidar com a seleção de procedimentos
-  const handleSelectProcedure = (procedimento) => {
-    setSelectedProcedures((prevSelected) => {
-      if (prevSelected.includes(procedimento)) {
-        return prevSelected.filter((item) => item !== procedimento);
-      } else {
-        return [...prevSelected, procedimento];
-      }
-    });
-  };
+    };
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        navigate('/'); 
 
-  return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-      }}
-    >
-      <Box
-        sx={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          width: '500px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          Selecione os Procedimentos
-        </Typography>
+    };
 
-        <TextField
-          label="Pesquisar Procedimentos"
-          variant="outlined"
-          fullWidth
-          sx={{ marginBottom: 2 }}
-        />
+    return (
+        <Box display="flex" justifyContent="flex-start" gap={2}>
+            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        Cadastro de Procedimento
+                    </Typography>
+                </Toolbar>
+            </AppBar>
 
-        <List>
-          {procedures.map((procedimento, index) => (
-            <ListItem key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                checked={selectedProcedures.includes(procedimento)}
-                onChange={() => handleSelectProcedure(procedimento)}
-              />
-              <Typography>{procedimento.nome || 'Nome não disponível'}</Typography>
-            </ListItem>
-          ))}
-        </List>
+            <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
 
-        <Box display="flex" justifyContent="space-between" sx={{ marginTop: 2 }}>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button
-            variant="contained"
-            onClick={() => onSave(selectedProcedures)} // Passa a lista de procedimentos selecionados
-          >
-            Salvar
-          </Button>
+            <Box
+                sx={{
+                    backgroundColor: 'white',
+                    padding: '30px',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    maxWidth: '800px',
+                    marginLeft: '200px',
+                    marginTop: '90px', // Ajuste este valor conforme necessário
+                }}
+            >
+                <Typography variant="h4" gutterBottom>
+                    Cadastrar Procedimento
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    {/* Nome do Procedimento */}
+                    <TextField
+                        label="Nome do Procedimento"
+                        value={nomeProcedimento}
+                        onChange={(e) => setNomeProcedimento(e.target.value)}
+                        required
+                        margin="normal"
+                        fullWidth
+                    />
+
+                    {/* Descrição */}
+                    <TextField
+                        label="Descrição Geral"
+                        value={descricao}
+                        onChange={(e) => setDescricao(e.target.value)}
+                        required
+                        margin="normal"
+                        multiline
+                        rows={4}
+                        style={{ width: '100%' }}
+                    />
+
+                    {/* Campo de Upload de PDF */}
+                    <Input
+                        type="file"
+                        inputProps={{ accept: 'application/pdf' }}
+                        onChange={(e) => setPdfFile(e.target.files[0])}
+                        required
+                        style={{ marginTop: '16px' }}
+                    />
+
+                    {/* Botão de Salvar */}
+                    <Box display="flex" justifyContent="center" marginTop={2}>
+                        <Button variant="contained" type="submit">
+                            Salvar Procedimento
+                        </Button>
+                    </Box>
+                </form>
+
+            </Box>
+            <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+
         </Box>
-      </Box>
-    </Box>
-  );
-};
+        
+    );
+}
 
-export default ProcedimentoSelector;
+export default ProcedimentoCadastro;

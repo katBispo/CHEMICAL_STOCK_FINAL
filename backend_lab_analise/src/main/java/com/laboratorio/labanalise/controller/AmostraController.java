@@ -65,6 +65,7 @@ public class AmostraController {
             amostra.setAnalitos(analitosAssociados);
         }
 
+        /*
         // Verificar e associar Procedimentos (nova parte adicionada)
         if (amostra.getProcedimentos() != null && !amostra.getProcedimentos().isEmpty()) {
             List<Long> idsProcedimentos = amostra.getProcedimentos().stream()
@@ -80,6 +81,7 @@ public class AmostraController {
 
             amostra.setProcedimentos(procedimentosAssociados);
         }
+        */
 
         // Salva a amostra
         amostra = service.salvar(amostra);

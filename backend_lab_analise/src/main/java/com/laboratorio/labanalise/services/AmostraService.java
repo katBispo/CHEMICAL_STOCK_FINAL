@@ -56,10 +56,11 @@ public class AmostraService {
             amostra.setAnalitos(analitos);
         }
 
-        if (dto.getProcedimentos() != null && !dto.getProcedimentos().isEmpty()) {
+        //ignroar trecho por enquanto
+        /*if (dto.getProcedimentos() != null && !dto.getProcedimentos().isEmpty()) {
             List<Procedimento> procedimentos = procedimentoRepository.findAllById(dto.getProcedimentos());
-            amostra.setProcedimentos(procedimentos);
-        }
+            amostra.set
+        }*/
 
         return amostraRepository.save(amostra);
     }

@@ -1,69 +1,76 @@
 package com.laboratorio.labanalise.model;
 
+import com.laboratorio.labanalise.model.enums.StatusAmostra;
 import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import com.laboratorio.labanalise.model.enums.StatusAmostra;
+import java.util.*;
 
 @Entity
-@Table(name = "AMOSTRA")
+@Table(
+        name = "AMOSTRA"
+)
 public class Amostra implements Serializable {
     private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Adicionado para geração de IDs automáticos
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
-
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private String nome;
-
     private String enderecoColeta;
-
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private LocalDate dataColeta;
-
     private String coordenadaColeta;
-
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private LocalDate prazoFinalizacao;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private StatusAmostra status;
-
-    @Column(length = 500)
+    @Column(
+            length = 500
+    )
     private String descricao;
-    
-    @Column(nullable = false, updatable = false)
-    private LocalDate dataCadastro; 
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "PROCEDIMENTO_AMOSTRA",
-        joinColumns = @JoinColumn(name = "id_amostra"),
-        inverseJoinColumns = @JoinColumn(name = "id_procedimento")
+    @Column(
+            nullable = false,
+            updatable = false
     )
-    private List<Procedimento> procedimentos = new ArrayList<>();
-    
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "AMOSTRA_ANALITO",
-        joinColumns = @JoinColumn(name = "ID_AMOSTRA"),
-        inverseJoinColumns = @JoinColumn(name = "ID_ANALITO")
+    private LocalDate dataCadastro;
+    @OneToMany(
+            mappedBy = "id.amostra"
     )
-    private List<Analito> analitos = new ArrayList<>();
-    
+    private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
+    @ManyToMany(
+            cascade = {CascadeType.ALL}
+    )
+    @JoinTable(
+            name = "AMOSTRA_ANALITO",
+            joinColumns = {@JoinColumn(
+                    name = "ID_AMOSTRA"
+            )},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "ID_ANALITO"
+            )}
+    )
+    private List<Analito> analitos = new ArrayList();
     @ManyToOne
-    @JoinColumn(name = "ID_ANALISE", nullable = false)
+    @JoinColumn(
+            name = "ID_ANALISE",
+            nullable = true//setar como false dps
+    )
     private Analise analise;
 
-    // Construtor com todos os parâmetros
-   public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
-                   LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
+    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta, LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
@@ -71,32 +78,32 @@ public class Amostra implements Serializable {
         this.prazoFinalizacao = prazoFinalizacao;
         this.status = status;
         this.descricao = descricao;
-        this.dataCadastro = LocalDate.now(); // Define a data de cadastro
+        this.dataCadastro = LocalDate.now();
     }
 
-    // Construtor padrão
     public Amostra() {
-        this.dataCadastro = LocalDate.now(); // Define a data de cadastro
-        this.status = StatusAmostra.EM_ANDAMENTO; // Status padrão
+        this.dataCadastro = LocalDate.now();
+        this.status = StatusAmostra.EM_ANDAMENTO;
     }
 
-    // Getters e Setters
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
+
     public LocalDate getDataCadastro() {
-        return dataCadastro;
+        return this.dataCadastro;
     }
 
     public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
+
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public void setNome(String nome) {
@@ -104,7 +111,7 @@ public class Amostra implements Serializable {
     }
 
     public String getEnderecoColeta() {
-        return enderecoColeta;
+        return this.enderecoColeta;
     }
 
     public void setEnderecoColeta(String enderecoColeta) {
@@ -112,7 +119,7 @@ public class Amostra implements Serializable {
     }
 
     public LocalDate getDataColeta() {
-        return dataColeta;
+        return this.dataColeta;
     }
 
     public void setDataColeta(LocalDate dataColeta) {
@@ -120,7 +127,7 @@ public class Amostra implements Serializable {
     }
 
     public String getCoordenadaColeta() {
-        return coordenadaColeta;
+        return this.coordenadaColeta;
     }
 
     public void setCoordenadaColeta(String coordenadaColeta) {
@@ -128,7 +135,7 @@ public class Amostra implements Serializable {
     }
 
     public LocalDate getPrazoFinalizacao() {
-        return prazoFinalizacao;
+        return this.prazoFinalizacao;
     }
 
     public void setPrazoFinalizacao(LocalDate prazoFinalizacao) {
@@ -136,7 +143,7 @@ public class Amostra implements Serializable {
     }
 
     public StatusAmostra getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(StatusAmostra status) {
@@ -144,23 +151,15 @@ public class Amostra implements Serializable {
     }
 
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
 
-    public List<Procedimento> getProcedimentos() {
-        return procedimentos;
-    }
-
-    public void setProcedimentos(List<Procedimento> procedimentos) {
-        this.procedimentos = procedimentos;
-    }
-
     public Analise getAnalise() {
-        return analise;
+        return this.analise;
     }
 
     public void setAnalise(Analise analise) {
@@ -168,23 +167,33 @@ public class Amostra implements Serializable {
     }
 
     public List<Analito> getAnalitos() {
-        return analitos;
+        return this.analitos;
     }
 
     public void setAnalitos(List<Analito> analitos) {
         this.analitos = analitos;
     }
 
-    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Amostra amostra = (Amostra) o;
-        return Objects.equals(id, amostra.id);
+        if (this == o) {
+            return true;
+        } else if (o != null && this.getClass() == o.getClass()) {
+            Amostra amostra = (Amostra) o;
+            return Objects.equals(this.id, amostra.id);
+        } else {
+            return false;
+        }
     }
 
-    @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.id);
+    }
+
+    public Set<AmostraProcedimento> getAmostraProcedimentos() {
+        return amostraProcedimentos;
+    }
+
+    public void setAmostraProcedimentos(Set<AmostraProcedimento> amostraProcedimentos) {
+        this.amostraProcedimentos = amostraProcedimentos;
     }
 }

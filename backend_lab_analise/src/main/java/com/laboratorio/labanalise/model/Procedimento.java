@@ -1,51 +1,59 @@
 package com.laboratorio.labanalise.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "PROCEDIMENTO")
+@Table(
+        name = "PROCEDIMENTO"
+)
 public class Procedimento implements Serializable {
     private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
-
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private String nomeProcedimento;
-
     private String descricaoProcedimento;
-
     @Lob
-    private byte[] pdfData; // Campo para armazenar o PDF
-
-    @ManyToMany
-    @JoinTable(name = "PROCEDIMENTO_AMOSTRA", joinColumns = @JoinColumn(name = "id_procedimento"), inverseJoinColumns = @JoinColumn(name = "id_amostra"))
-    private List<Amostra> amostras = new ArrayList<>();
-
-    // Nova variável para armazenar a data de cadastro
-    @Column(name = "data_cadastro", nullable = false)
+    private byte[] pdfData;
+    @OneToMany(
+            mappedBy = "id.procedimento"
+    )
+    private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
+    @Column(
+            name = "data_cadastro",
+            nullable = false
+    )
     private LocalDate dataCadastro;
 
-    // Getters e Setters
-
     public Procedimento() {
-        this.dataCadastro = LocalDate.now(); // Definindo a data de cadastro como a data atual
+        this.dataCadastro = LocalDate.now();
     }
 
     public Procedimento(String nomeProcedimento, String descricaoProcedimento) {
         this.nomeProcedimento = nomeProcedimento;
         this.descricaoProcedimento = descricaoProcedimento;
-        this.dataCadastro = LocalDate.now(); // Definindo a data de cadastro como a data atual
+        this.dataCadastro = LocalDate.now();
     }
 
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
@@ -53,7 +61,7 @@ public class Procedimento implements Serializable {
     }
 
     public String getNomeProcedimento() {
-        return nomeProcedimento;
+        return this.nomeProcedimento;
     }
 
     public void setNomeProcedimento(String nomeProcedimento) {
@@ -61,7 +69,7 @@ public class Procedimento implements Serializable {
     }
 
     public String getDescricaoProcedimento() {
-        return descricaoProcedimento;
+        return this.descricaoProcedimento;
     }
 
     public void setDescricaoProcedimento(String descricaoProcedimento) {
@@ -69,41 +77,33 @@ public class Procedimento implements Serializable {
     }
 
     public byte[] getPdfData() {
-        return pdfData;
+        return this.pdfData;
     }
 
     public void setPdfData(byte[] pdfData) {
         this.pdfData = pdfData;
     }
 
-    public List<Amostra> getAmostras() {
-        return amostras;
-    }
-
-    public void setAmostras(List<Amostra> amostras) {
-        this.amostras = amostras;
-    }
-
     public LocalDate getDataCadastro() {
-        return dataCadastro;
+        return this.dataCadastro;
     }
 
     public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
 
-    @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        } else if (o != null && this.getClass() == o.getClass()) {
+            Procedimento that = (Procedimento)o;
+            return Objects.equals(this.id, that.id);
+        } else {
             return false;
-        Procedimento that = (Procedimento) o;
-        return Objects.equals(id, that.id);
+        }
     }
 
-    @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(new Object[]{this.id});
     }
 }
