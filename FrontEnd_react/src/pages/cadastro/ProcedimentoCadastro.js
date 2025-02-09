@@ -8,10 +8,12 @@ import {
     Button,
     TextField,
     Input,
+    Dialog,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import FeedbackDialog from '../components/FeedbackDialog'; 
 import SideBar from '../components/SideBar.js'; 
+import SelectReagente from '../components/SelectReagente';
 import { useNavigate } from 'react-router-dom';
 
 function ProcedimentoCadastro() {
@@ -19,9 +21,10 @@ function ProcedimentoCadastro() {
     const [nomeProcedimento, setNomeProcedimento] = useState('');
     const [descricao, setDescricao] = useState('');
     const [pdfFile, setPdfFile] = useState(null);
-    const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]); // Definir data de cadastro como a data atual (em formato YYYY-MM-DD)
+    const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
+    const [overlayOpen, setOverlayOpen] = useState(false);
     const navigate = useNavigate();
 
     const toggleDrawer = () => {
@@ -35,7 +38,7 @@ function ProcedimentoCadastro() {
         formData.append('nomeProcedimento', nomeProcedimento);
         formData.append('descricaoProcedimento', descricao);
         formData.append('pdfFile', pdfFile);
-        formData.append('dataCadastro', dataCadastro); // Enviar a dataCadastro
+        formData.append('dataCadastro', dataCadastro);
         
         try {
             const response = await fetch('http://localhost:8080/procedimento', {
@@ -57,12 +60,11 @@ function ProcedimentoCadastro() {
             console.error('Erro:', error);
         }
         setDialogOpen(true);
-
     };
+    
     const handleDialogClose = () => {
         setDialogOpen(false);
         navigate('/'); 
-
     };
 
     return (
@@ -88,14 +90,13 @@ function ProcedimentoCadastro() {
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                     maxWidth: '800px',
                     marginLeft: '200px',
-                    marginTop: '90px', // Ajuste este valor conforme necessário
+                    marginTop: '90px',
                 }}
             >
                 <Typography variant="h4" gutterBottom>
                     Cadastrar Procedimento
                 </Typography>
                 <form onSubmit={handleSubmit}>
-                    {/* Nome do Procedimento */}
                     <TextField
                         label="Nome do Procedimento"
                         value={nomeProcedimento}
@@ -104,8 +105,6 @@ function ProcedimentoCadastro() {
                         margin="normal"
                         fullWidth
                     />
-
-                    {/* Descrição */}
                     <TextField
                         label="Descrição Geral"
                         value={descricao}
@@ -116,8 +115,6 @@ function ProcedimentoCadastro() {
                         rows={4}
                         style={{ width: '100%' }}
                     />
-
-                    {/* Campo de Upload de PDF */}
                     <Input
                         type="file"
                         inputProps={{ accept: 'application/pdf' }}
@@ -126,19 +123,23 @@ function ProcedimentoCadastro() {
                         style={{ marginTop: '16px' }}
                     />
 
-                    {/* Botão de Salvar */}
                     <Box display="flex" justifyContent="center" marginTop={2}>
-                        <Button variant="contained" type="submit">
-                            Salvar Procedimento
+                        <Button variant="contained" onClick={() => setOverlayOpen(true)}>
+                            Selecionar Reagentes
+                        </Button>
+                    </Box>
+                    
+                    <Box display="flex" justifyContent="center" marginTop={2}>
+                        <Button type="submit" variant="contained" color="primary">
+                            Cadastrar Procedimento
                         </Button>
                     </Box>
                 </form>
-
             </Box>
-            <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
 
+            <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+            <SelectReagente open={overlayOpen} onClose={() => setOverlayOpen(false)} />
         </Box>
-        
     );
 }
 

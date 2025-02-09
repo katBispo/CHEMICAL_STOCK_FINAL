@@ -2,6 +2,7 @@ package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.enums.TipoReagente;
+import com.laboratorio.labanalise.model.enums.UnidadeReagente;
 import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -43,5 +45,14 @@ public class ReagenteController {
     public ResponseEntity<TipoReagente[]> getTiposReagente() {
         TipoReagente[] tipos = TipoReagente.values();
         return ResponseEntity.ok().body(tipos);
+    }
+
+     // Novo endpoint para listar unidades de medida dos reagentes
+    @GetMapping("/unidades")
+    public ResponseEntity<List<String>> listarUnidadesReagente() {
+        List<String> unidades = Arrays.stream(UnidadeReagente.values())
+                                      .map(Enum::name)
+                                      .toList();
+        return ResponseEntity.ok().body(unidades);
     }
 }

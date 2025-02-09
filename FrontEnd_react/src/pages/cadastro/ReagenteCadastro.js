@@ -14,17 +14,20 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Grid
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
 import { useNavigate } from 'react-router-dom';
+import FeedbackDialog from '../components/FeedbackDialog'; // Importe o novo componente
 
 function ReagenteCadastro() {
-    const [dialogOpen, setDialogOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const [nome, setNome] = useState('');
     const [marca, setMarca] = useState('');
@@ -34,6 +37,14 @@ function ReagenteCadastro() {
     const [dataValidade, setDataValidade] = useState('');
     const [tiposReagentes, setTiposReagentes] = useState([]);
     const [selectedTipoReagente, setSelectedTipoReagente] = useState('');
+
+    const [selectedUnidade, setSelectedUnidade] = useState(null);
+    const [unidadesReagentes, setUnidadesReagentes] = useState([]);
+
+
+    const [qtdFrascos, setQtdFrascos] = useState('');
+    const [volumePorFrasco, setVolumePorFrasco] = useState('');
+
 
     useEffect(() => {
         const fetchTiposReagentes = async () => {
@@ -48,6 +59,19 @@ function ReagenteCadastro() {
         };
 
         fetchTiposReagentes();
+        const fetchUnidadesReagentes = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/reagente/unidades');
+                if (!response.ok) throw new Error('Erro ao buscar unidades de reagentes');
+                const data = await response.json();
+                setUnidadesReagentes(data);
+            } catch (error) {
+                console.error('Erro ao buscar unidades de reagentes:', error);
+            }
+        };
+
+        fetchUnidadesReagentes();
+
     }, []);
 
     const handleSubmit = async () => {
@@ -58,7 +82,11 @@ function ReagenteCadastro() {
             dataValidade,
             controlado: controlado === 'sim',
             numeroControlado: controlado === 'sim' ? numeroControlado : null,
-            tipo: selectedTipoReagente
+            tipo: selectedTipoReagente,
+
+            unidadeReagente: selectedUnidade, // Unidade do reagente (g, mL, etc.)
+            qtdFrascos: Number(qtdFrascos),  // Converte para número
+            volumePorFrasco: Number(volumePorFrasco) // Converte para número
         };
 
         try {
@@ -71,20 +99,24 @@ function ReagenteCadastro() {
             });
 
             if (response.ok) {
-                setDialogOpen(true); // Abre o diálogo de sucesso
+                setDialogMessage(true); // Abre o diálogo de sucesso
             } else {
+                setDialogMessage('Erro ao salvar reagente');
                 console.error('Erro ao salvar reagente');
             }
         } catch (error) {
             console.error('Erro:', error);
+            setDialogMessage('Erro:', error);
         }
+        setDialogOpen(true);
+
     };
 
-    const handleCloseDialog = () => {
+    const handleDialogClose = () => {
         setDialogOpen(false);
-        navigate('/'); // Redireciona para a rota '/'
-    };
+        navigate('/'); 
 
+    };
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -109,96 +141,121 @@ function ReagenteCadastro() {
                         borderRadius: '8px',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                         maxWidth: '800px',
-                        marginLeft: '200px',
+                        margin: '0 auto',
                     }}
                 >
-                    <Typography variant="h4" gutterBottom>
+                    <Typography variant="h4" gutterBottom align="center">
                         Cadastrar Reagente
                     </Typography>
 
-                    <Box
-                        sx={{
-                            backgroundColor: 'white',
-                            padding: '30px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                            maxWidth: '800px',
-                            width: '100%',
-                        }}
-                    >
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-                            <TextField
-                                label="Nome do Reagente"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={nome}
-                                onChange={(e) => setNome(e.target.value)}
-                            />
-                            <TextField
-                                label="Marca do Reagente"
-                                required
-                                margin="normal"
-                                style={{ width: '350px' }}
-                                value={marca}
-                                onChange={(e) => setMarca(e.target.value)}
-                            />
-                        </Box>
-
-                        <Box display="flex" flexDirection="column" gap={2} mt={2}>
-                            <Box display="flex" justifyContent="flex-start" gap={2}>
+                    <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Grid container spacing={2}>
+                            {/* Nome e Marca */}
+                            <Grid item xs={12} sm={6}>
                                 <TextField
+                                    fullWidth
+                                    label="Nome do Reagente"
+                                    required
+                                    value={nome}
+                                    onChange={(e) => setNome(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Marca do Reagente"
+                                    required
+                                    value={marca}
+                                    onChange={(e) => setMarca(e.target.value)}
+                                />
+                            </Grid>
+
+                            {/* Lote e Data de Validade */}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
                                     label="Lote"
                                     required
-                                    margin="normal"
-                                    style={{ width: '350px' }}
                                     value={lote}
                                     onChange={(e) => setLote(e.target.value)}
                                 />
-
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
+                                    fullWidth
                                     label="Data de Validade"
                                     type="date"
                                     required
-                                    margin="normal"
                                     InputLabelProps={{ shrink: true }}
-                                    style={{ width: '350px' }}
                                     value={dataValidade}
                                     onChange={(e) => setDataValidade(e.target.value)}
                                 />
-                            </Box>
+                            </Grid>
 
-                            <Autocomplete
-                                options={tiposReagentes}
-                                getOptionLabel={(option) => option.toString()}
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Selecione o Tipo de Reagente" variant="outlined" />
-                                )}
-                                onChange={(event, newValue) => setSelectedTipoReagente(newValue)}
-                            />
+                            {/* Tipo e Unidade do Reagente */}
+                            <Grid item xs={12} sm={6}>
+                                <Autocomplete
+                                    options={tiposReagentes}
+                                    getOptionLabel={(option) => option.toString()}
+                                    value={selectedTipoReagente}
+                                    onChange={(event, newValue) => setSelectedTipoReagente(newValue)}
+                                    renderInput={(params) => <TextField {...params} label="Tipo de Reagente" fullWidth />}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Autocomplete
+                                    options={unidadesReagentes}
+                                    getOptionLabel={(option) => option}
+                                    value={selectedUnidade}
+                                    onChange={(event, newValue) => setSelectedUnidade(newValue)}
+                                    renderInput={(params) => <TextField {...params} label="Unidade do Reagente" fullWidth />}
+                                />
+                            </Grid>
 
-                            <Typography variant="h6">Reagente Controlado</Typography>
-                            <RadioGroup
-                                row
-                                value={controlado}
-                                onChange={(e) => setControlado(e.target.value)}
-                            >
-                                <FormControlLabel value="sim" control={<Radio />} label="Sim" />
-                                <FormControlLabel value="não" control={<Radio />} label="Não" />
-                            </RadioGroup>
+                            {/* Quantidade de Frascos e Volume por Frasco */}
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="Quantidade de Frascos"
+                                    variant="outlined"
+                                    type="number"
+                                    fullWidth
+                                    value={qtdFrascos}
+                                    onChange={(e) => setQtdFrascos(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="Volume por Frasco"
+                                    variant="outlined"
+                                    type="number"
+                                    fullWidth
+                                    value={volumePorFrasco}
+                                    onChange={(e) => setVolumePorFrasco(e.target.value)}
+                                />
+                            </Grid>
+                            {/* Reagente Controlado */}
+                            <Grid item xs={12}>
+                                <Typography variant="h6">Reagente Controlado</Typography>
+                                <RadioGroup row value={controlado} onChange={(e) => setControlado(e.target.value)}>
+                                    <FormControlLabel value="sim" control={<Radio />} label="Sim" />
+                                    <FormControlLabel value="não" control={<Radio />} label="Não" />
+                                </RadioGroup>
+                            </Grid>
 
                             {controlado === 'sim' && (
-                                <TextField
-                                    label="Número do Reagente Controlado"
-                                    required
-                                    margin="normal"
-                                    style={{ width: '350px' }}
-                                    value={numeroControlado}
-                                    onChange={(e) => setNumeroControlado(e.target.value)}
-                                />
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Número do Reagente Controlado"
+                                        required
+                                        value={numeroControlado}
+                                        onChange={(e) => setNumeroControlado(e.target.value)}
+                                    />
+                                </Grid>
                             )}
-                        </Box>
+                        </Grid>
 
+                        {/* Botão de salvar */}
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button variant="contained" onClick={handleSubmit}>
                                 Salvar
@@ -207,18 +264,20 @@ function ReagenteCadastro() {
                     </Box>
                 </Box>
 
+                <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
+
                 {/* Diálogo de sucesso */}
-                <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+                <Dialog open={dialogOpen} onClose={handleDialogClose}>
                     <DialogTitle>Sucesso</DialogTitle>
                     <DialogContent>Dados salvos com sucesso!</DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseDialog} color="primary">
+                        <Button onClick={handleDialogClose} color="primary">
                             OK
                         </Button>
                     </DialogActions>
                 </Dialog>
             </Box>
-        </Box>
+        </Box >
     );
 }
 

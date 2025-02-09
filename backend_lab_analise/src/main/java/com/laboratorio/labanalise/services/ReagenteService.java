@@ -1,10 +1,14 @@
 package com.laboratorio.labanalise.services;
 
+import com.laboratorio.labanalise.model.MovimentacaoReagente;
 import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.enums.*;
 import com.laboratorio.labanalise.repositories.ReagenteRepository;
+import com.laboratorio.labanalise.repositories.MovimentacaoReagenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -13,8 +17,29 @@ public class ReagenteService {
     @Autowired
     public ReagenteRepository repository;
 
+    @Autowired
+    private MovimentacaoReagenteRepository movimentacaoReagenteRepository;
+
     public Reagente salvar(Reagente reagente) {
-        return repository.save(reagente);
+        // Salvar o reagente primeiro
+        reagente = repository.save(reagente);
+
+        // Criar a movimentação inicial de entrada
+        MovimentacaoReagente movimentacao = new MovimentacaoReagente();
+        movimentacao.setReagente(reagente);
+        movimentacao.setDataMovimentacao(LocalDate.now());
+        movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
+        movimentacao.setQuantidadeAlterada(reagente.getQtdFrascos() * reagente.getVolumePorFrasco());
+        movimentacao.setQuantidadeFinal(movimentacao.getQuantidadeAlterada()); // Primeira movimentação, então é o total
+        movimentacao.setMotivo("Cadastro inicial");
+
+        // Salvar a movimentação
+        movimentacaoReagenteRepository.save(movimentacao);
+
+        // Adicionar movimentação ao reagente para manter o relacionamento bidirecional
+        reagente.getMovimentacoes().add(movimentacao);
+
+        return reagente;
     }
 
     public void remover(Long id) {

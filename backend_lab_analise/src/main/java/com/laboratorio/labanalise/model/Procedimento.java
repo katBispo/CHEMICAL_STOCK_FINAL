@@ -1,5 +1,7 @@
 package com.laboratorio.labanalise.model;
 
+
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +43,11 @@ public class Procedimento implements Serializable {
             nullable = false
     )
     private LocalDate dataCadastro;
+
+
+    @OneToMany(mappedBy = "procedimento")
+    private Set<ReagenteUsadoProcedimento> reagentesUsados = new HashSet<>();
+
 
     public Procedimento() {
         this.dataCadastro = LocalDate.now();
