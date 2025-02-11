@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Modal, IconButton } from '@mui/material';
 import { FaPlus } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
-import AnalitoExistenteCadastro from './AnalitoExistenteCadastro'; // Certifique-se de importar corretamente
-
+import { useNavigate } from 'react-router-dom'; 
+import AnalitoExistenteCadastro from './AnalitoExistenteCadastro'; 
 const AnalitoCadastro = ({ open, handleClose }) => {
-    const navigate = useNavigate(); // Crie uma instância do hook de navegação
+    const navigate = useNavigate(); 
     const [showInitialScreen, setShowInitialScreen] = useState(true);
     const [classificacao, setClassificacao] = useState('');
     const [tipoAnalito, setTipoAnalito] = useState('');
@@ -15,6 +14,9 @@ const AnalitoCadastro = ({ open, handleClose }) => {
     const [messageBoxSeverity, setMessageBoxSeverity] = useState('success');
     const [isAnalitoExistenteOpen, setIsAnalitoExistenteOpen] = useState(false);
 
+
+
+    
     const openAnalitoExistente = () => {
         setIsAnalitoExistenteOpen(true);
     };

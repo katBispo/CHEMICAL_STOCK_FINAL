@@ -15,19 +15,27 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Modal,
     Grid
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
 import { useNavigate } from 'react-router-dom';
-import FeedbackDialog from '../components/FeedbackDialog'; // Importe o novo componente
+import FeedbackDialog from '../components/FeedbackDialog'; 
+import ReporEstoqueModal from '../components/ReposicaoReagentOverlay.js'
 
-function ReagenteCadastro() {
+function ReagenteCadastro({ open, handleClose }) {
     const [drawerOpen, setDrawerOpen] = useState(true);
     const toggleDrawer = () => setDrawerOpen((prev) => !prev);
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [showForm, setShowForm] = useState(false);
+    const [showInitialScreen, setShowInitialScreen] = useState(true);
+
+
+    const [isEscolhaAcaoOpen, setIsEscolhaAcaoOpen] = useState(true); 
+    const [isReporEstoqueOpen, setIsReporEstoqueOpen] = useState(false);
 
     const [nome, setNome] = useState('');
     const [marca, setMarca] = useState('');
@@ -118,6 +126,49 @@ function ReagenteCadastro() {
 
     };
     return (
+        <>
+        {/* Modal de Escolha de Ação */}
+        {/* Modal de Escolha de Ação */}
+        <Modal open={isEscolhaAcaoOpen} onClose={() => setIsEscolhaAcaoOpen(false)}>
+                <Box
+                    sx={{
+                        backgroundColor: "white",
+                        padding: "30px",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        maxWidth: "400px",
+                        margin: "auto",
+                        marginTop: "100px",
+                        textAlign: "center",
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom>
+                        Escolha uma ação
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setIsEscolhaAcaoOpen(false)} // Apenas fecha o modal
+                        sx={{ m: 1, width: "80%" }}
+                    >
+                        Cadastrar Novo Reagente
+                    </Button>
+
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => {
+                            setIsEscolhaAcaoOpen(false); // Fecha o modal
+                            navigate("/reposicaoReagente"); // Redireciona para a rota desejada
+                        }}
+                        sx={{ m: 1, width: "80%" }}
+                    >
+                        Repor Estoque
+                    </Button>
+                </Box>
+            </Modal>
+        
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
@@ -263,7 +314,6 @@ function ReagenteCadastro() {
                         </Box>
                     </Box>
                 </Box>
-
                 <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
 
                 {/* Diálogo de sucesso */}
@@ -278,6 +328,8 @@ function ReagenteCadastro() {
                 </Dialog>
             </Box>
         </Box >
+        </>
+
     );
 }
 

@@ -25,6 +25,7 @@ import {
     ListItemText,
     Typography,
 } from '@mui/material';
+import ReagenteCadastro from '../cadastro/ReagenteCadastro';
 
 const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
@@ -32,6 +33,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
     const [openMatrizOverlay, setOpenMatrizOverlay] = useState(false); // Estado para controlar o overlay da Matriz
     const [openAnalitoOverlay, setOpenAnalitoOverlay] = useState(false); // Estado para controlar o overlay do Analito
     const [openAmostraOverlay, setOpenAmostraOverlay] = useState(false); // Controla o modal
+    const [openReagenteOverlay, setOpenReagenteOverlay] = useState(false); // Controla o modal
 
 
 
@@ -62,6 +64,16 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
         setOpenAnalitoOverlay(false);
     };
 
+
+    const handleCloseReagenteOverlay = () => {
+        setOpenAmostraOverlay(false);
+        //navigate("/amostraCadastro"); // Redireciona para a rota de cadastro
+    };
+
+
+    const handleOpenReagenteOverlay = () => {
+        setOpenReagenteOverlay(true); // Abre o overlay para selecionar a análise
+    };
 
 
 
@@ -319,6 +331,23 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                                 handleClose={handleCloseAmostraOverlay}  // Fecha o overlay quando necessário
 
                             />
+                            <div>
+                                <ListItem
+                                    button
+                                    onClick={handleOpenMatrizOverlay} // Abre o overlay da Matriz ao clicar
+                                    sx={{
+                                        pl: 4,
+                                        bgcolor: selectedItem === '/matrizCadastro' ? '#8BC34A' : 'transparent',
+                                        textDecoration: 'none',
+                                        color: 'white',
+                                    }}
+                                >
+                                    <ListItemText primary="Matriz" />
+                                </ListItem>
+                                <MatrizCadastro open={openReagenteOverlay} handleClose={handleCloseReagenteOverlay} />
+                            </div>
+
+
 
 
                             <ListItem
@@ -336,6 +365,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                             >
                                 <ListItemText primary="Reagentes" />
                             </ListItem>
+
 
 
                             <div>

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.enums.*;
 
 @Entity
@@ -53,61 +54,126 @@ public class Reagente implements Serializable {
 
     // Relacionamento com movimentações (histórico de estoque)
     @OneToMany(mappedBy = "reagente", cascade = CascadeType.PERSIST, orphanRemoval = true)
+   // @JsonIgnore
     private List<MovimentacaoReagente> movimentacoes;
 
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeAtual() {
         return movimentacoes.stream()
-            .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
-            .reduce((first, second) -> second) // Pega o último registro
-            .orElse(0.0);
+                .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
+                .reduce((first, second) -> second) // Pega o último registro
+                .orElse(0.0);
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getMarca() { return marca; }
-    public void setMarca(String marca) { this.marca = marca; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getLote() { return lote; }
-    public void setLote(String lote) { this.lote = lote; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public boolean isControlado() { return controlado; }
-    public void setControlado(boolean controlado) { this.controlado = controlado; }
+    public String getMarca() {
+        return marca;
+    }
 
-    public String getNumeroControlado() { return numeroControlado; }
-    public void setNumeroControlado(String numeroControlado) { this.numeroControlado = numeroControlado; }
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
 
-    public LocalDate getDataValidade() { return dataValidade; }
-    public void setDataValidade(LocalDate dataValidade) { this.dataValidade = dataValidade; }
+    public String getLote() {
+        return lote;
+    }
 
-    public TipoReagente getTipo() { return tipo; }
-    public void setTipo(TipoReagente tipo) { this.tipo = tipo; }
+    public void setLote(String lote) {
+        this.lote = lote;
+    }
 
-    public UnidadeReagente getUnidadeReagente() { return unidadeReagente; }
-    public void setUnidadeReagente(UnidadeReagente unidadeReagente) { this.unidadeReagente = unidadeReagente; }
+    public boolean isControlado() {
+        return controlado;
+    }
 
-    public Integer getQtdFrascos() { return qtdFrascos; }
-    public void setQtdFrascos(Integer qtdFrascos) { this.qtdFrascos = qtdFrascos; }
+    public void setControlado(boolean controlado) {
+        this.controlado = controlado;
+    }
 
-    public Double getVolumePorFrasco() { return volumePorFrasco; }
-    public void setVolumePorFrasco(Double volumePorFrasco) { this.volumePorFrasco = volumePorFrasco; }
+    public String getNumeroControlado() {
+        return numeroControlado;
+    }
 
-    public List<MovimentacaoReagente> getMovimentacoes() { return movimentacoes; }
-    public void setMovimentacoes(List<MovimentacaoReagente> movimentacoes) { this.movimentacoes = movimentacoes; }
+    public void setNumeroControlado(String numeroControlado) {
+        this.numeroControlado = numeroControlado;
+    }
+
+    public LocalDate getDataValidade() {
+        return dataValidade;
+    }
+
+    public void setDataValidade(LocalDate dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public TipoReagente getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoReagente tipo) {
+        this.tipo = tipo;
+    }
+
+    public UnidadeReagente getUnidadeReagente() {
+        return unidadeReagente;
+    }
+
+    public void setUnidadeReagente(UnidadeReagente unidadeReagente) {
+        this.unidadeReagente = unidadeReagente;
+    }
+
+    public Integer getQtdFrascos() {
+        return qtdFrascos;
+    }
+
+    public void setQtdFrascos(Integer qtdFrascos) {
+        this.qtdFrascos = qtdFrascos;
+    }
+
+    public Double getVolumePorFrasco() {
+        return volumePorFrasco;
+    }
+
+    public void setVolumePorFrasco(Double volumePorFrasco) {
+        this.volumePorFrasco = volumePorFrasco;
+    }
+
+    public List<MovimentacaoReagente> getMovimentacoes() {
+        return movimentacoes;
+    }
+
+    public void setMovimentacoes(List<MovimentacaoReagente> movimentacoes) {
+        this.movimentacoes = movimentacoes;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Reagente reagente = (Reagente) o;
         return Objects.equals(id, reagente.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

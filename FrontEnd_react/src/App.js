@@ -24,6 +24,8 @@ import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro'
 
 
 import SelectAnaliseDaAmostra from './pages/components/SelectAnaliseDaAmostra';
+import ReposicaoReagentOverlay from './pages/components/ReposicaoReagentOverlay';
+
 
 import Perfil from './pages/Perfil';
 
@@ -58,6 +60,7 @@ function App() {
         <Route path="/analitoExistenteCadastro" element={<AnalitoExistenteCadastro />} />
 
         <Route path="/analiseAmostra" element={<SelectAnaliseDaAmostra />} />
+        <Route path="/reposicaoReagente" element={<ReposicaoReagentOverlay />} />
 
 
 
