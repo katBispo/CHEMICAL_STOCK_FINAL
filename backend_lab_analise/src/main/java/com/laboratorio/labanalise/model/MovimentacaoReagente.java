@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
 import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +19,7 @@ import com.laboratorio.labanalise.model.enums.*;
 
 @Entity
 @Table(name = "MOVIMENTACAO_REAGENTE")
+@EntityListeners(AuditingEntityListener.class)
 public class MovimentacaoReagente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +31,7 @@ public class MovimentacaoReagente {
     private Reagente reagente;
 
     @Column(nullable = false)
-    private LocalDate dataMovimentacao;
+    private LocalDate dataMovimentacao = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,6 +45,7 @@ public class MovimentacaoReagente {
 
     @Column(nullable = true)
     private String motivo; // Opcional: Exemplo "Uso em experimento X"
+
 
     public Long getId() {
         return id;
@@ -79,6 +85,7 @@ public class MovimentacaoReagente {
 
     public void setQuantidadeAlterada(Double quantidadeAlterada) {
         this.quantidadeAlterada = quantidadeAlterada;
+        
     }
 
     public Double getQuantidadeFinal() {

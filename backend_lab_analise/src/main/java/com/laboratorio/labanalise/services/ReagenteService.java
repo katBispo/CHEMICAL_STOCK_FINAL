@@ -18,13 +18,20 @@ public class ReagenteService {
     public ReagenteRepository repository;
 
     @Autowired
-    private MovimentacaoReagenteRepository movimentacaoReagenteRepository;
+    private MovimentacaoReagenteService movimentacaoReagenteService; 
 
     public Reagente salvar(Reagente reagente) {
         // Salvar o reagente primeiro
         reagente = repository.save(reagente);
-
+        movimentacaoReagenteService.registrarEntrada(reagente);
+        
         // Criar a movimentação inicial de entrada
+      //  getMovimentacaoInicial(reagente);
+
+        return reagente;
+    }
+
+    /*private void getMovimentacaoInicial(Reagente reagente) {
         MovimentacaoReagente movimentacao = new MovimentacaoReagente();
         movimentacao.setReagente(reagente);
         movimentacao.setDataMovimentacao(LocalDate.now());
@@ -34,13 +41,11 @@ public class ReagenteService {
         movimentacao.setMotivo("Cadastro inicial");
 
         // Salvar a movimentação
-        movimentacaoReagenteRepository.save(movimentacao);
+        service.salvar(movimentacao);
 
         // Adicionar movimentação ao reagente para manter o relacionamento bidirecional
         reagente.getMovimentacoes().add(movimentacao);
-
-        return reagente;
-    }
+    }*/
 
     public void remover(Long id) {
         repository.deleteById(id);

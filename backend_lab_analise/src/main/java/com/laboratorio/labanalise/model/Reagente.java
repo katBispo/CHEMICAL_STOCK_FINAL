@@ -61,15 +61,15 @@ public class Reagente implements Serializable {
 
     // Relacionamento com movimentações (histórico de estoque)
     @OneToMany(mappedBy = "reagente", cascade = CascadeType.PERSIST, orphanRemoval = true)
-   // @JsonIgnore
+    // @JsonIgnore
     private List<MovimentacaoReagente> movimentacoes;
 
     @CreatedBy
-    @Column(length = 50,updatable = false)
+    @Column(length = 50, updatable = false)
     private String cadastradoPor;
 
     @LastModifiedBy
-    @Column(length = 50,updatable = false)
+    @Column(length = 50, updatable = false)
     private String atualizadoPor;
 
     @LastModifiedDate
@@ -77,13 +77,23 @@ public class Reagente implements Serializable {
     @LastModifiedDate
     private Instant atualizadoEm = Instant.now();
 
-
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeAtual() {
         return movimentacoes.stream()
                 .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
                 .reduce((first, second) -> second) // Pega o último registro
                 .orElse(0.0);
+    }
+    @Column
+    private Integer quantidadeTotalVolume;
+    
+
+    public Integer getQuantidadeTotalVolume() {
+        return quantidadeTotalVolume;
+    }
+
+    public void setQuantidadeTotalVolume(Integer quantidadeTotalVolume) {
+        this.quantidadeTotalVolume = quantidadeTotalVolume;
     }
 
     // Getters e Setters
