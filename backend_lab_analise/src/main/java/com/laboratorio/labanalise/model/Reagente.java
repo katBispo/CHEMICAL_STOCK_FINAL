@@ -2,15 +2,22 @@ package com.laboratorio.labanalise.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.enums.*;
 
 @Entity
 @Table(name = "REAGENTE")
+@EntityListeners(AuditingEntityListener.class)
 public class Reagente implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -56,6 +63,20 @@ public class Reagente implements Serializable {
     @OneToMany(mappedBy = "reagente", cascade = CascadeType.PERSIST, orphanRemoval = true)
    // @JsonIgnore
     private List<MovimentacaoReagente> movimentacoes;
+
+    @CreatedBy
+    @Column(length = 50,updatable = false)
+    private String cadastradoPor;
+
+    @LastModifiedBy
+    @Column(length = 50,updatable = false)
+    private String atualizadoPor;
+
+    @LastModifiedDate
+    private Instant criadoEm = Instant.now();
+    @LastModifiedDate
+    private Instant atualizadoEm = Instant.now();
+
 
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeAtual() {

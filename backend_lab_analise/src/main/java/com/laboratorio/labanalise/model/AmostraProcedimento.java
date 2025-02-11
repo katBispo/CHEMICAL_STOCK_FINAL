@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.pk.AmostraProcedimentoPK;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -22,6 +23,7 @@ public class AmostraProcedimento implements Serializable {
     public AmostraProcedimento() {
     }
 
+    @JsonIgnore
     public Amostra getAmostra() {
         return this.id.getAmostra();
     }
@@ -29,7 +31,7 @@ public class AmostraProcedimento implements Serializable {
     public void setAmostra(Amostra amostra) {
         this.id.setAmostra(amostra);
     }
-
+    @JsonIgnore
     public Procedimento getProcedimento() {
         return this.id.getProcedimento();
     }

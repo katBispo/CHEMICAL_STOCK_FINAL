@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.enums.*;
 
 
@@ -19,8 +20,9 @@ public class MovimentacaoReagente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reagente_id", nullable = false)
+    @JsonIgnore
     private Reagente reagente;
 
     @Column(nullable = false)
