@@ -68,4 +68,5 @@ public class ReagenteUsadoProcedimento implements Serializable {
     public void setQuantidade(Double quantidade) {
         this.quantidade = quantidade;
     }
+
 }
