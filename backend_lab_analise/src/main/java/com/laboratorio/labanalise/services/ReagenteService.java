@@ -15,7 +15,7 @@ public class ReagenteService {
     public ReagenteRepository repository;
 
     @Autowired
-    private MovimentacaoReagenteService movimentacaoReagenteService; 
+    private MovimentacaoReagenteService movimentacaoReagenteService;
 
     public Reagente salvar(Reagente reagente) {
         reagente = repository.save(reagente);
@@ -26,8 +26,12 @@ public class ReagenteService {
     @Transactional
     public Reagente atualizarReagente(Long id, Reagente reagenteNovo) {
         Reagente reagente = repository.findById(id).orElse(null);
-        atualizarDados(reagente,reagenteNovo);
-        movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente,reagenteNovo);
+        atualizarDados(reagente, reagenteNovo);
+        if (reagenteNovo.getQuantidadeDeFrascos() > reagente.getQuantidadeDeFrascos()) {
+            movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente, reagenteNovo);
+        } else {
+            movimentacaoReagenteService.registrarMovimentacaoDeSaida(reagente, reagenteNovo);
+        }
         return repository.save(reagente);
     }
 

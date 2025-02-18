@@ -80,7 +80,8 @@ public class Reagente implements Serializable {
     private Instant atualizadoEm = Instant.now();
     @Column
     private Double quantidadeTotal;
-    @Column private Double quantidadeAtual;
+    @Column
+    private Double quantidadeAtual;
 
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeTotal() {
