@@ -2,6 +2,7 @@ package com.laboratorio.labanalise.services;
 
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.repositories.ReagenteRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class ReagenteService {
         return reagente;
     }
 
+    @Transactional
     public Reagente atualizarReagente(Long id, Reagente reagenteNovo) {
         Reagente reagente = repository.findById(id).orElse(null);
         atualizarDados(reagente,reagenteNovo);

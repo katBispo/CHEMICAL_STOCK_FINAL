@@ -27,5 +27,45 @@ public class ReagenteUsadoProcedimento implements Serializable {
     @Column(nullable = false)
     private Double quantidade;  // Quantidade usada, por exemplo, 10 ml, 20 mg, etc.
 
-    // Getters e Setters
+    public ReagenteUsadoProcedimento(Reagente reagente, Procedimento procedimento, Double quantidade) {
+        this.reagente = reagente;
+        this.procedimento = procedimento;
+        this.quantidade = quantidade;
+    }
+
+    public ReagenteUsadoProcedimento(){
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Reagente getReagente() {
+        return reagente;
+    }
+
+    public void setReagente(Reagente reagente) {
+        this.reagente = reagente;
+    }
+
+    public Procedimento getProcedimento() {
+        return procedimento;
+    }
+
+    public void setProcedimento(Procedimento procedimento) {
+        this.procedimento = procedimento;
+    }
+
+    public Double getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Double quantidade) {
+        this.quantidade = quantidade;
+    }
 }
