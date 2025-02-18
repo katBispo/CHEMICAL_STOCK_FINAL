@@ -23,8 +23,10 @@ public class ReagenteController {
     @PostMapping
     public ResponseEntity<Reagente> salvarReagente(@RequestBody Reagente reagente) {
         reagente = service.salvar(reagente);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(reagente.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(reagente.getId())
+                .toUri();
         return ResponseEntity.created(uri).body(reagente);
     }
 
@@ -47,12 +49,18 @@ public class ReagenteController {
         return ResponseEntity.ok().body(tipos);
     }
 
-     // Novo endpoint para listar unidades de medida dos reagentes
+    // Novo endpoint para listar unidades de medida dos reagentes
     @GetMapping("/unidades")
     public ResponseEntity<List<String>> listarUnidadesReagente() {
         List<String> unidades = Arrays.stream(UnidadeReagente.values())
-                                      .map(Enum::name)
-                                      .toList();
+                .map(Enum::name)
+                .toList();
         return ResponseEntity.ok().body(unidades);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Reagente> atualizarReagente(@PathVariable(value = "id") Long id, @RequestBody Reagente reagente) {
+        service.atualizarReagente(id, reagente);
+        return ResponseEntity.noContent().build();
     }
 }

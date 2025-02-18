@@ -33,8 +33,8 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
   const [dataValidade, setDataValidade] = useState('');
   const [controlado, setControlado] = useState('não');
   const [numeroControlado, setNumeroControlado] = useState('');
-  const [qtdFrascos, setQtdFrascos] = useState('');
-  const [volumePorFrasco, setVolumePorFrasco] = useState('');
+  const [quantidadeDeFrascos, setquantidadeDeFrascos] = useState('');
+  const [quantidadePorFrasco, setquantidadePorFrasco] = useState('');
   const [selectedTipoReagente, setSelectedTipoReagente] = useState('');
   const [selectedUnidade, setSelectedUnidade] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -70,8 +70,8 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
           dataValidade,
           controlado: controlado === 'sim',
           numeroControlado: controlado === 'sim' ? numeroControlado : null,
-          qtdFrascos: Number(qtdFrascos),
-          volumePorFrasco: Number(volumePorFrasco),
+          quantidadeDeFrascos: Number(quantidadeDeFrascos),
+          quantidadePorFrasco: Number(quantidadePorFrasco),
       });
   };
   const toggleDrawer = () => setDrawerOpen(!drawerOpen);
@@ -226,8 +226,8 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
                                 variant="outlined"
                                 type="number"
                                 fullWidth
-                                value={qtdFrascos}
-                                onChange={(e) => setQtdFrascos(e.target.value)}
+                                value={quantidadeDeFrascos}
+                                onChange={(e) => setquantidadeDeFrascos(e.target.value)}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -236,8 +236,8 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
                                 variant="outlined"
                                 type="number"
                                 fullWidth
-                                value={volumePorFrasco}
-                                onChange={(e) => setVolumePorFrasco(e.target.value)}
+                                value={quantidadePorFrasco}
+                                onChange={(e) => setquantidadePorFrasco(e.target.value)}
                             />
                         </Grid>
                     </Grid>

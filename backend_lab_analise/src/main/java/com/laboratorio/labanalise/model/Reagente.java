@@ -1,19 +1,21 @@
 package com.laboratorio.labanalise.model;
 
+import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
+import com.laboratorio.labanalise.model.enums.TipoReagente;
+import com.laboratorio.labanalise.model.enums.UnidadeReagente;
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.laboratorio.labanalise.model.enums.*;
+import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "REAGENTE")
@@ -53,11 +55,11 @@ public class Reagente implements Serializable {
 
     // Quantidade de frascos (ex: 10 frascos de 500mL)
     @Column(nullable = false)
-    private Integer qtdFrascos;
+    private Integer quantidadeDeFrascos;
 
     // Quantidade de conteúdo por frasco (ex: 500mL por frasco)
     @Column(nullable = false)
-    private Double volumePorFrasco;
+    private Double quantidadePorFrasco;
 
     // Relacionamento com movimentações (histórico de estoque)
     @OneToMany(mappedBy = "reagente", cascade = CascadeType.PERSIST, orphanRemoval = true)
@@ -76,24 +78,41 @@ public class Reagente implements Serializable {
     private Instant criadoEm = Instant.now();
     @LastModifiedDate
     private Instant atualizadoEm = Instant.now();
+    @Column
+    private Double quantidadeTotal;
+    @Column Double quantidadeAtual;
 
     // Método para calcular o estoque atual com base nas movimentações
-    public Double getQuantidadeAtual() {
-        return movimentacoes.stream()
+    public Double getQuantidadeTotal() {
+        /*return movimentacoes.stream()
                 .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
                 .reduce((first, second) -> second) // Pega o último registro
-                .orElse(0.0);
-    }
-    @Column
-    private Integer quantidadeTotalVolume;
-    
+                .orElse(0.0);*/
+        Double entrada = Optional.ofNullable(movimentacoes)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.ENTRADA))
+                .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
+                .sum();
 
-    public Integer getQuantidadeTotalVolume() {
-        return quantidadeTotalVolume;
+        Double saida = Optional.ofNullable(movimentacoes)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.SAIDA))
+                .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
+                .sum();
+        entrada = Optional.ofNullable(entrada).orElse(0.0);
+        saida = Optional.ofNullable(saida).orElse(0.0);
+        return entrada - saida;
     }
 
-    public void setQuantidadeTotalVolume(Integer quantidadeTotalVolume) {
-        this.quantidadeTotalVolume = quantidadeTotalVolume;
+    public Double getQuantidadeAtual() {
+        Double quantidade = this.quantidadeDeFrascos * this.quantidadePorFrasco;
+        return quantidade;
+    }
+
+    public void setQuantidadeAtual(Double quantidadeAtual) {
+        this.quantidadeTotal = quantidadeAtual;
     }
 
     // Getters e Setters
@@ -169,20 +188,20 @@ public class Reagente implements Serializable {
         this.unidadeReagente = unidadeReagente;
     }
 
-    public Integer getQtdFrascos() {
-        return qtdFrascos;
+    public Integer getQuantidadeDeFrascos() {
+        return quantidadeDeFrascos;
     }
 
-    public void setQtdFrascos(Integer qtdFrascos) {
-        this.qtdFrascos = qtdFrascos;
+    public void setQuantidadeDeFrascos(Integer qtdFrascos) {
+        this.quantidadeDeFrascos = qtdFrascos;
     }
 
-    public Double getVolumePorFrasco() {
-        return volumePorFrasco;
+    public Double getQuantidadePorFrasco() {
+        return quantidadePorFrasco;
     }
 
-    public void setVolumePorFrasco(Double volumePorFrasco) {
-        this.volumePorFrasco = volumePorFrasco;
+    public void setQuantidadePorFrasco(Double volumePorFrasco) {
+        this.quantidadePorFrasco = volumePorFrasco;
     }
 
     public List<MovimentacaoReagente> getMovimentacoes() {

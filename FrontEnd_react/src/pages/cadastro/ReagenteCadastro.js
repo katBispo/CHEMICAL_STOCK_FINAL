@@ -50,8 +50,8 @@ function ReagenteCadastro({ open, handleClose }) {
     const [unidadesReagentes, setUnidadesReagentes] = useState([]);
 
 
-    const [qtdFrascos, setQtdFrascos] = useState('');
-    const [volumePorFrasco, setVolumePorFrasco] = useState('');
+    const [quantidadeDeFrascos, setQuantidadeDeFrascos] = useState('');
+    const [quantidadePorFrasco, setQuantidadePorFrasco] = useState('');
 
 
     useEffect(() => {
@@ -93,8 +93,8 @@ function ReagenteCadastro({ open, handleClose }) {
             tipo: selectedTipoReagente,
 
             unidadeReagente: selectedUnidade, // Unidade do reagente (g, mL, etc.)
-            qtdFrascos: Number(qtdFrascos),  // Converte para número
-            volumePorFrasco: Number(volumePorFrasco) // Converte para número
+            quantidadeDeFrascos: Number(quantidadeDeFrascos),  // Converte para número
+            quantidadePorFrasco: Number(quantidadePorFrasco) // Converte para número
         };
 
         try {
@@ -270,8 +270,8 @@ function ReagenteCadastro({ open, handleClose }) {
                                     variant="outlined"
                                     type="number"
                                     fullWidth
-                                    value={qtdFrascos}
-                                    onChange={(e) => setQtdFrascos(e.target.value)}
+                                    value={quantidadeDeFrascos}
+                                    onChange={(e) => setQuantidadeDeFrascos(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={6}>
@@ -280,8 +280,8 @@ function ReagenteCadastro({ open, handleClose }) {
                                     variant="outlined"
                                     type="number"
                                     fullWidth
-                                    value={volumePorFrasco}
-                                    onChange={(e) => setVolumePorFrasco(e.target.value)}
+                                    value={quantidadePorFrasco}
+                                    onChange={(e) => setQuantidadePorFrasco(e.target.value)}
                                 />
                             </Grid>
                             {/* Reagente Controlado */}
