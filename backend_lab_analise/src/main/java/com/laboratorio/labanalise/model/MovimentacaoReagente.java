@@ -1,20 +1,11 @@
 package com.laboratorio.labanalise.model;
 
-import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-
-import java.util.HashSet;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.laboratorio.labanalise.model.enums.*;
+import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
+import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 
 
 @Entity
@@ -85,7 +76,7 @@ public class MovimentacaoReagente {
 
     public void setQuantidadeAlterada(Double quantidadeAlterada) {
         this.quantidadeAlterada = quantidadeAlterada;
-        
+
     }
 
     public Double getQuantidadeFinal() {
@@ -106,6 +97,4 @@ public class MovimentacaoReagente {
 
 
 
-
-    
 }
