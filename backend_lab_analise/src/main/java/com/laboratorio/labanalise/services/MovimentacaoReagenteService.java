@@ -68,7 +68,7 @@ public class MovimentacaoReagenteService {
         movimentacaoReagenteSaida.setDataMovimentacao(LocalDate.now());
         movimentacaoReagenteSaida.setQuantidadeAlterada(quantidadeSaida);
         movimentacaoReagenteSaida.setQuantidadeFinal(reagente.getQuantidadeAtual() - quantidadeSaida);
-        movimentacaoReagenteSaida.setMotivo(motivo); // Definir um motivo para a saída
+        movimentacaoReagenteSaida.setMotivo(motivo);
 
         repository.save(movimentacaoReagenteSaida);
     }
