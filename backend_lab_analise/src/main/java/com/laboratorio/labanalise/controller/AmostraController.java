@@ -35,57 +35,43 @@ public class AmostraController {
 
     @Autowired
     private ProcedimentoService procedimentoService;
-
     @PostMapping
     public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
-        if (amostra.getAnalise() == null) {
-            return ResponseEntity.badRequest().body(null); // Retorna 400 se não tiver análise
+        if (amostra.getAnalise() == null || amostra.getAnalise().getId() == null) {
+            return ResponseEntity.badRequest().body(null); // Retorna 400 se não tiver análise associada
         }
-
-        // Verificar se a análise existe no banco
+    
+        // Buscar a análise no banco
         Analise analise = analiseService.buscarPorId(amostra.getAnalise().getId());
         if (analise == null) {
             return ResponseEntity.badRequest().body(null);
         }
-
+    
+        // Associar a análise à amostra
         amostra.setAnalise(analise);
-
+    
         // Verificar e associar Analitos
         if (amostra.getAnalitos() != null && !amostra.getAnalitos().isEmpty()) {
             List<Long> idsAnalitos = amostra.getAnalitos().stream()
                     .map(Analito::getId)
                     .collect(Collectors.toList());
             List<Analito> analitosAssociados = analitoService.buscarAnalitosPorIds(idsAnalitos);
-
+    
             // Adiciona a amostra nos analitos (evita problema de não persistir a relação)
             for (Analito analito : analitosAssociados) {
                 analito.getAmostras().add(amostra);
             }
-
+    
             amostra.setAnalitos(analitosAssociados);
         }
-
-        /*
-        // Verificar e associar Procedimentos (nova parte adicionada)
-        if (amostra.getProcedimentos() != null && !amostra.getProcedimentos().isEmpty()) {
-            List<Long> idsProcedimentos = amostra.getProcedimentos().stream()
-                    .map(Procedimento::getId)
-                    .collect(Collectors.toList());
-            List<Procedimento> procedimentosAssociados = procedimentoService.buscarPorIds(idsProcedimentos);
-
-            // Adiciona a amostra nos procedimentos (evita problema de não persistir a
-            // relação)
-            for (Procedimento procedimento : procedimentosAssociados) {
-                procedimento.getAmostras().add(amostra);
-            }
-
-            amostra.setProcedimentos(procedimentosAssociados);
-        }
-        */
-
-        // Salva a amostra
+    
+        // Salvar a amostra
         amostra = service.salvar(amostra);
-
+    
+        // Adicionar a amostra à lista da análise e salvar a análise
+        analise.getAmostras().add(amostra);
+        analiseService.salvar(analise);
+    
         // Retorna a amostra criada com status 201 (Created)
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -93,6 +79,7 @@ public class AmostraController {
                 .toUri();
         return ResponseEntity.created(uri).body(amostra);
     }
+    
 
     @GetMapping
     public ResponseEntity<List<Amostra>> listarAmostras() {

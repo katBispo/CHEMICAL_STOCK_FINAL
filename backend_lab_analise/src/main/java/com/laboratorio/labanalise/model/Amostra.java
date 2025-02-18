@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.laboratorio.labanalise.model.enums.StatusAmostra;
 import jakarta.persistence.*;
 
@@ -68,6 +69,7 @@ public class Amostra implements Serializable {
             name = "ID_ANALISE",
             nullable = true//setar como false dps
     )
+    @JsonBackReference
     private Analise analise;
 
     public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta, LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {

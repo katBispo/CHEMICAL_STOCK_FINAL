@@ -2,6 +2,7 @@ import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import React, { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
+import Checkbox from '@mui/material/Checkbox';
 import SideBar from '../components/SideBar';
 import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailOverlay';
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
@@ -31,10 +32,10 @@ const AmostraLista = () => {
 
     const [selectedAmostra, setSelectedAmostra] = useState(null); // Amostra selecionada
     const [open, setOpen] = useState(false);
-    
+
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [amostraToEdit, setAmostraToEdit] = useState(null);
-    
+
     const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
 
     const handleOpenDeleteOverlay = (amostra) => {
@@ -46,58 +47,103 @@ const AmostraLista = () => {
         setOpenDeleteOverlay(false);
         setSelectedAmostra(null);
     };
+    const [selectedAmostras, setSelectedAmostras] = useState([]);
+
+    const handleCheckboxChange = (amostraId) => {
+        setSelectedAmostras((prevSelected) => {
+            if (prevSelected.includes(amostraId)) {
+                // Desmarcar
+                return prevSelected.filter((id) => id !== amostraId);
+            } else {
+                // Marcar
+                return [...prevSelected, amostraId];
+            }
+        });
+    };
+    const [selectedRows, setSelectedRows] = useState([]);
+
+    // Exemplo de como selecionar uma amostra
+    const handleSelectRow = (id) => {
+        setSelectedAmostras(prevSelected => {
+            if (prevSelected.includes(id)) {
+                return prevSelected.filter(selectedId => selectedId !== id);
+            } else {
+                return [...prevSelected, id];
+            }
+        });
+    };
+
+
+    const handleSelectAll = () => {
+        if (selectedRows.length === amostras.length) {
+            setSelectedRows([]);
+        } else {
+            setSelectedRows(amostras.map((amostra) => amostra.id));
+        }
+    };
+
+
 
     const handleDeleteAmostra = async (id) => {
-        // Faz a requisição para deletar a análise
         const response = await fetch(`http://localhost:8080/amostra/${id}`, {
             method: 'DELETE',
         });
 
         if (response.ok) {
             console.log('Amostra excluída com sucesso');
-            
+            setAmostras(prevAmostras => prevAmostras.filter(amostra => amostra.id !== id)); // Remove da lista local
         } else {
             console.error('Erro ao excluir a amostra');
         }
 
-        // Fecha o overlay após a exclusão ou erro
         handleCloseDeleteOverlay();
     };
 
 
+
     // Função para abrir o modal
     const handleOpen = () => setOpen(true);
-    
+
     // Função para fechar o modal
     const handleClose = () => setOpen(false);
-    
+
     const handleEditClick = (amostra) => {
         setAmostraToEdit(amostra);
         setEditOverlayOpen(true);
     };
-    
+
+
+
     useEffect(() => {
         // Função para buscar as amostras do backend
         const fetchAmostras = async () => {
             try {
-                const response = await fetch('http://localhost:8080/amostra'); // Certifique-se de que a URL está correta
+                const response = await fetch('http://localhost:8080/amostra');
                 const data = await response.json();
+                console.log("Amostras carregadas:", data); // Verifique o formato no console
+
                 setAmostras(data);
             } catch (error) {
                 console.error('Erro ao buscar amostras:', error);
             }
         };
-    
+
+        // Função para buscar as análises do backend
+
+
+        // Chamando ambas as funções de busca
         fetchAmostras();
+        //fetchAnalises();
     }, []);
-    
+
+
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
-    
+
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
-    
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'CONCLUIDA':
@@ -110,7 +156,7 @@ const AmostraLista = () => {
                 return { backgroundColor: 'gray', color: '#fff' }; // Cor padrão para status desconhecido
         }
     };
-    
+
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -123,18 +169,18 @@ const AmostraLista = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
-    
+
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
-    
+
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
                 <Toolbar />
-    
+
                 <Box textAlign="center" mt={2} mb={2}>
                     <Typography variant="h4" component="h1" fontWeight="bold">
                         Lista de Amostras
                     </Typography>
                 </Box>
-    
+
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Button
                         variant="contained"
@@ -145,13 +191,36 @@ const AmostraLista = () => {
                     >
                         Cadastrar Amostra
                     </Button>
+
+                    <Button
+                        variant="contained"
+                        color="error"
+                        style={{ textTransform: 'none', fontWeight: 'bold' }}
+                        onClick={() => {
+                            selectedAmostras.forEach(amostraId => {
+                                handleDeleteAmostra(amostraId); // Exclui as amostras selecionadas
+                            });
+                        }}
+                    >
+                        Excluir Selecionados
+                    </Button>
+
+
                 </Box>
-    
+
                 <Box display="flex" justifyContent="space-around" mt={2}>
                     <TableContainer component={Paper} style={{ marginTop: '20px', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
                         <Table>
                             <TableHead>
                                 <TableRow style={{ backgroundColor: '#4CAF50' }}>
+                                    {/* Adiciona a coluna de checkbox */}
+                                    <TableCell style={{ textAlign: 'center' }}>
+                                        <Checkbox
+                                            checked={selectedRows.length === amostras.length}
+                                            onChange={handleSelectAll}
+                                            color="primary"
+                                        />
+                                    </TableCell>
                                     {['Nome', 'Prazo Finalização', 'Endereço', 'Análise', 'Status', 'Ações'].map((header) => (
                                         <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
                                             {header}
@@ -167,6 +236,14 @@ const AmostraLista = () => {
                                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
                                     >
+                                        {/* Checkbox para cada linha */}
+                                        <TableCell style={{ textAlign: 'center' }}>
+                                            <Checkbox
+                                                checked={selectedRows.includes(amostra.id)}
+                                                onChange={() => handleSelectRow(amostra.id)}
+                                                color="primary"
+                                            />
+                                        </TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.nome}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
@@ -190,7 +267,7 @@ const AmostraLista = () => {
                                                 {amostra.status}
                                             </Box>
                                         </TableCell>
-    
+
                                         <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
                                             <IconButton onClick={() => { handleOpen(); setSelectedAmostra(amostra); }}>
                                                 <FaEye style={{ color: '#666', fontSize: '18px' }} />
@@ -204,8 +281,8 @@ const AmostraLista = () => {
                                         </TableCell>
                                     </TableRow>
                                 ))}
-    
-                                {/* Verifique se `selectedAmostra` está definido antes de renderizar o modal */}
+
+                                {/* Modais de detalhes e edição */}
                                 {selectedAmostra && (
                                     <AmostraDetailOverlay
                                         open={open}
@@ -213,13 +290,13 @@ const AmostraLista = () => {
                                         amostra={selectedAmostra} // Passa a amostra selecionada para o modal
                                     />
                                 )}
-    
+
                                 <AmostraEditOverlay
                                     open={editOverlayOpen}
                                     onClose={() => setEditOverlayOpen(false)}
                                     amostra={amostraToEdit}
                                 />
-                                    {selectedAmostra && (
+                                {selectedAmostra && (
                                     <AmostraExcluirOverlay
                                         open={openDeleteOverlay}
                                         onClose={handleCloseDeleteOverlay}
@@ -227,7 +304,7 @@ const AmostraLista = () => {
                                         amostra={selectedAmostra}
                                     />
                                 )}
-                                
+
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -235,7 +312,6 @@ const AmostraLista = () => {
             </Box>
         </Box>
     );
-    };
-    
-    export default AmostraLista;
-    
+};
+
+export default AmostraLista;

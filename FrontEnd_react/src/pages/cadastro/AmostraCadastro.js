@@ -127,7 +127,7 @@ function AmostraCadastro({ }) {
                     subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
                 })),
             })),
-            analise: selectedAnalise,  // Passando o objeto completo da análise
+            analise: { id: selectedAnalise.id },  // Passando apenas o ID da análise
             coordenadaColeta, // Usar diretamente a string "latitude;longitude"
 
             analitos: selectedAnalitos.map((analito) => ({

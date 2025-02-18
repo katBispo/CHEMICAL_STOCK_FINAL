@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.laboratorio.labanalise.model.enums.StatusAnalise;
 import jakarta.persistence.*;
 
@@ -39,6 +40,7 @@ public class Analise implements Serializable {
     private Matriz matriz;
 
     @OneToMany(mappedBy = "analise")
+    @JsonManagedReference
     private List<Amostra> amostras = new ArrayList<>();
 
     @ManyToOne
@@ -139,6 +141,13 @@ public class Analise implements Serializable {
 
     public void setContrato(Contrato contrato) {
         this.contrato = contrato;
+    }
+    public List<Amostra> getAmostras() {
+        return amostras;
+    }
+    
+    public void setAmostras(List<Amostra> amostras) {
+        this.amostras = amostras;
     }
 
     @Override
