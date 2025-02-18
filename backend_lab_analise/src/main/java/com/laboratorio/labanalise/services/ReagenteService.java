@@ -27,12 +27,16 @@ public class ReagenteService {
     public Reagente atualizarReagente(Long id, Reagente reagenteNovo) {
         Reagente reagente = repository.findById(id).orElse(null);
         atualizarDados(reagente, reagenteNovo);
+        registrarMovimentacao(reagenteNovo, reagente);
+        return repository.save(reagente);
+    }
+
+    private void registrarMovimentacao(Reagente reagenteNovo, Reagente reagente) {
         if (reagenteNovo.getQuantidadeDeFrascos() > reagente.getQuantidadeDeFrascos()) {
             movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente, reagenteNovo);
         } else {
             movimentacaoReagenteService.registrarMovimentacaoDeSaida(reagente, reagenteNovo);
         }
-        return repository.save(reagente);
     }
 
     private void atualizarDados(Reagente reagente, Reagente reagenteNovo) {
