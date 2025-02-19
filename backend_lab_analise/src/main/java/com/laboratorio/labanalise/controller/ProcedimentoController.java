@@ -2,16 +2,15 @@ package com.laboratorio.labanalise.controller;
 
 
 import com.laboratorio.labanalise.model.Procedimento;
+import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.services.ProcedimentoService;
+import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -23,12 +22,27 @@ public class ProcedimentoController {
     @Autowired
     private ProcedimentoService service;
 
+    @Autowired
+    private ReagenteService reagenteService;
+
     // Endpoint para salvar o procedimento
     @PostMapping
-    public ResponseEntity<Procedimento> salvarProcedimento(
+    public ResponseEntity<Procedimento> salvar(@RequestBody Procedimento procedimento, @RequestParam Long id, @RequestParam Double quantidade) {
+        Reagente reagente = reagenteService.buscarPorId(id);
+        procedimento = service.salvar(procedimento, reagente, quantidade);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(procedimento.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(procedimento);
+    }
+    /*public ResponseEntity<Procedimento> salvarProcedimento(
             @RequestParam("nomeProcedimento") String nomeProcedimento,
             @RequestParam("descricaoProcedimento") String descricaoProcedimento,
-            @RequestParam("pdfFile") MultipartFile pdfFile) {
+            @RequestParam("pdfFile") MultipartFile pdfFile,
+            @RequestParam("reagenteId") Long reagenteId,
+            @RequestParam("quantidadeReagente") Double quantidadeReagente) {
         try {
             // Verificar se o arquivo PDF não está vazio
             if (pdfFile.isEmpty()) {
@@ -42,18 +56,24 @@ public class ProcedimentoController {
             Procedimento procedimento = new Procedimento(nomeProcedimento, descricaoProcedimento);
             procedimento.setPdfData(pdfData); // Salvando os dados do PDF no objeto
 
-            // Salvando o procedimento usando o serviço
-            procedimento = service.salvar(procedimento);
+            // Criando um objeto Reagente apenas com o ID
+            Reagente reagente = new Reagente();
+            reagente.setId(reagenteId);
+
+            // Chamando o serviço para salvar o procedimento e registrar a saída do reagente
+            Procedimento procedimentoSalvo = service.salvar(procedimento, reagente, quantidadeReagente);
 
             // Construindo a URI do novo procedimento criado
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(procedimento.getId()).toUri();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(procedimentoSalvo.getId())
+                    .toUri();
 
-            return ResponseEntity.created(uri).body(procedimento); // Retorna 201 com o procedimento salvo
+            return ResponseEntity.created(uri).body(procedimentoSalvo); // Retorna 201 com o procedimento salvo
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Retorna 500 em caso de erro
         }
-    }
+    }*/
 
     // Endpoint para listar todos os procedimentos
     @GetMapping
