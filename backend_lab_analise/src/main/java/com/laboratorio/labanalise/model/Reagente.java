@@ -78,15 +78,17 @@ public class Reagente implements Serializable {
     private Instant criadoEm = Instant.now();
     @LastModifiedDate
     private Instant atualizadoEm = Instant.now();
-
-    public void setQuantidadeTotal(Double quantidadeTotal) {
-        this.quantidadeTotal = quantidadeTotal;
-    }
-
     @Column
     private Double quantidadeTotal;
     @Column
     private Double quantidadeAtual;
+
+    public Reagente() {
+    }
+
+    public void setQuantidadeTotal(Double quantidadeTotal) {
+        this.quantidadeTotal = quantidadeTotal;
+    }
 
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeTotal() {
@@ -99,6 +101,7 @@ public class Reagente implements Serializable {
         Double saida = obtertTotalDeSaidas();
         entrada = Optional.ofNullable(entrada).orElse(0.0);
         saida = Optional.ofNullable(saida).orElse(0.0);
+
         return entrada - saida;
     }
 
@@ -127,12 +130,15 @@ public class Reagente implements Serializable {
         return quantidade;
     }
 
-    public void reduzirQuantidade(Double quantidade){
-        this.quantidadeTotal = this.quantidadeTotal - quantidade;
-    }
-
     public void setQuantidadeAtual(Double quantidadeAtual) {
         this.quantidadeTotal = quantidadeAtual;
+    }
+
+    public void reduzirQuantidade(Double quantidade) {
+        if(quantidade<this.quantidadeTotal)
+            this.quantidadeTotal = this.quantidadeTotal - quantidade;
+        else
+            throw new IllegalArgumentException("Estoque possui menos que a quantidade!");
     }
 
     // Getters e Setters

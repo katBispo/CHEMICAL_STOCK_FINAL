@@ -26,9 +26,9 @@ public class MovimentacaoReagenteService {
         return lista;
     }
 
-    public void registarMovimentacaoDeEntrada(Reagente reagente,Reagente novo) {
+    public void registarMovimentacaoDeEntrada(Reagente reagente, Reagente novo) {
         MovimentacaoReagente movimentacaoReagenteEntrada = new MovimentacaoReagente();
-        criarMovimentacaoEntrada(reagente,novo,movimentacaoReagenteEntrada);
+        criarMovimentacaoEntrada(reagente, novo, movimentacaoReagenteEntrada);
         repository.save(movimentacaoReagenteEntrada);
     }
 
@@ -46,19 +46,21 @@ public class MovimentacaoReagenteService {
         movimentacao.setQuantidadeAlterada(reagente.getQuantidadeAtual());
         movimentacao.setQuantidadeFinal(reagente.getQuantidadeAtual());
     }
+
     private void criarMovimentacaoEntrada(Reagente reagente, Reagente novo, MovimentacaoReagente movimentacao) {
         movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
         movimentacao.setReagente(reagente);
         movimentacao.setDataMovimentacao(LocalDate.now());
         movimentacao.setQuantidadeAlterada(reagente.getQuantidadeAtual());
-        movimentacao.setQuantidadeFinal(reagente.getQuantidadeAtual().doubleValue() + novo.getQuantidadeAtual());
+        movimentacao.setQuantidadeFinal(reagente.getQuantidadeAtual() + (novo.getQuantidadeAtual() - reagente.getQuantidadeAtual()));
     }
-    public void registrarMovimentacaoDeSaida(Reagente reagente, Reagente novo) {
-        if (novo.getQuantidadeDeFrascos() <= 0) {
+
+    public void registrarMovimentacaoDeSaida(Reagente reagente, Double quantidadeRemovida) {
+        if (quantidadeRemovida <= 0) {
             throw new IllegalArgumentException("A quantidade de saída deve ser maior que zero.");
         }
 
-        if (reagente.getQuantidadeAtual() <novo.getQuantidadeDeFrascos()) {
+        if (reagente.getQuantidadeTotal() < quantidadeRemovida) {
             throw new IllegalArgumentException("Quantidade insuficiente em estoque para saída.");
         }
 
@@ -66,34 +68,32 @@ public class MovimentacaoReagenteService {
         movimentacaoReagenteSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
         movimentacaoReagenteSaida.setReagente(reagente);
         movimentacaoReagenteSaida.setDataMovimentacao(LocalDate.now());
-        movimentacaoReagenteSaida.setQuantidadeAlterada(novo.getQuantidadeAtual());
-        movimentacaoReagenteSaida.setQuantidadeFinal(reagente.getQuantidadeAtual() -novo.getQuantidadeAtual());
+        movimentacaoReagenteSaida.setQuantidadeAlterada(quantidadeRemovida);
 
+        double novaQuantidade = Math.max(0, reagente.getQuantidadeTotal() - quantidadeRemovida);
+        movimentacaoReagenteSaida.setQuantidadeFinal(novaQuantidade);
 
         repository.save(movimentacaoReagenteSaida);
     }
-
-
-
-    /*
-    // Método para registrar a entrada de um reagente
-    public void registrarEntrada(Reagente reagente) {
-        // Verifica se a quantidade de frascos e volume por frasco é válida antes de realizar a movimentação
-        if (reagente.getQtdFrascos() > 0 && reagente.getVolumePorFrasco() > 0) {
-            MovimentacaoReagente movimentacaoReagente = new MovimentacaoReagente();
-            movimentacaoReagente.setReagente(reagente);
-            movimentacaoReagente.setQuantidadeAlterada(reagente.getQtdFrascos() * reagente.getVolumePorFrasco());
-            movimentacaoReagente.setQuantidadeFinal(movimentacaoReagente.getQuantidadeAlterada());
-            movimentacaoReagente.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-            movimentacaoReagente.setDataMovimentacao(java.time.LocalDate.now()); // Definindo a data da movimentação
-            movimentacaoReagente.setMotivo("Cadastro inicial");
-
-            // Salva a movimentação no banco de dados
-            salvar(movimentacaoReagente);
-        } else {
-            // Lógica de erro ou exceção se os dados forem inválidos
-            throw new IllegalArgumentException("Quantidade de frascos ou volume por frasco inválido.");
+    /*public void registrarMovimentacaoDeSaida(Reagente reagente, Reagente novo) {
+        if (novo.getQuantidadeTotal() <= 0) {
+            throw new IllegalArgumentException("A quantidade de saída deve ser maior que zero.");
         }
+
+        if (reagente.getQuantidadeTotal() < novo.getQuantidadeTotal()) {
+            throw new IllegalArgumentException("Quantidade insuficiente em estoque para saída.");
+        }
+
+        MovimentacaoReagente movimentacaoReagenteSaida = new MovimentacaoReagente();
+        movimentacaoReagenteSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+        movimentacaoReagenteSaida.setReagente(reagente);
+        movimentacaoReagenteSaida.setDataMovimentacao(LocalDate.now());
+        movimentacaoReagenteSaida.setQuantidadeAlterada(novo.getQuantidadeTotal());
+
+        double novaQuantidade = Math.max(0, reagente.getQuantidadeTotal() - novo.getQuantidadeTotal());
+        movimentacaoReagenteSaida.setQuantidadeFinal(novaQuantidade);
+
+        repository.save(movimentacaoReagenteSaida);
     }*/
 
 }

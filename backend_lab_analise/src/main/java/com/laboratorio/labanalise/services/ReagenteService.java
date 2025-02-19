@@ -32,11 +32,7 @@ public class ReagenteService {
     }
 
     private void registrarMovimentacao(Reagente reagenteNovo, Reagente reagente) {
-        if (reagenteNovo.getQuantidadeDeFrascos() > reagente.getQuantidadeDeFrascos()) {
-            movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente, reagenteNovo);
-        } else {
-            movimentacaoReagenteService.registrarMovimentacaoDeSaida(reagente, reagenteNovo);
-        }
+        movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente, reagenteNovo);
     }
 
     private void atualizarDados(Reagente reagente, Reagente reagenteNovo) {
@@ -47,23 +43,6 @@ public class ReagenteService {
         reagente.setLote(reagenteNovo.getLote());
         reagente.setQuantidadeAtual(reagenteNovo.getQuantidadeAtual());
     }
-
-
-    /*private void getMovimentacaoInicial(Reagente reagente) {
-        MovimentacaoReagente movimentacao = new MovimentacaoReagente();
-        movimentacao.setReagente(reagente);
-        movimentacao.setDataMovimentacao(LocalDate.now());
-        movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        movimentacao.setQuantidadeAlterada(reagente.getQtdFrascos() * reagente.getVolumePorFrasco());
-        movimentacao.setQuantidadeFinal(movimentacao.getQuantidadeAlterada()); // Primeira movimentação, então é o total
-        movimentacao.setMotivo("Cadastro inicial");
-
-        // Salvar a movimentação
-        service.salvar(movimentacao);
-
-        // Adicionar movimentação ao reagente para manter o relacionamento bidirecional
-        reagente.getMovimentacoes().add(movimentacao);
-    }*/
 
     public void remover(Long id) {
         repository.deleteById(id);

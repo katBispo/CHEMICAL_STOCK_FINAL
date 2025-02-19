@@ -26,8 +26,7 @@ public class ReagenteUsadoProcedimentoService {
 
     //todo
     public ReagenteUsadoProcedimento cadastrar(ReagenteUsadoProcedimento reagenteUsadoProcedimento) {
-      //  Reagente reagente = reagente
-        return null;
+       return repository.save(reagenteUsadoProcedimento);
     }
 
 
