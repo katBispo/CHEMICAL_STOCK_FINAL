@@ -78,6 +78,11 @@ public class Reagente implements Serializable {
     private Instant criadoEm = Instant.now();
     @LastModifiedDate
     private Instant atualizadoEm = Instant.now();
+
+    public void setQuantidadeTotal(Double quantidadeTotal) {
+        this.quantidadeTotal = quantidadeTotal;
+    }
+
     @Column
     private Double quantidadeTotal;
     @Column
@@ -89,27 +94,41 @@ public class Reagente implements Serializable {
                 .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
                 .reduce((first, second) -> second) // Pega o último registro
                 .orElse(0.0);*/
+        Double entrada = obterEntradas();
+
+        Double saida = obtertTotalDeSaidas();
+        entrada = Optional.ofNullable(entrada).orElse(0.0);
+        saida = Optional.ofNullable(saida).orElse(0.0);
+        return entrada - saida;
+    }
+
+    private Double obterEntradas() {
         Double entrada = Optional.ofNullable(movimentacoes)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.ENTRADA))
                 .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
                 .sum();
+        return entrada;
+    }
 
+    private Double obtertTotalDeSaidas() {
         Double saida = Optional.ofNullable(movimentacoes)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.SAIDA))
                 .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
                 .sum();
-        entrada = Optional.ofNullable(entrada).orElse(0.0);
-        saida = Optional.ofNullable(saida).orElse(0.0);
-        return entrada - saida;
+        return saida;
     }
 
     public Double getQuantidadeAtual() {
         Double quantidade = this.quantidadeDeFrascos * this.quantidadePorFrasco;
         return quantidade;
+    }
+
+    public void reduzirQuantidade(Double quantidade){
+        this.quantidadeTotal = this.quantidadeTotal - quantidade;
     }
 
     public void setQuantidadeAtual(Double quantidadeAtual) {

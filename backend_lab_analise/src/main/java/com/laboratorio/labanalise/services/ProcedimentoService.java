@@ -1,7 +1,10 @@
 package com.laboratorio.labanalise.services;
 
 import com.laboratorio.labanalise.model.Procedimento;
+import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
 import com.laboratorio.labanalise.repositories.ProcedimentoRepository;
+import com.laboratorio.labanalise.repositories.ReagenteUsadoProcedimentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +14,25 @@ import java.util.List;
 public class ProcedimentoService {
 
     @Autowired
-    public ProcedimentoRepository repository;
+    private ProcedimentoRepository repository;
 
-    public Procedimento salvar(Procedimento procedimento) {
-        return repository.save(procedimento);
+    @Autowired
+    private ReagenteUsadoProcedimentoRepository reagenteUsadoProcedimentoRepository;
+
+    @Autowired
+    private ReagenteService reagenteService;
+
+    public Procedimento salvar(Procedimento procedimento, Reagente reagente,Double quantidade) {
+        Reagente r = reagenteService.buscarPorId(reagente.getId());
+        ReagenteUsadoProcedimento reagenteUsadoProcedimento = new ReagenteUsadoProcedimento();
+        reagenteUsadoProcedimento.setReagente(r);
+        reagenteUsadoProcedimento.setProcedimento(procedimento);
+        reagenteUsadoProcedimento.setQuantidade(quantidade);
+        r.reduzirQuantidade(quantidade);
+        reagenteService.atualizarReagente(reagente.getId(),r);
+        repository.save(procedimento);
+        reagenteUsadoProcedimentoRepository.save(reagenteUsadoProcedimento);
+        return procedimento;
     }
 
     public void remover(Long id) {
