@@ -19,6 +19,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
 import FeedbackDialog from '../components/FeedbackDialog.js';
 import { useNavigate, useLocation } from 'react-router-dom';
+import "./css/baseCadastro.css"
 
 function AnaliseCadastro() {
 
@@ -179,8 +180,8 @@ function AnaliseCadastro() {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Box sx={{ display: "flex" }}>
+            <AppBar position="fixed" sx={{ bgcolor: "#4CAF50", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
                         <MenuIcon />
@@ -195,57 +196,37 @@ function AnaliseCadastro() {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
                 <Toolbar />
-                <Box
-                    sx={{
-                        backgroundColor: 'white',
-                        padding: '30px',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        maxWidth: '800px',
-                        marginLeft: '200px',
-                    }}
-                >
+                <Box className="cadastro-container">
                     <Typography variant="h4" gutterBottom>
                         Cadastrar Análise
                     </Typography>
 
-
-
-                    <form onSubmit={handleSubmit}>
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                    <form onSubmit={handleSubmit} className="cadastro-form">
+                        <div className="input-group">
                             <TextField
                                 label="Nome"
                                 required
                                 margin="normal"
-                                style={{ width: '350px' }}
+                                className="input-field"
                                 value={nome}
                                 onChange={(e) => setNome(e.target.value)}
                             />
                             <Autocomplete
                                 options={contracts}
-                                getOptionLabel={(option) => option.nomeContrato} // Ajusta conforme a estrutura do contrato
-                                onChange={(event, value) => setSelectedContract(value)} // Atualiza o contrato selecionado
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Contratos Associados"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '300px' }}
-                                    />
-                                )}
+                                getOptionLabel={(option) => option.nomeContrato}
+                                onChange={(event, value) => setSelectedContract(value)}
+                                renderInput={(params) => <TextField {...params} label="Contratos Associados" required margin="normal" className="input-field" />}
                             />
+                        </div>
 
-                        </Box>
-
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
+                        <div className="input-group">
                             <TextField
                                 label="Data de Início"
                                 type="date"
                                 required
                                 margin="normal"
                                 InputLabelProps={{ shrink: true }}
-                                style={{ width: '350px' }}
+                                className="input-field"
                                 value={dataInicio}
                                 onChange={(e) => setDataInicio(e.target.value)}
                             />
@@ -255,68 +236,58 @@ function AnaliseCadastro() {
                                 required
                                 margin="normal"
                                 InputLabelProps={{ shrink: true }}
-                                style={{ width: '300px' }}
+                                className="input-field"
                                 value={prazoFinalizacao}
                                 onChange={(e) => setPrazoFinalizacao(e.target.value)}
                             />
-                        </Box>
+                        </div>
 
-                        <Box display="flex" justifyContent="flex-start" gap={2}>
-
-
+                        <div className="input-group">
                             <TextField
                                 label="Quantidade de Amostras"
                                 required
                                 margin="normal"
-                                style={{ width: '300px' }}
-                                type="number" // Adicione isso para garantir que seja um número
+                                className="input-field"
+                                type="number"
                                 value={quantidadeAmostras}
-                                onChange={(e) => setQuantidadeAmostras(e.target.valueAsNumber)} // Use valueAsNumber para garantir que seja numérico
+                                onChange={(e) => setQuantidadeAmostras(e.target.valueAsNumber)}
                             />
                             <Autocomplete
                                 options={matrizes}
-                                getOptionLabel={(option) => option.nomeMatriz} // Acessa a propriedade correta da matriz
-                                onChange={(event, value) => setSelectedMatriz(value)} // Atualiza a matriz selecionada
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Matriz"
-                                        required
-                                        margin="normal"
-                                        style={{ width: '350px' }}
-                                    />
-                                )}
+                                getOptionLabel={(option) => option.nomeMatriz}
+                                onChange={(event, value) => setSelectedMatriz(value)}
+                                renderInput={(params) => <TextField {...params} label="Matriz" required margin="normal" className="input-field" />}
                             />
-                        </Box>
+                        </div>
+
                         <TextField
                             label="Descrição da Análise"
                             required
                             margin="normal"
-                            style={{ width: '350px' }}
-                            InputProps={{ style: { height: '100px' } }}
+                            className="input-field"
+                            InputProps={{ style: { height: "100px" } }}
                             value={descricaoGeral}
                             onChange={(e) => setDescricaoGeral(e.target.value)}
                         />
 
-                        <Box display="flex" justifyContent="center" marginTop={2}>
+                        <div className="button-container">
                             <Button variant="contained" type="submit">
                                 Salvar
                             </Button>
-                        </Box>
-
-                        <Dialog open={openAlertDialog} onClose={() => setOpenAlertDialog(false)}>
-                            <DialogTitle>Alerta</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    Para adicionar amostras posteriormente, não esqueça de adicionar o ID dessa análise.
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleAlertOk}>Ok</Button>
-                            </DialogActions>
-                        </Dialog>
+                        </div>
                     </form>
                 </Box>
+
+                <Dialog open={openAlertDialog} onClose={handleAlertOk}>
+                    <DialogTitle>Alerta</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>Para adicionar amostras posteriormente, não esqueça de adicionar o ID dessa análise.</DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleAlertOk}>Ok</Button>
+                    </DialogActions>
+                </Dialog>
+
                 <Dialog open={dialogOpen} onClose={handleCloseDialog}>
                     <DialogTitle>Sucesso</DialogTitle>
                     <DialogContent>Dados salvos com sucesso!</DialogContent>
@@ -332,3 +303,4 @@ function AnaliseCadastro() {
 }
 
 export default AnaliseCadastro;
+    
