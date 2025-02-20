@@ -22,7 +22,7 @@ import {
 } from '@mui/material';import { useNavigate } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
-import { listarReagentes,cadastrarReagente, obterTiposReagente, listarUnidadesReagente} from '../../services/reagenteService.js';
+import { listarReagentes,cadastrarReagente, obterTiposReagente, listarUnidadesReagente,atualizarReagente} from '../../services/reagenteService.js';
 
 const ReposicaoReagentOverlay = ({ onClose }) => {
   const [reagentes, setReagentes] = useState([]);
@@ -73,7 +73,7 @@ useEffect(() => {
         quantidadePorFrasco: Number(quantidadePorFrasco),
         dataValidade,
       };
-      await cadastrarReagente(reagenteAtualizado);  // Cadastro do reagente
+      await atualizarReagente(selectedReagente.id,reagenteAtualizado);  // Cadastro do reagente
      // onClose(); // Fecha o overlay após o sucesso
     }
   };
