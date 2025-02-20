@@ -42,6 +42,8 @@ public class ReagenteService {
         reagente.setQuantidadeDeFrascos(reagenteNovo.getQuantidadeDeFrascos());
         reagente.setLote(reagenteNovo.getLote());
         reagente.setQuantidadeAtual(reagenteNovo.getQuantidadeAtual());
+        //verifica abaixo
+        reagente.setQuantidadeTotal(reagenteNovo.getQuantidadeAtual() + reagente.getQuantidadeTotal()) ;
     }
 
     public void remover(Long id) {
