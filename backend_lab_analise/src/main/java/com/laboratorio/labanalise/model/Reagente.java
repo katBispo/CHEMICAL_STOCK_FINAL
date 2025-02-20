@@ -80,7 +80,15 @@ public class Reagente implements Serializable {
     private Instant atualizadoEm = Instant.now();
     @Column
     private Double quantidadeTotal;
-    @Column Double quantidadeAtual;
+    @Column
+    private Double quantidadeAtual;
+
+    public Reagente() {
+    }
+
+    public void setQuantidadeTotal(Double quantidadeTotal) {
+        this.quantidadeTotal = quantidadeTotal;
+    }
 
     // Método para calcular o estoque atual com base nas movimentações
     public Double getQuantidadeTotal() {
@@ -88,22 +96,33 @@ public class Reagente implements Serializable {
                 .mapToDouble(MovimentacaoReagente::getQuantidadeFinal)
                 .reduce((first, second) -> second) // Pega o último registro
                 .orElse(0.0);*/
+        Double entrada = obterEntradas();
+
+        Double saida = obtertTotalDeSaidas();
+        entrada = Optional.ofNullable(entrada).orElse(0.0);
+        saida = Optional.ofNullable(saida).orElse(0.0);
+
+        return entrada - saida;
+    }
+
+    private Double obterEntradas() {
         Double entrada = Optional.ofNullable(movimentacoes)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.ENTRADA))
                 .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
                 .sum();
+        return entrada;
+    }
 
+    private Double obtertTotalDeSaidas() {
         Double saida = Optional.ofNullable(movimentacoes)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(movimentacaoReagente -> movimentacaoReagente.getTipoMovimentacao().equals(TipoMovimentacao.SAIDA))
                 .mapToDouble(movimentacao -> movimentacao.getQuantidadeAlterada())
                 .sum();
-        entrada = Optional.ofNullable(entrada).orElse(0.0);
-        saida = Optional.ofNullable(saida).orElse(0.0);
-        return entrada - saida;
+        return saida;
     }
 
     public Double getQuantidadeAtual() {
@@ -113,6 +132,13 @@ public class Reagente implements Serializable {
 
     public void setQuantidadeAtual(Double quantidadeAtual) {
         this.quantidadeTotal = quantidadeAtual;
+    }
+
+    public void reduzirQuantidade(Double quantidade) {
+        if(quantidade<this.quantidadeTotal)
+            this.quantidadeTotal = this.quantidadeTotal - quantidade;
+        else
+            throw new IllegalArgumentException("Estoque possui menos que a quantidade!");
     }
 
     // Getters e Setters
