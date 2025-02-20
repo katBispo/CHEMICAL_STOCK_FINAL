@@ -18,6 +18,7 @@ public class ReagenteService {
     private MovimentacaoReagenteService movimentacaoReagenteService;
 
     public Reagente salvar(Reagente reagente) {
+
         reagente = repository.save(reagente);
         movimentacaoReagenteService.registrarMovimentacaoInicial(reagente);
         return reagente;
@@ -42,8 +43,7 @@ public class ReagenteService {
         reagente.setQuantidadeDeFrascos(reagenteNovo.getQuantidadeDeFrascos());
         reagente.setLote(reagenteNovo.getLote());
         reagente.setQuantidadeAtual(reagenteNovo.getQuantidadeAtual());
-        //verifica abaixo
-        reagente.setQuantidadeTotal(reagenteNovo.getQuantidadeAtual() + reagente.getQuantidadeTotal()) ;
+        reagente.setQuantidadeTotal(reagente.getQuantidadeTotal() + reagenteNovo.getQuantidadeAtual());
     }
 
     public void remover(Long id) {

@@ -26,10 +26,10 @@ public class MovimentacaoReagenteService {
         return lista;
     }
 
-    public void registarMovimentacaoDeEntrada(Reagente reagente, Reagente novo) {
+    public MovimentacaoReagente registarMovimentacaoDeEntrada(Reagente reagente, Reagente novo) {
         MovimentacaoReagente movimentacaoReagenteEntrada = new MovimentacaoReagente();
         criarMovimentacaoEntrada(reagente, novo, movimentacaoReagenteEntrada);
-        repository.save(movimentacaoReagenteEntrada);
+        return repository.save(movimentacaoReagenteEntrada);
     }
 
     public void registrarMovimentacaoInicial(Reagente reagente) {

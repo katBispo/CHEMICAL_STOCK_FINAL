@@ -105,6 +105,15 @@ public class Reagente implements Serializable {
         return entrada - saida;
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.quantidadeTotal == null) {
+            this.quantidadeTotal = getQuantidadeAtual(); // Define a quantidade inicial como a quantidade atual dos frascos
+        }
+    }
+
+
+
     private Double obterEntradas() {
         Double entrada = Optional.ofNullable(movimentacoes)
                 .orElse(Collections.emptyList())
