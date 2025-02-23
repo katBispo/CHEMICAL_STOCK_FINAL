@@ -25,6 +25,10 @@ public class ProcedimentoService {
     @Autowired
     private MovimentacaoReagenteService movimentacaoReagenteService;
 
+
+
+
+
     public Procedimento salvar(Procedimento procedimento, Reagente reagente, Double quantidade) {
         if (reagente.getQuantidadeTotal() < quantidade) {
             throw new IllegalArgumentException("Quantidade insuficiente no estoque do reagente.");
@@ -32,7 +36,6 @@ public class ProcedimentoService {
         Reagente r = reagenteService.buscarPorId(reagente.getId());
 
         ReagenteUsadoProcedimento reagenteUsadoProcedimento = criarReagenteUsadoProcedimento(procedimento, quantidade, r);
-       // reagenteService.atualizarReagente(reagente.getId(), r);
         movimentacaoReagenteService.registrarMovimentacaoDeSaida(r,quantidade);
         repository.save(procedimento);
         reagenteUsadoProcedimentoRepository.save(reagenteUsadoProcedimento);

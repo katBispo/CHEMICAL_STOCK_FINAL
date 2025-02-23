@@ -3,6 +3,9 @@ package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
+import com.laboratorio.labanalise.request.ProcedimentoRequest;
+import com.laboratorio.labanalise.request.ReagenteQuantidadeRequest;
 import com.laboratorio.labanalise.services.ProcedimentoService;
 import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ public class ProcedimentoController {
 
     // Endpoint para salvar o procedimento
     @PostMapping
-    public ResponseEntity<Procedimento> salvar(@RequestBody Procedimento procedimento, @RequestParam Long id, @RequestParam Double quantidade) {
+    /*public ResponseEntity<Procedimento> salvar(@RequestBody Procedimento procedimento, @RequestParam Long id, @RequestParam Double quantidade) {
         Reagente reagente = reagenteService.buscarPorId(id);
         procedimento = service.salvar(procedimento, reagente, quantidade);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -36,7 +39,23 @@ public class ProcedimentoController {
                 .toUri();
 
         return ResponseEntity.created(uri).body(procedimento);
+    }*/
+    public ResponseEntity<Procedimento> salvar(@RequestBody ProcedimentoRequest request) {
+        Procedimento procedimento = request.getProcedimento();
+        List<ReagenteQuantidadeRequest> reagenteQuantidadeRequests = request.getReagentesQuantidades();
+        reagenteQuantidadeRequests.stream()
+                .forEach(r -> {
+                    Reagente reagente = reagenteService.buscarPorId(r.getIdReagente());
+                    service.salvar(procedimento,reagente,r.getQuantidade());
+                });
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(procedimento.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(procedimento);
     }
+
     /*public ResponseEntity<Procedimento> salvarProcedimento(
             @RequestParam("nomeProcedimento") String nomeProcedimento,
             @RequestParam("descricaoProcedimento") String descricaoProcedimento,
