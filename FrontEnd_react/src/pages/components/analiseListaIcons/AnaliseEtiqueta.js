@@ -1,8 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 
-const AnaliseEtiqueta = ({ analise }) => {
-    // Função para iniciar a impressão
+const Etiqueta = ({ analise }) => {
     const handlePrint = () => {
         window.print();
     };
@@ -12,7 +11,7 @@ const AnaliseEtiqueta = ({ analise }) => {
             sx={{
                 bgcolor: 'white',
                 p: 2,
-                border: '1px solid #ddd',
+                border: '2px solid green',
                 borderRadius: 2,
                 maxWidth: '300px',
                 width: '100%',
@@ -24,34 +23,21 @@ const AnaliseEtiqueta = ({ analise }) => {
                 },
             }}
         >
-            <Typography variant="h6" align="center" gutterBottom>
+            <Typography variant="h6" align="center" gutterBottom sx={{ color: 'green', fontWeight: 'bold' }}>
                 Etiqueta da Análise
             </Typography>
             
-            <Typography variant="body2">
-                <strong>Nome:</strong> {analise.nome}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Data Final:</strong> {analise.prazoFinalizacao}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Cliente:</strong> {analise.contrato ? analise.contrato.nomeContrato : 'N/A'}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Matriz:</strong> {analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Analito:</strong> {analise.analito}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Quantidade de Amostras:</strong> {analise.qtdAmostras}
-            </Typography>
-            <Typography variant="body2">
-                <strong>Status:</strong> {analise.status}
-            </Typography>
+            <Typography variant="body2"><strong>N° do Pedido:</strong> {analise.pedido || 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Cliente:</strong> {analise.contrato ? analise.contrato.nomeContrato : 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Ponto de Coleta:</strong> {analise.pontoColeta || 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Coletor:</strong> {analise.coletor || 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Data:</strong> {analise.prazoFinalizacao}</Typography>
+            <Typography variant="body2"><strong>Hora:</strong> {analise.hora || 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Matriz:</strong> {analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}</Typography>
+            <Typography variant="body2"><strong>Analito:</strong> {analise.analito || 'N/A'}</Typography>
 
             <Box display="flex" justifyContent="center" mt={2}>
-                <Button variant="contained" color="primary" onClick={handlePrint}>
+                <Button variant="contained" sx={{ bgcolor: 'green', color: 'white' }} onClick={handlePrint}>
                     Imprimir Etiqueta
                 </Button>
             </Box>
@@ -59,4 +45,4 @@ const AnaliseEtiqueta = ({ analise }) => {
     );
 };
 
-export default AnaliseEtiqueta;
+export default Etiqueta;
