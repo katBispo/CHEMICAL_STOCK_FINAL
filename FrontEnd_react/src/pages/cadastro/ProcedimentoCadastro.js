@@ -25,33 +25,50 @@ function ProcedimentoCadastro() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [overlayOpen, setOverlayOpen] = useState(false);
+    const [reagentesSelecionados, setReagentesSelecionados] = useState([]);
+
     const navigate = useNavigate();
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
 
+    const handleSaveReagentes = (reagentes) => {
+        console.log('Reagentes selecionados:', reagentes);
+
+        setReagentesSelecionados(reagentes); // Atualiza a lista de reagentes selecionados
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('nomeProcedimento', nomeProcedimento);
-        formData.append('descricaoProcedimento', descricao);
-        formData.append('pdfFile', pdfFile);
-        formData.append('dataCadastro', dataCadastro);
-        
+    
+        if (reagentesSelecionados.length === 0) {
+            setDialogMessage('Selecione pelo menos um reagente.');
+            setDialogOpen(true);
+            return;
+        }
+    
+        // Pegando o primeiro reagente da lista (ou ajustar para múltiplos)
+        const { idReagente, quantidade } = reagentesSelecionados[0];
+    
+        const requestBody = {
+            nomeProcedimento: nomeProcedimento,
+            descricaoProcedimento: descricao,
+        };
+    
         try {
-            const response = await fetch('http://localhost:8080/procedimento', {
+            const response = await fetch(`http://localhost:8080/procedimento?id=${idReagente}&quantidade=${quantidade}`, {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
             });
-            
+    
             if (response.ok) {
                 setDialogMessage('Procedimento cadastrado com sucesso!');
-                console.log('Procedimento salvo com sucesso');
             } else {
                 setDialogMessage('Erro ao cadastrar procedimento.');
-                console.error('Erro ao salvar o procedimento');
                 const errorData = await response.json();
                 console.error('Detalhes do erro:', errorData);
             }
@@ -62,9 +79,10 @@ function ProcedimentoCadastro() {
         setDialogOpen(true);
     };
     
+
     const handleDialogClose = () => {
         setDialogOpen(false);
-        navigate('/'); 
+        navigate('/');
     };
 
     return (
@@ -122,13 +140,34 @@ function ProcedimentoCadastro() {
                         required
                         style={{ marginTop: '16px' }}
                     />
+                    <div>
+                        {/* Botão que abre o overlay */}
+                        <Box display="flex" justifyContent="center" marginTop={2}>
+                            <Button variant="contained" onClick={() => setOverlayOpen(true)}>
+                                Selecionar Reagentes
+                            </Button>
+                        </Box>
 
-                    <Box display="flex" justifyContent="center" marginTop={2}>
-                        <Button variant="contained" onClick={() => setOverlayOpen(true)}>
-                            Selecionar Reagentes
-                        </Button>
-                    </Box>
-                    
+                        {/* Componente Overlay com a lista de reagentes */}
+                        <SelectReagente
+                            open={overlayOpen}               // Controla a abertura do overlay
+                            onClose={() => setOverlayOpen(false)} // Fecha o overlay
+                            onSave={handleSaveReagentes}     // Passa a função de salvar para o componente filho
+                        />
+
+                        {/* Exibe os reagentes selecionados */}
+                        <div>
+                            <h3>Reagentes Selecionados</h3>
+                            <ul>
+                                {reagentesSelecionados.map((item, index) => (
+                                    <li key={index}>
+                                        {item.reagente.nome} - {item.quantidade}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
                     <Box display="flex" justifyContent="center" marginTop={2}>
                         <Button type="submit" variant="contained" color="primary">
                             Cadastrar Procedimento
@@ -138,7 +177,6 @@ function ProcedimentoCadastro() {
             </Box>
 
             <FeedbackDialog open={dialogOpen} message={dialogMessage} onClose={handleDialogClose} />
-            <SelectReagente open={overlayOpen} onClose={() => setOverlayOpen(false)} />
         </Box>
     );
 }
