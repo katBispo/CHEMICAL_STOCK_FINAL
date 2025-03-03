@@ -13,17 +13,15 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
-import SideBar from './components/SideBar.js'; // Importe o novo componente
-import Dashboard from './components/Dashboard.js'; // Importe o novo componente
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; // Ícone para o Cadastro de Processo
+import SideBar from './components/SideBar.js'; // Componente Sidebar
+import Dashboard from './components/Dashboard.js'; // Componente Dashboard
 import { useNavigate } from 'react-router-dom';
 import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';
 
-
-
 function Menu() {
     const [drawerOpen, setDrawerOpen] = useState(true);
-
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
@@ -33,9 +31,9 @@ function Menu() {
 
     const handleNavigate = () => {
         console.log('Botão clicado, redirecionando...');
-
         navigate('/analiseLista');
     };
+
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -87,7 +85,6 @@ function Menu() {
                             Lista de Análises
                         </Button>
                     </ButtonBase>
-
 
                     <Button
                         variant="contained"
@@ -144,6 +141,27 @@ function Menu() {
                         }}
                     >
                         Cadastrar Amostra
+                    </Button>
+
+                    {/* Botão para Cadastrar Processo com cor vermelha */}
+                    <Button
+                        variant="contained"
+                        startIcon={<LocalHospitalIcon sx={{ fontSize: '50px' }} />}
+                        sx={{
+                            borderRadius: '20px',
+                            bgcolor: 'red',
+                            flexGrow: 1,
+                            mx: 1,
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                        }}
+                        onClick={() => navigate('/cadastrarProcesso')}
+                    >
+                        Cadastrar Processo
                     </Button>
                 </Box>
 
