@@ -47,7 +47,6 @@ const movimentacoes = [
 function Menu() {
     const [drawerOpen, setDrawerOpen] = useState(true);
 
-
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
     };
@@ -56,9 +55,9 @@ function Menu() {
 
     const handleNavigate = () => {
         console.log('Botão clicado, redirecionando...');
-
         navigate('/analiseLista');
     };
+
     return (
         <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -91,6 +90,108 @@ function Menu() {
                     <InfoCard title="Amostras em Atraso" value="10" route="/amostras-atrasadas" colorKey="amostrasAtrasadas" />
                     <InfoCard title="Reagentes Vencidos" value="5" route="/reagentes-vencidos" colorKey="reagentesVencidos" />
                     <InfoCard title="Amostras a Vencer" value="8" route="/amostras-proximas" colorKey="amostrasProximas" />
+                <Box display="flex" justifyContent="space-around" mt={2}>
+                    <ButtonBase
+                        component={Link}
+                        to="/analiseLista"
+                    >
+                        <Button
+                            variant="contained"
+                            startIcon={<ListAltIcon sx={{ fontSize: '50px' }} />}
+                            sx={{
+                                borderRadius: '20px',
+                                bgcolor: '#76C043',
+                                flexGrow: 1,
+                                mx: 1,
+                                height: '60px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 'bold',
+                                fontSize: '18px',
+                            }}
+                        >
+                            Lista de Análises
+                        </Button>
+                    </ButtonBase>
+
+                    <Button
+                        variant="contained"
+                        startIcon={<AddCircleIcon sx={{ fontSize: '50px' }} />}
+                        sx={{
+                            borderRadius: '20px',
+                            bgcolor: '#76C043',
+                            flexGrow: 1,
+                            mx: 1,
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                        }}
+                    >
+                        Cadastrar Reagente
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        startIcon={<AssessmentIcon sx={{ fontSize: '50px' }} />}
+                        sx={{
+                            borderRadius: '20px',
+                            bgcolor: '#76C043',
+                            flexGrow: 1,
+                            mx: 1,
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                        }}
+                    >
+                        Cadastrar Análise
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        startIcon={<EmojiNatureIcon sx={{ fontSize: '50px' }} />}
+                        sx={{
+                            borderRadius: '20px',
+                            bgcolor: '#76C043',
+                            flexGrow: 1,
+                            mx: 1,
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                        }}
+                    >
+                        Cadastrar Amostra
+                    </Button>
+
+                    {/* Botão para Cadastrar Processo com cor vermelha */}
+                    <Button
+                        variant="contained"
+                        startIcon={<LocalHospitalIcon sx={{ fontSize: '50px' }} />}
+                        sx={{
+                            borderRadius: '20px',
+                            bgcolor: 'red',
+                            flexGrow: 1,
+                            mx: 1,
+                            height: '60px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '18px',
+                        }}
+                        onClick={() => navigate('/cadastrarProcesso')}
+                    >
+                        Cadastrar Processo
+                    </Button>
                 </Box>
 
                 <Box
@@ -123,6 +224,7 @@ function Menu() {
                     </Box>
                 </Box>
 
+                </Box>
 
             </Box>
         </Box>

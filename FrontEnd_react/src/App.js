@@ -21,6 +21,7 @@ import ContAnaliseCadastro from './pages/cadastro/ContAnaliseCadastro';
 import AmostraCadastro from './pages/cadastro/AmostraCadastro';
 import ReagenteCadastro from './pages/cadastro/ReagenteCadastro';
 import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro';
+import CadastrarProcesso from './pages/cadastro/CadastrarProcesso'; 
 
 
 import SelectAnaliseDaAmostra from './pages/components/SelectAnaliseDaAmostra';
@@ -58,6 +59,7 @@ function App() {
         <Route path="/amostraCadastro" element={<AmostraCadastro />} />
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
         <Route path="/analitoExistenteCadastro" element={<AnalitoExistenteCadastro />} />
+        <Route path="/cadastrarProcesso" element={<CadastrarProcesso />} />
 
         <Route path="/analiseAmostra" element={<SelectAnaliseDaAmostra />} />
         <Route path="/reposicaoReagente" element={<ReposicaoReagentOverlay />} />
