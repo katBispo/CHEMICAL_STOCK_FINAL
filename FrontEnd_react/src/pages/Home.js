@@ -14,12 +14,35 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
 import SideBar from './components/SideBar.js'; // Importe o novo componente
-import Dashboard from './components/Dashboard.js'; // Importe o novo componente
+import Dashboard from './components/MenuComponents/Dashboard.js'; // Importe o novo componente
 import { useNavigate } from 'react-router-dom';
 import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';
+import InfoCard from './components/MenuComponents/InfoCard.js';
+import AmostraCardContainer from './components/MenuComponents/AmostraCardContainer.js';
+import CardReabastecimentoEstoque from './components/MenuComponents/CardReabastecimentoEstoque.js';
+import ListaMovimentacoes from './components/MenuComponents/ListaMovimentacoes.js';
 
+//EXEMPLOS
+const amostras = [
+    { dataVencimento: '2024-08-10', nome: 'Amostra 1', diasParaVencer: 5, endereco: 'Laboratório A' },
+    { dataVencimento: '2024-08-12', nome: 'Amostra 2', diasParaVencer: 7, endereco: 'Laboratório B' },
+    { dataVencimento: '2024-08-15', nome: 'Amostra 3', diasParaVencer: 10, endereco: 'Laboratório C' },
+    { dataVencimento: '2024-08-18', nome: 'Amostra 4', diasParaVencer: 13, endereco: 'Laboratório D' } // Essa NÃO será exibida
+];
 
+const reagentes = [
+    { nome: "Ácido Sulfúrico", quantidade: 5, limite: 10 },
+    { nome: "Hidróxido de Sódio", quantidade: 3, limite: 5 },
+    { nome: "Água Destilada", quantidade: 15, limite: 10 } // Esse não precisa ser reposto
+];
+
+const movimentacoes = [
+    { dataMovimentacao: '2024-08-05', reagente: 'Ácido Clorídrico', quantidade: 20, tipo: 'Entrada' },
+    { dataMovimentacao: '2024-08-07', reagente: 'Hidróxido de Sódio', quantidade: 5, tipo: 'Saída' },
+    { dataMovimentacao: '2024-08-10', reagente: 'Sulfato de Cobre', quantidade: 10, tipo: 'Entrada' },
+    { dataMovimentacao: '2024-08-12', reagente: 'Ácido Sulfúrico', quantidade: 7, tipo: 'Saída' }, // Essa NÃO será exibida
+];
 
 function Menu() {
     const [drawerOpen, setDrawerOpen] = useState(true);
@@ -63,96 +86,48 @@ function Menu() {
                     Painel de Controle
                 </Typography>
 
-                <Box display="flex" justifyContent="space-around" mt={2}>
-                    <ButtonBase
-                        component={Link}
-                        to="/analiseLista"
-                    >
-                        <Button
-                            variant="contained"
-                            startIcon={<ListAltIcon sx={{ fontSize: '50px' }} />}
-                            sx={{
-                                borderRadius: '20px',
-                                bgcolor: '#76C043',
-                                flexGrow: 1,
-                                mx: 1,
-                                height: '60px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 'bold',
-                                fontSize: '18px',
-                            }}
-                        >
-                            Lista de Análises
-                        </Button>
-                    </ButtonBase>
-
-
-                    <Button
-                        variant="contained"
-                        startIcon={<AddCircleIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                    >
-                        Cadastrar Reagente
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        startIcon={<AssessmentIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                    >
-                        Cadastrar Análise
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        startIcon={<EmojiNatureIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                    >
-                        Cadastrar Amostra
-                    </Button>
+                <Box display="flex" justifyContent="space-around" mt={2} flexWrap="wrap" gap={2}>
+                    <InfoCard title="Reagentes Cadastrados" value="50" route="/reagentes" colorKey="reagentes" />
+                    <InfoCard title="Amostras em Atraso" value="10" route="/amostras-atrasadas" colorKey="amostrasAtrasadas" />
+                    <InfoCard title="Reagentes Vencidos" value="5" route="/reagentes-vencidos" colorKey="reagentesVencidos" />
+                    <InfoCard title="Amostras a Vencer" value="8" route="/amostras-proximas" colorKey="amostrasProximas" />
                 </Box>
 
-                <Container>
-                    <Dashboard /> {/* Chamando o componente Dashboard */}
-                </Container>
+                <Box
+                    display="flex"
+                    justifyContent="flex-start" // Mantém os elementos alinhados à esquerda
+                    alignItems="flex-start"
+                    sx={{ width: '100%' }}
+                >
+                    {/* Gráfico */}
+                    <Box sx={{ marginRight: "50px" }}> {/* Ajuste o espaço aqui */}
+                        <Dashboard />
+                    </Box>
+
+                    {/* Amostras Próximas a Vencer */}
+                    <Box sx={{ position: "relative", top: "30px" }}>
+                        <AmostraCardContainer amostras={amostras} />
+                    </Box>
+                </Box>
+
+
+                <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
+                    {/* Novo Box para o Card de Reabastecimento */}
+                    <Box sx={{ flex: 1 }}>
+                        <CardReabastecimentoEstoque reagentes={reagentes} />
+                    </Box>
+
+                    {/* Lista de Movimentações */}
+                    <Box sx={{ flex: 1 }}>
+                        <ListaMovimentacoes />
+                    </Box>
+                </Box>
+
+
             </Box>
         </Box>
     );
+
 }
 
 export default Menu;
