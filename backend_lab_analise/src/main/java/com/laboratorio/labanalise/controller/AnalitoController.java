@@ -1,9 +1,8 @@
 package com.laboratorio.labanalise.controller;
 
+import com.laboratorio.labanalise.DTO.request.TipoESubtiposRequest;
 import com.laboratorio.labanalise.model.Analito;
-import com.laboratorio.labanalise.DTO.TipoAnalitoDto; // Certifique-se de que você tenha esse DTO criado
 import com.laboratorio.labanalise.services.AnalitoService;
-import com.laboratorio.labanalise.request.*;
 import com.laboratorio.labanalise.repositories.AnalitoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

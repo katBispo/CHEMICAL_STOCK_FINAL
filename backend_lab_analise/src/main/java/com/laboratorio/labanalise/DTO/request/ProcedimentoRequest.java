@@ -1,8 +1,7 @@
-package com.laboratorio.labanalise.request;
+package com.laboratorio.labanalise.DTO.request;
 
 import com.laboratorio.labanalise.model.Procedimento;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcedimentoRequest {

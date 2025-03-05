@@ -3,9 +3,8 @@ package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
-import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
-import com.laboratorio.labanalise.request.ProcedimentoRequest;
-import com.laboratorio.labanalise.request.ReagenteQuantidadeRequest;
+import com.laboratorio.labanalise.DTO.request.ProcedimentoRequest;
+import com.laboratorio.labanalise.DTO.request.ReagenteQuantidadeRequest;
 import com.laboratorio.labanalise.services.ProcedimentoService;
 import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
