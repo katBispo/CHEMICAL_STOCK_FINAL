@@ -1,4 +1,4 @@
-package com.laboratorio.labanalise.DTO.request;
+package com.laboratorio.labanalise.request;
 import java.util.List;
 
 

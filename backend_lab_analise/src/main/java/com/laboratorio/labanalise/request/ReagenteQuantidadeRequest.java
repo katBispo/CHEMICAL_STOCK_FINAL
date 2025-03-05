@@ -1,4 +1,4 @@
-package com.laboratorio.labanalise.DTO.request;
+package com.laboratorio.labanalise.request;
 
 public class ReagenteQuantidadeRequest {
     private Long idReagente;
