@@ -57,4 +57,8 @@ public class ReagenteService {
     public List<Reagente> buscarTodos() {
         return repository.findAll();
     }
+
+    public List<Reagente> listarReagentesVencidos(){
+        return repository.reagentesVencidos();
+    }
 }

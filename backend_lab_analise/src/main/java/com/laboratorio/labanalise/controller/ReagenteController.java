@@ -63,4 +63,9 @@ public class ReagenteController {
         service.atualizarReagente(id, reagente);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/vencidos")
+    public ResponseEntity<List<Reagente>> listarVencidosReagente() {
+        List <Reagente> reagentes = service.listarReagentesVencidos();
+        return ResponseEntity.ok().body(reagentes);
+    }
 }
