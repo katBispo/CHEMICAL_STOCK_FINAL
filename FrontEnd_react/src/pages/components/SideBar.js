@@ -142,6 +142,23 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                         <ListItemText primary="Home" />
                     </ListItem>
 
+                    <ListItem
+                        button
+                        component={Link}
+                        to="/estoque" // Define a rota
+                        onClick={() => setSelectedItem('/estoque')} // Atualiza o item selecionado
+                        selected={selectedItem === '/estoque'} // Condição para o estilo selecionado
+                        sx={{
+                            bgcolor: selectedItem === '/estoque' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                            textDecoration: 'none',
+                            color: 'white',
+                        }}
+                    >
+                        <ListItemIcon>
+                            <HomeIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary="Estoque" />
+                    </ListItem>
 
                     <ListItem button onClick={handleListasClick}>
                         <ListItemIcon>
