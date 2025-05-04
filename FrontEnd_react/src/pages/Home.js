@@ -13,9 +13,10 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
+import SideBar from './components/SideBar.js'; 
+import Dashboard from './components/MenuComponents/Dashboard.js'; 
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import SideBar from './components/SideBar.js'; // Importe o novo componente
-import Dashboard from './components/MenuComponents/Dashboard.js'; // Importe o novo componente
+
 import { useNavigate } from 'react-router-dom';
 import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';
