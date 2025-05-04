@@ -14,7 +14,7 @@ import SideBar from "../components/SideBar";
 const EstoqueHeader = ({ onAdd }) => (
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Typography variant="h4" component="h1" fontWeight="bold" color="text.primary">
-            📦 Estoque de Reagentes
+             Estoque de Reagentes
         </Typography>
         <Button
             onClick={onAdd}
@@ -28,9 +28,9 @@ const EstoqueHeader = ({ onAdd }) => (
 );
 
 // Cartões de resumo
-const ResumoEstoque = ({ reagentes }) => {
-    const total = reagentes.reduce((sum, r) => sum + r.quantidade, 0);
-    const vencidos = reagentes.filter(r => new Date(r.validade) < new Date()).length;
+const ResumoEstoque = ({ reagentes, vencidosTotal }) => {
+    const total = reagentes.reduce((sum, r) => sum + r.quantidadeTotal, 0);
+    const vencidos = vencidosTotal !== undefined ? vencidosTotal : reagentes.filter(r => new Date(r.validade) < new Date()).length;
 
     return (
         <Box display="flex" gap={4} mb={4} flexWrap="wrap">
@@ -39,14 +39,13 @@ const ResumoEstoque = ({ reagentes }) => {
                 <Typography variant="h4" fontWeight="bold" mt={1}>{total}</Typography>
             </Paper>
             <Paper elevation={3} sx={{ p: 3, flex: 1, minWidth: 250, borderLeft: '5px solid #f44336' }}>
-                <Typography variant="h6" color="error">Reagentes Vencidos</Typography>
+                <Typography variant="h6" color="error">Vencidos</Typography>
                 <Typography variant="h4" fontWeight="bold" mt={1}>{vencidos}</Typography>
             </Paper>
         </Box>
     );
 };
 
-// Gráfico de pizza
 const GraficoPizza = ({ reagentes }) => {
     const data = reagentes.map(r => ({
         nome: r.nome,
@@ -157,6 +156,8 @@ const TabelaReagentes = ({ reagentes }) => (
 const EstoqueReagentes = () => {
     const [reagentes, setReagentes] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [vencidosCount, setVencidosCount] = useState(0);
+
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
@@ -173,7 +174,20 @@ const EstoqueReagentes = () => {
             }
         };
 
+    const fetchReagentesVencidosCount = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/reagente/vencidos/quantidade');
+            const data = await response.json();
+            console.log('quantidade de vencidos: ', data);
+            setVencidosCount(data);
+        } catch (error) {
+            console.error('Erro ao buscar quantidade de reagentes vencidos:', error);
+        }
+    };
+
         fetchReagentes();
+        fetchReagentesVencidosCount();
+
     }, []);
 
     const handleAdd = () => {
@@ -217,7 +231,7 @@ const EstoqueReagentes = () => {
                 }}
             >
                 <EstoqueHeader onAdd={handleAdd} />
-                <ResumoEstoque reagentes={reagentes} />
+                <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} /> {/* ✅ Aqui usa */}
 
                 <Box display="flex" gap={4} flexWrap="wrap" mb={4}>
                     <Box flex={1} minWidth={300}>

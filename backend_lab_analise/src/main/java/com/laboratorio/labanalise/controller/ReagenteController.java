@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(path = "/reagente")
 public class ReagenteController {
@@ -60,13 +60,22 @@ public class ReagenteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reagente> atualizarReagente(@PathVariable(value = "id") Long id, @RequestBody Reagente reagente) {
+    public ResponseEntity<Reagente> atualizarReagente(@PathVariable(value = "id") Long id,
+            @RequestBody Reagente reagente) {
         service.atualizarReagente(id, reagente);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/vencidos")
     public ResponseEntity<List<Reagente>> listarVencidosReagente() {
-        List <Reagente> reagentes = service.listarReagentesVencidos();
+        List<Reagente> reagentes = service.listarReagentesVencidos();
         return ResponseEntity.ok().body(reagentes);
     }
+
+    @GetMapping("/vencidos/quantidade")
+    public ResponseEntity<Long> contarReagentesVencidos() {
+        long total = service.listarReagentesVencidos().size();
+        return ResponseEntity.ok().body(total);
+    }
+
 }
