@@ -13,6 +13,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import SideBar from './components/SideBar.js'; // Importe o novo componente
 import Dashboard from './components/MenuComponents/Dashboard.js'; // Importe o novo componente
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +23,10 @@ import InfoCard from './components/MenuComponents/InfoCard.js';
 import AmostraCardContainer from './components/MenuComponents/AmostraCardContainer.js';
 import CardReabastecimentoEstoque from './components/MenuComponents/CardReabastecimentoEstoque.js';
 import ListaMovimentacoes from './components/MenuComponents/ListaMovimentacoes.js';
+
+import LineChartDashboard from './components/MenuComponents/LineChartDashboard'; // ajuste o caminho conforme necessário
+
+
 
 //EXEMPLOS
 const amostras = [
@@ -86,18 +91,35 @@ function Menu() {
                 </Typography>
 
                 <Box display="flex" justifyContent="space-around" mt={2} flexWrap="wrap" gap={2}>
-                    <InfoCard title="Reagentes Cadastrados" value="50" route="/reagentes" colorKey="reagentes" />
-                    <InfoCard title="Amostras em Atraso" value="10" route="/amostras-atrasadas" colorKey="amostrasAtrasadas" />
-                    <InfoCard title="Reagentes Vencidos" value="5" route="/reagentes-vencidos" colorKey="reagentesVencidos" />
-                    <InfoCard title="Amostras a Vencer" value="8" route="/amostras-proximas" colorKey="amostrasProximas" />
-                <Box display="flex" justifyContent="space-around" mt={2}>
-                    <ButtonBase
-                        component={Link}
-                        to="/analiseLista"
-                    >
+
+                    <Box display="flex" justifyContent="space-around" mt={2}>
+                        <ButtonBase
+                            component={Link}
+                            to="/analiseLista"
+                        >
+                            <Button
+                                variant="contained"
+                                startIcon={<ListAltIcon sx={{ fontSize: '50px' }} />}
+                                sx={{
+                                    borderRadius: '20px',
+                                    bgcolor: '#76C043',
+                                    flexGrow: 1,
+                                    mx: 1,
+                                    height: '60px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 'bold',
+                                    fontSize: '18px',
+                                }}
+                            >
+                                Lista de Análises
+                            </Button>
+                        </ButtonBase>
+
                         <Button
                             variant="contained"
-                            startIcon={<ListAltIcon sx={{ fontSize: '50px' }} />}
+                            startIcon={<AddCircleIcon sx={{ fontSize: '50px' }} />}
                             sx={{
                                 borderRadius: '20px',
                                 bgcolor: '#76C043',
@@ -111,123 +133,116 @@ function Menu() {
                                 fontSize: '18px',
                             }}
                         >
-                            Lista de Análises
+                            Cadastrar Reagente
                         </Button>
-                    </ButtonBase>
 
-                    <Button
-                        variant="contained"
-                        startIcon={<AddCircleIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
+                        <Button
+                            variant="contained"
+                            startIcon={<AssessmentIcon sx={{ fontSize: '50px' }} />}
+                            sx={{
+                                borderRadius: '20px',
+                                bgcolor: '#76C043',
+                                flexGrow: 1,
+                                mx: 1,
+                                height: '60px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 'bold',
+                                fontSize: '18px',
+                            }}
+                        >
+                            Cadastrar Análise
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            startIcon={<EmojiNatureIcon sx={{ fontSize: '50px' }} />}
+                            sx={{
+                                borderRadius: '20px',
+                                bgcolor: '#76C043',
+                                flexGrow: 1,
+                                mx: 1,
+                                height: '60px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 'bold',
+                                fontSize: '18px',
+                            }}
+                        >
+                            Cadastrar Amostra
+                        </Button>
+
+
+                        {/* Botão para Cadastrar Processo com cor vermelha */}
+                        <Button
+                            variant="contained"
+                            startIcon={<LocalHospitalIcon sx={{ fontSize: '50px' }} />}
+                            sx={{
+                                borderRadius: '20px',
+                                bgcolor: 'red',
+                                flexGrow: 1,
+                                mx: 1,
+                                height: '60px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 'bold',
+                                fontSize: '18px',
+                            }}
+                            onClick={() => navigate('/cadastrarProcesso')}
+                        >
+                            Cadastrar Processo
+                        </Button>
+                    </Box>
+                    <Box
+                        display="flex"
+                        justifyContent="flex-start" // Mantém os elementos alinhados à esquerda
+                        alignItems="flex-start"
+                        sx={{ width: '100%' }}
                     >
-                        Cadastrar Reagente
-                    </Button>
+                        {/* Gráfico */}
+                        <Box sx={{ marginRight: "50px" }}> {/* Ajuste o espaço aqui */}
+                            <Dashboard />
+                        </Box>
 
-                    <Button
-                        variant="contained"
-                        startIcon={<AssessmentIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                    >
-                        Cadastrar Análise
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        startIcon={<EmojiNatureIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: '#76C043',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                    >
-                        Cadastrar Amostra
-                    </Button>
-
-                    {/* Botão para Cadastrar Processo com cor vermelha */}
-                    <Button
-                        variant="contained"
-                        startIcon={<LocalHospitalIcon sx={{ fontSize: '50px' }} />}
-                        sx={{
-                            borderRadius: '20px',
-                            bgcolor: 'red',
-                            flexGrow: 1,
-                            mx: 1,
-                            height: '60px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '18px',
-                        }}
-                        onClick={() => navigate('/cadastrarProcesso')}
-                    >
-                        Cadastrar Processo
-                    </Button>
-                </Box>
-
-                <Box
-                    display="flex"
-                    justifyContent="flex-start" // Mantém os elementos alinhados à esquerda
-                    alignItems="flex-start"
-                    sx={{ width: '100%' }}
-                >
-                    {/* Gráfico */}
-                    <Box sx={{ marginRight: "50px" }}> {/* Ajuste o espaço aqui */}
-                        <Dashboard />
+                        {/* Amostras Próximas a Vencer */}
+                        <Box sx={{ position: "relative", top: "30px" }}>
+                            <AmostraCardContainer amostras={amostras} />
+                        </Box>
                     </Box>
 
-                    {/* Amostras Próximas a Vencer */}
-                    <Box sx={{ position: "relative", top: "30px" }}>
-                        <AmostraCardContainer amostras={amostras} />
+
+                    <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
+                        {/* Novo Box para o Card de Reabastecimento */}
+                        <Box sx={{ flex: 1 }}>
+                            <CardReabastecimentoEstoque reagentes={reagentes} />
+                        </Box>
+
+                        {/* Lista de Movimentações */}
+                        <Box sx={{ flex: 1 }}>
+                            <ListaMovimentacoes />
+                        </Box>
                     </Box>
+
                 </Box>
 
 
-                <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
-                    {/* Novo Box para o Card de Reabastecimento */}
-                    <Box sx={{ flex: 1 }}>
-                        <CardReabastecimentoEstoque reagentes={reagentes} />
-                    </Box>
 
-                    {/* Lista de Movimentações */}
-                    <Box sx={{ flex: 1 }}>
-                        <ListaMovimentacoes />
-                    </Box>
-                </Box>
+                <div>
+      <h1 className="text-xl font-bold">Dashboard</h1>
+      <LineChartDashboard />
+    </div>
+                    
 
-                </Box>
 
             </Box>
+
+            
         </Box>
+
+        
     );
 
 }

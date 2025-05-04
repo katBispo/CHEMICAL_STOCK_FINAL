@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") // Permite requisições do frontend no localhost:3000
+@CrossOrigin(origins = "http://localhost:3000") 
 @RestController
 @RequestMapping(path = "/procedimento")
 public class ProcedimentoController {
