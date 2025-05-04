@@ -128,7 +128,6 @@ function ReagenteCadastro({ open, handleClose }) {
     return (
         <>
         {/* Modal de Escolha de Ação */}
-        {/* Modal de Escolha de Ação */}
         <Modal open={isEscolhaAcaoOpen} onClose={() => setIsEscolhaAcaoOpen(false)}>
                 <Box
                     sx={{

@@ -78,4 +78,10 @@ public class ReagenteController {
         return ResponseEntity.ok().body(total);
     }
 
+    @GetMapping("/total-frascos")
+    public ResponseEntity<Integer> getTotalFrascos() {
+        Integer totalFrascos = service.obterTotalDeFrascos();
+        return ResponseEntity.ok(totalFrascos);
+    }
+
 }

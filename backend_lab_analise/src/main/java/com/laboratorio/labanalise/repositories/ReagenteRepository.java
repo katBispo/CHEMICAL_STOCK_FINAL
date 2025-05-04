@@ -11,4 +11,7 @@ public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
     @Query("SELECT r FROM Reagente r WHERE r.dataValidade < CURRENT_DATE")
     List<Reagente> reagentesVencidos();
 
+    @Query("SELECT SUM(r.quantidadeDeFrascos) FROM Reagente r")
+    Integer somarTodosOsFrascos();
+
 }

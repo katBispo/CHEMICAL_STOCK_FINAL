@@ -61,4 +61,8 @@ public class ReagenteService {
     public List<Reagente> listarReagentesVencidos(){
         return repository.reagentesVencidos();
     }
+    public Integer obterTotalDeFrascos() {
+        return repository.somarTodosOsFrascos();
+    }
+    
 }
