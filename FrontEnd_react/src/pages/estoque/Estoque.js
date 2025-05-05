@@ -9,6 +9,9 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { FaPlus } from "react-icons/fa";
 import SideBar from "../components/SideBar";
+import GraficoTiposReagente from "./graficos/GraficoTiposReagente";
+import GraficoValidadeReagentes from "./graficos/GraficoValidadeReagentes";
+import TabelaListaReagentes from "./tabelas/TabelaListaReagentes";
 
 // Cabeçalho com botão
 const EstoqueHeader = ({ onAdd }) => (
@@ -47,111 +50,7 @@ const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal }) => {
     );
 };
 
-const GraficoPizza = ({ reagentes }) => {
-    const data = reagentes.map(r => ({
-        nome: r.nome,
-        quantidade: r.quantidade,
-    }));
 
-    const cores = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#f44336'];
-
-    return (
-        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" fontWeight="bold" mb={2} color="text.secondary">
-                🧪 Distribuição por Quantidade
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                    <Pie
-                        data={data}
-                        dataKey="quantidade"
-                        nameKey="nome"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={90}
-                        fill="#8884d8"
-                        label
-                    >
-                        {data.map((_, index) => (
-                            <Cell key={`cell-${index}`} fill={cores[index % cores.length]} />
-                        ))}
-                    </Pie>
-                    <Legend verticalAlign="bottom" height={36} />
-                </PieChart>
-            </ResponsiveContainer>
-        </Paper>
-    );
-};
-
-// Gráfico de barras
-const GraficoValidade = ({ reagentes }) => {
-    const data = reagentes.map(r => ({
-        nome: r.nome,
-        validade: new Date(r.validade).getFullYear()
-    }));
-
-    const contagem = {};
-    data.forEach(item => {
-        contagem[item.validade] = (contagem[item.validade] || 0) + 1;
-    });
-
-    const graficoData = Object.entries(contagem).map(([ano, qtd]) => ({
-        ano,
-        reagentes: qtd,
-    }));
-
-    return (
-        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" fontWeight="bold" mb={2} color="text.secondary">
-                📊 Reagentes por Ano de Validade
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={graficoData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="ano" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="reagentes" fill="#3b82f6" radius={[5, 5, 0, 0]} />
-                </BarChart>
-            </ResponsiveContainer>
-        </Paper>
-    );
-};
-
-// Tabela
-const TabelaReagentes = ({ reagentes }) => (
-    <Paper elevation={3} sx={{ overflowX: 'auto', borderRadius: '10px' }}>
-        <table className="min-w-full">
-            <thead style={{ backgroundColor: '#4CAF50' }}>
-                <tr>
-                    {['Nome', 'Tipo', 'Quantidade Frascos', 'Lote'].map((header) => (
-                        <th
-                            key={header}
-                            style={{ color: '#fff', padding: '12px 24px', textAlign: 'left', fontWeight: 'bold' }}
-                        >
-                            {header}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {reagentes.map((r) => (
-                    <tr
-                        key={r.id}
-                        style={{ transition: 'background-color 0.3s' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f9f9f9')}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
-                    >
-                        <td style={{ padding: '12px 24px' }}>{r.nome}</td>
-                        <td style={{ padding: '12px 24px' }}>{r.tipo}</td>
-                        <td style={{ padding: '12px 24px' }}>{r.quantidadeDeFrascos}</td>
-                        <td style={{ padding: '12px 24px' }}>{r.lote}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    </Paper>
-);
 
 // Componente principal
 const EstoqueReagentes = () => {
@@ -196,9 +95,11 @@ const EstoqueReagentes = () => {
                 console.error('Erro ao buscar quantidade de reagentes vencidos:', error);
             }
         };
+
         fetchReagentes();
         fetchReagentesVencidosCount();
         fetchReagentesTotalFrascos();
+
 
     }, []);
 
@@ -244,18 +145,39 @@ const EstoqueReagentes = () => {
             >
                 <EstoqueHeader onAdd={handleAdd} />
                 <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} frascosTotal={frascosCount}
-                /> 
+                />
 
-                <Box display="flex" gap={4} flexWrap="wrap" mb={4}>
+                <Box
+                    display="flex"
+                    flexWrap="wrap"
+                    gap={4}
+                    mb={4}
+                    justifyContent="center"
+                    alignItems="stretch"
+                >
+                    <Box display="flex" flexWrap="wrap" gap={4} justifyContent="center" mb={4}>
+                        <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
+                            <GraficoTiposReagente />
+                        </Box>
+
+                        <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
+                            <GraficoValidadeReagentes />
+                        </Box>
+                    </Box>
+
+
+                </Box>
+
+
+                <Box display="flex" gap={2} flexWrap="wrap">
                     <Box flex={1} minWidth={300}>
-                        <GraficoPizza reagentes={reagentes} />
+                        <TabelaListaReagentes reagentes={reagentes} />
                     </Box>
                     <Box flex={1} minWidth={300}>
-                        <GraficoValidade reagentes={reagentes} />
+                        <TabelaListaReagentes reagentes={reagentes} />
                     </Box>
                 </Box>
 
-                <TabelaReagentes reagentes={reagentes} />
             </Box>
         </>
     );

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -82,6 +84,16 @@ public class ReagenteController {
     public ResponseEntity<Integer> getTotalFrascos() {
         Integer totalFrascos = service.obterTotalDeFrascos();
         return ResponseEntity.ok(totalFrascos);
+    }
+
+    @GetMapping("/quantidade-por-tipo")
+    public ResponseEntity<Map<TipoReagente, Long>> contarPorTipo() {
+        return ResponseEntity.ok(service.contarPorTipo());
+    }
+
+    @GetMapping("/grafico-validade")
+    public Map<String, Long> getDadosGraficoValidade() {
+        return service.getDadosGraficoValidade();
     }
 
 }
