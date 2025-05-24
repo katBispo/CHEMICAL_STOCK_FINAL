@@ -43,7 +43,6 @@ const AnaliseLista = () => {
     };
 
     const handleDeleteAnalise = async (id) => {
-        // Faz a requisição para deletar a análise
         const response = await fetch(`http://localhost:8080/analise/${id}`, {
             method: 'DELETE',
         });
@@ -55,7 +54,6 @@ const AnaliseLista = () => {
             console.error('Erro ao excluir a análise');
         }
 
-        // Fecha o overlay após a exclusão ou erro
         handleCloseDeleteOverlay();
     };
 
@@ -65,7 +63,7 @@ const AnaliseLista = () => {
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [analiseToEdit, setAnaliseToEdit] = useState(null);
 
-    // Função para abrir o overlay de edição com a análise selecionada
+    //  abrir o overlay de edição com a análise selecionada
     const handleEditClick = (analise) => {
         setAnaliseToEdit(analise);
         setEditOverlayOpen(true);
@@ -73,20 +71,15 @@ const AnaliseLista = () => {
     const handleSave = (updatedAnalise) => {
         console.log("Análise salva:", updatedAnalise);
         setEditOverlayOpen(false);
-        // Aqui você pode atualizar a lista de análises com os novos dados
     };
 
 
-    // Função para abrir o modal
     const handleOpen = () => setOpen(true);
 
-    // Função para fechar o modal
     const handleClose = () => setOpen(false);
 
-    // Função para abrir o overlay de edição com a análise selecionada
 
 
-    // Função para buscar os análises
     const fetchAnalises = async () => {
         try {
             const response = await fetch('http://localhost:8080/analise');
@@ -232,7 +225,6 @@ const AnaliseLista = () => {
                                     </TableRow>
                                 ))}
 
-                                {/* Verifique se `selectedAnalise` está definido antes de renderizar o modal */}
                                 {selectedAnalise && (
                                     <AnaliseDetailOverlay
                                         open={open}

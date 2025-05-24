@@ -110,4 +110,8 @@ public class ReagenteService {
         return resultado;
     }
 
+    public long contarReagentesControlados() {
+        return repository.contarReagentesControlados();
+    }
+    
 }

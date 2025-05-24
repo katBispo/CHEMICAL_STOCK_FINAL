@@ -31,7 +31,7 @@ const EstoqueHeader = ({ onAdd }) => (
 );
 
 // Cartões de resumo
-const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal }) => {
+const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal, controlados }) => {
     const total = reagentes.reduce((sum, r) => sum + r.quantidadeTotal, 0);
     const vencidos = vencidosTotal !== undefined ? vencidosTotal : reagentes.filter(r => new Date(r.validade) < new Date()).length;
 
@@ -46,6 +46,10 @@ const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal }) => {
                 <Typography variant="h6" color="error">Vencidos</Typography>
                 <Typography variant="h4" fontWeight="bold" mt={1}>{vencidos}</Typography>
             </Paper>
+            <Paper elevation={3} sx={{ p: 3, flex: 1, minWidth: 250, borderLeft: '5px solid #f44336' }}>
+                <Typography variant="h6" color="error">Controlados</Typography>
+                <Typography variant="h4" fontWeight="bold" mt={1}>{controlados}</Typography>
+            </Paper>
         </Box>
     );
 };
@@ -58,6 +62,8 @@ const EstoqueReagentes = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [vencidosCount, setVencidosCount] = useState(0);
     const [frascosCount, setFrascosCount] = useState(0);
+    const [controladosCount, setControladosCount] = useState(0);
+
 
 
     const toggleDrawer = () => {
@@ -85,6 +91,16 @@ const EstoqueReagentes = () => {
                 console.error('Erro ao buscar quantidade de reagentes vencidos:', error);
             }
         };
+        const fetchReagentesTotalControlados = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/reagente/quantidade-controlados');
+                const data = await response.json();
+                console.log('quantidade de Controlados: ', data);
+                setControladosCount(data);
+            } catch (error) {
+                console.error('Erro ao buscar quantidade de reagentes Controlados:', error);
+            }
+        };
         const fetchReagentesTotalFrascos = async () => {
             try {
                 const response = await fetch('http://localhost:8080/reagente/total-frascos');
@@ -96,9 +112,11 @@ const EstoqueReagentes = () => {
             }
         };
 
+
         fetchReagentes();
         fetchReagentesVencidosCount();
         fetchReagentesTotalFrascos();
+        fetchReagentesTotalControlados();
 
 
     }, []);
@@ -144,7 +162,7 @@ const EstoqueReagentes = () => {
                 }}
             >
                 <EstoqueHeader onAdd={handleAdd} />
-                <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} frascosTotal={frascosCount}
+                <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} frascosTotal={frascosCount} controlados = {controladosCount}
                 />
 
                 <Box

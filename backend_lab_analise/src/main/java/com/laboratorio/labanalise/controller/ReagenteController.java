@@ -96,4 +96,9 @@ public class ReagenteController {
         return service.getDadosGraficoValidade();
     }
 
+    @GetMapping("/quantidade-controlados")
+    public long getQuantidadeReagentesControlados() {
+        return service.contarReagentesControlados();
+    }
+
 }

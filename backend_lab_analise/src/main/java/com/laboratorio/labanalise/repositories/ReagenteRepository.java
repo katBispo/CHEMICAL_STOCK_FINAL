@@ -25,4 +25,7 @@ public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
     @Query("SELECT r FROM Reagente r WHERE r.dataValidade > :quinzeDias AND r.dataValidade <= :trintaDias")
     List<Reagente> vencemEm30Dias(@Param("quinzeDias") LocalDate quinzeDias, @Param("trintaDias") LocalDate trintaDias);
 
+    @Query("SELECT COUNT(r) FROM Reagente r WHERE r.controlado = true")
+    long contarReagentesControlados();
+
 }
