@@ -198,4 +198,13 @@ public class Amostra implements Serializable {
     public void setAmostraProcedimentos(Set<AmostraProcedimento> amostraProcedimentos) {
         this.amostraProcedimentos = amostraProcedimentos;
     }
+    public StatusAmostra verificarStatusAtual() {
+    if (this.status != StatusAmostra.CONCLUIDA && prazoFinalizacao != null) {
+        if (prazoFinalizacao.isBefore(LocalDate.now())) {
+            return StatusAmostra.ATRASADA;
+        }
+    }
+    return this.status;
+}
+
 }

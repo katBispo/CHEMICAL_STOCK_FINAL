@@ -4,6 +4,7 @@ import com.laboratorio.labanalise.model.Amostra;
 import com.laboratorio.labanalise.model.Analise;
 import com.laboratorio.labanalise.model.Analito;
 import com.laboratorio.labanalise.model.Procedimento;
+import com.laboratorio.labanalise.model.enums.StatusAmostra;
 import com.laboratorio.labanalise.services.AmostraService;
 import com.laboratorio.labanalise.services.AnaliseService;
 import com.laboratorio.labanalise.services.ProcedimentoService;
@@ -80,12 +81,22 @@ public class AmostraController {
         return ResponseEntity.created(uri).body(amostra);
     }
     
+@GetMapping
+public ResponseEntity<List<Amostra>> listarAmostras() {
+    List<Amostra> amostras = service.buscarTodos();
 
-    @GetMapping
-    public ResponseEntity<List<Amostra>> listarAmostras() {
-        List<Amostra> amostras = service.buscarTodos();
-        return ResponseEntity.ok().body(amostras);
+    // Atualiza status dinamicamente
+    for (Amostra amostra : amostras) {
+        StatusAmostra novoStatus = amostra.verificarStatusAtual();
+        if (amostra.getStatus() != novoStatus) {
+            amostra.setStatus(novoStatus);
+            service.salvar(amostra); // salva a alteração
+        }
     }
+
+    return ResponseEntity.ok().body(amostras);
+}
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarAmostra(@PathVariable Long id) {
