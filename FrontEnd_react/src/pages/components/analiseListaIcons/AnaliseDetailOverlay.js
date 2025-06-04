@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Modal, Typography, IconButton, Button, TextField } from '@mui/material';
 import { FaTimes } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
 const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
     const [quantidadeEtiquetas, setQuantidadeEtiquetas] = useState(1);
+    const [quantidadeAmostras, setQuantidadeAmostras] = useState(0);
+
+    useEffect(() => {
+        if (analise?.id) {
+            fetch(`/analises/${analise.id}/quantidade-amostras`)
+                .then(res => res.json())
+                .then(qtd => setQuantidadeAmostras(qtd))
+                .catch(err => console.error("Erro ao buscar quantidade de amostras:", err));
+        }
+    }, [analise]);
 
     // Função para gerar o PDF com as etiquetas
     const handleDownloadPDF = () => {
@@ -87,8 +97,9 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
                     <strong>Analito:</strong> {analise.analito}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Quantidade de Amostras:</strong> {analise.qtdAmostras}
+                    <strong>Quantidade de Amostras:</strong> {quantidadeAmostras}
                 </Typography>
+
                 <Typography variant="body1">
                     <strong>Status:</strong> {analise.status}
                 </Typography>

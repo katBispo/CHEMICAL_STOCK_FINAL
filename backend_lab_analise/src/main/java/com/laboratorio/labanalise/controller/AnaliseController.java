@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import com.laboratorio.labanalise.repositories.*;
 
 import java.net.URI;
 import java.util.List;
@@ -18,6 +19,7 @@ public class AnaliseController {
 
     @Autowired
     private AnaliseService service;
+    private AmostraRepository amostraRepository;
 
     @PostMapping
     public ResponseEntity<?> salvarAnalise(@RequestBody Analise analise) {
@@ -104,4 +106,10 @@ public class AnaliseController {
         service.remover(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/analises/{id}/quantidade-amostras")
+    public int getQuantidadeAmostras(@PathVariable Long id) {
+        return amostraRepository.countByAnaliseId(id);
+    }
+
 }

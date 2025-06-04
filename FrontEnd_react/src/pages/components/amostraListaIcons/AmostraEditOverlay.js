@@ -4,13 +4,19 @@ import { FaTimes } from 'react-icons/fa';
 
 const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
     const [editAmostra, setEditAmostra] = useState({
-        nome: amostra?.nome || '',
-        dataColeta: amostra?.dataColeta || '',
-        prazoFinalizacao: amostra?.prazoFinalizacao || '',
-        procedimento: amostra?.procedimento || '',
-        descricao: amostra?.descricao || '',
-        id: amostra?.id || null, // Certifique-se de que o ID está definido
+        nome: '',
+        dataColeta: '',
+        prazoFinalizacao: '',
+        enderecoColeta: '',
+        descricao: '',
+        dataCadastro: '',
+        coordenadaColeta: '',
+        analise: { id: '' },
+        procedures: [],
+        analitos: [],
+        id: null,
     });
+
 
     const [message, setMessage] = useState(''); // Estado para mensagem de erro/sucesso
 
@@ -21,8 +27,13 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                 nome: amostra.nome || '',
                 dataColeta: amostra.dataColeta || '',
                 prazoFinalizacao: amostra.prazoFinalizacao || '',
-                procedimento: amostra.procedimento || '',
+                enderecoColeta: amostra.enderecoColeta || '',
                 descricao: amostra.descricao || '',
+                dataCadastro: amostra.dataCadastro || '',
+                coordenadaColeta: amostra.coordenadaColeta || '',
+                analise: amostra.analise || { id: '' },
+                procedures: amostra.procedures || [],
+                analitos: amostra.analitos || [],
                 id: amostra.id,
             });
         }
@@ -140,18 +151,29 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     rows={4}
                     margin="normal"
                 />
+                <TextField
+                    label="Coordenada de Coleta"
+                    name="coordenadaColeta"
+                    value={editAmostra.coordenadaColeta}
+                    onChange={handleChange}
+                    fullWidth
+                    margin="normal"
+                />
+               
 
-                {message && (
-                    <Typography variant="body2" color="error" mt={2}>
-                        {message}
-                    </Typography>
-                )}
+                    {message && (
+                        <Typography variant="body2" color="error" mt={2}>
+                            {message}
+                        </Typography>
+                    )}
 
-                <Box display="flex" justifyContent="flex-end" mt={3}>
-                    <Button variant="contained" color="primary" onClick={handleSave}>
-                        Salvar
-                    </Button>
-                </Box>
+
+
+                    <Box display="flex" justifyContent="flex-end" mt={3}>
+                        <Button variant="contained" color="primary" onClick={handleSave}>
+                            Salvar
+                        </Button>
+                    </Box>
             </Box>
         </Modal>
     );

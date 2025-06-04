@@ -53,7 +53,6 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
                     overflowX: 'auto',
                     borderRadius: '10px',
                     width: '600px',
-                    maxWidth: 800,
                     margin: '0 auto',
                 }}
             >

@@ -13,8 +13,8 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import EmojiNatureIcon from '@mui/icons-material/EmojiNature';
-import SideBar from './components/SideBar.js'; 
-import Dashboard from './components/MenuComponents/Dashboard.js'; 
+import SideBar from './components/SideBar.js';
+import Dashboard from './components/MenuComponents/Dashboard.js';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 import { useNavigate } from 'react-router-dom';
@@ -232,18 +232,18 @@ function Menu() {
 
 
                 <div>
-      <h1 className="text-xl font-bold">Dashboard</h1>
-      <LineChartDashboard />
-    </div>
-                    
+                    <h1 className="text-xl font-bold">Dashboard</h1>
+                    <LineChartDashboard />
+                </div>
+
 
 
             </Box>
 
-            
+
         </Box>
 
-        
+
     );
 
 }

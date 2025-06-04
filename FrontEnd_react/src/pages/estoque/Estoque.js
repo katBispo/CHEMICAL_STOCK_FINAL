@@ -16,7 +16,13 @@ import TabelaListaReagentes from "./tabelas/TabelaListaReagentes";
 // Cabeçalho com botão
 const EstoqueHeader = ({ onAdd }) => (
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4" component="h1" fontWeight="bold" color="text.primary">
+        <Typography
+            variant="h4"
+            component="h1"
+            fontWeight="bold"
+            color="text.primary"
+            sx={{ ml: '120px' }}
+        >
             Estoque de Reagentes
         </Typography>
         <Button
@@ -36,21 +42,32 @@ const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal, controlados }) 
     const vencidos = vencidosTotal !== undefined ? vencidosTotal : reagentes.filter(r => new Date(r.validade) < new Date()).length;
 
     return (
-        <Box display="flex" gap={4} mb={4} flexWrap="wrap">
-
-            <Paper elevation={3} sx={{ p: 3, flex: 1, minWidth: 250, borderLeft: '5px solid #4CAF50' }}>
+        <Box
+            display="flex"
+            gap={3}
+            mb={4}
+            flexWrap="wrap"
+            sx={{ ml: '120px' }} // Ajuste esse valor para mover os cards manualmente
+        >
+            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #4CAF50' }}>
                 <Typography variant="h6" color="success.main">Total de Frascos</Typography>
                 <Typography variant="h4" fontWeight="bold" mt={1}>{frascosTotal}</Typography>
             </Paper>
-            <Paper elevation={3} sx={{ p: 3, flex: 1, minWidth: 250, borderLeft: '5px solid #f44336' }}>
+            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #f44336' }}>
                 <Typography variant="h6" color="error">Vencidos</Typography>
                 <Typography variant="h4" fontWeight="bold" mt={1}>{vencidos}</Typography>
             </Paper>
-            <Paper elevation={3} sx={{ p: 3, flex: 1, minWidth: 250, borderLeft: '5px solid #f44336' }}>
+            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #f44336' }}>
                 <Typography variant="h6" color="error">Controlados</Typography>
                 <Typography variant="h4" fontWeight="bold" mt={1}>{controlados}</Typography>
             </Paper>
+            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #f44336' }}>
+                <Typography variant="h6" color="error">Controlados</Typography>
+                <Typography variant="h4" fontWeight="bold" mt={1}>{controlados}</Typography>
+            </Paper>
+
         </Box>
+
     );
 };
 
@@ -153,7 +170,7 @@ const EstoqueReagentes = () => {
             {/* Conteúdo principal */}
             <Box
                 sx={{
-                    maxWidth: '1200px',
+                    maxWidth: '1600px',
                     mx: 'auto',
                     p: 3,
                     bgcolor: '#f5f5f5',
@@ -162,9 +179,8 @@ const EstoqueReagentes = () => {
                 }}
             >
                 <EstoqueHeader onAdd={handleAdd} />
-                <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} frascosTotal={frascosCount} controlados = {controladosCount}
+                <ResumoEstoque reagentes={reagentes} vencidosTotal={vencidosCount} frascosTotal={frascosCount} controlados={controladosCount}
                 />
-
                 <Box
                     display="flex"
                     flexWrap="wrap"
@@ -174,25 +190,39 @@ const EstoqueReagentes = () => {
                     alignItems="stretch"
                 >
                     <Box display="flex" flexWrap="wrap" gap={4} justifyContent="center" mb={4}>
+
                         <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
                             <GraficoTiposReagente />
                         </Box>
 
-                        <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
-                            <GraficoValidadeReagentes />
+                        <Box
+                            flex={1}
+                            minWidth={300}
+                            mt={6}
+                            height="900px"  // ⬅️ Aumente esse valor conforme necessário
+                            sx={{ overflowY: 'auto' }}  // ⬅️ Para rolar caso o conteúdo passe
+                        >
+                            <TabelaListaReagentes reagentes={reagentes} />
                         </Box>
+
                     </Box>
-
-
                 </Box>
 
 
-                <Box display="flex" gap={2} flexWrap="wrap">
-                    <Box flex={1} minWidth={300}>
-                        <TabelaListaReagentes reagentes={reagentes} />
-                    </Box>
-                    <Box flex={1} minWidth={300}>
-                        <TabelaListaReagentes reagentes={reagentes} />
+                <Box
+                    display="flex"
+                    gap={2}
+                    flexWrap="wrap"
+                    mt={-70}  // ← Levanta o bloco
+                    mb={4}   // ← Espaço abaixo para não grudar no próximo
+                    ml={10}
+                >
+                    <Box
+                        flex="1 1 400px"
+                        minWidth={300}
+                        maxWidth={600}
+                    >
+                        <GraficoValidadeReagentes />
                     </Box>
                 </Box>
 

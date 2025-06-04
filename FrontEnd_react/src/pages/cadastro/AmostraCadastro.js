@@ -138,7 +138,7 @@ function AmostraCadastro({ }) {
                     subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
                 })),
             })),
-    
+
         };
 
         // Exibir payload no console antes de enviar
@@ -192,7 +192,7 @@ function AmostraCadastro({ }) {
         console.log("Analitos recebidos:", analitosSelecionados);
         setSelectedAnalitos(analitosSelecionados || []); // Garante que não seja undefined
     };
-    
+
     const handleSaveProcedures = (procedures) => {
         console.log("Procedimentos recebidos:", procedures);
         setSelectedProcedures(procedures || []); // Garante que não seja undefined
@@ -333,43 +333,43 @@ function AmostraCadastro({ }) {
                                 </Box>
                             )}
 
-                 {/* Botão para abrir o AnalitoSelector */}
-<Button
-    onClick={() => setShowAnalitoSelector(true)}
-    sx={{
-        width: '350px',
-        height: '50px',
-        backgroundColor: '#4caf50',
-        color: 'white',
-        '&:hover': { backgroundColor: '#45a049' },
-    }}
->
-    Selecionar Analitos
-</Button>
+                            {/* Botão para abrir o AnalitoSelector */}
+                            <Button
+                                onClick={() => setShowAnalitoSelector(true)}
+                                sx={{
+                                    width: '350px',
+                                    height: '50px',
+                                    backgroundColor: '#4caf50',
+                                    color: 'white',
+                                    '&:hover': { backgroundColor: '#45a049' },
+                                }}
+                            >
+                                Selecionar Analitos
+                            </Button>
 
-{/* Lista de Analitos Selecionados */}
-{selectedAnalitos?.length > 0 && (
-    <Box
-        sx={{
-            backgroundColor: '#f9f9f9',
-            padding: '10px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            width: '350px',
-        }}
-    >
-        <Typography variant="subtitle1">Analitos Selecionados:</Typography>
-        <List>
-            {selectedAnalitos.map((analito, index) => (
-                <ListItem key={index}>
-                    <Typography variant="body2">
-                        {analito.classificacao || "Classificação não disponível"} -{" "}
-                        {analito.tipos?.length > 0
-                            ? analito.tipos.map(
-                                (tipo) =>
-                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
-                            ).join("; ")
-                            : "Nenhum tipo disponível"}
+                            {/* Lista de Analitos Selecionados */}
+                            {selectedAnalitos?.length > 0 && (
+                                <Box
+                                    sx={{
+                                        backgroundColor: '#f9f9f9',
+                                        padding: '10px',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        width: '350px',
+                                    }}
+                                >
+                                    <Typography variant="subtitle1">Analitos Selecionados:</Typography>
+                                    <List>
+                                        {selectedAnalitos.map((analito, index) => (
+                                            <ListItem key={index}>
+                                                <Typography variant="body2">
+                                                    {analito.classificacao || "Classificação não disponível"} -{" "}
+                                                    {analito.tipos?.length > 0
+                                                        ? analito.tipos.map(
+                                                            (tipo) =>
+                                                                `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                                                        ).join("; ")
+                                                        : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>
                                         ))}
@@ -385,11 +385,11 @@ function AmostraCadastro({ }) {
                                 />
                             )}
                             {showAnalitoSelector && (
-                               <AnalitoSelector
-                               selectedAnalitos={selectedAnalitos}
-                               handleClose={() => setShowAnalitoSelector(false)}
-                               onAnalitoSelect={handleAnalitoSelection}
-                           />
+                                <AnalitoSelector
+                                    selectedAnalitos={selectedAnalitos}
+                                    handleClose={() => setShowAnalitoSelector(false)}
+                                    onAnalitoSelect={handleAnalitoSelection}
+                                />
                             )}
                         </Box>
 

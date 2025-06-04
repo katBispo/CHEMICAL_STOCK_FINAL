@@ -7,6 +7,7 @@ import SideBar from '../components/SideBar';
 import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailOverlay';
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
 import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExcluirOverlay';
+import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
 
 
 
@@ -33,6 +34,9 @@ const AmostraLista = () => {
     const [selectedAmostra, setSelectedAmostra] = useState(null); // Amostra selecionada
     const [open, setOpen] = useState(false);
 
+    const [openAmostraOverlay, setOpenAmostraOverlay] = useState(false); // Controla o modal
+
+
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [amostraToEdit, setAmostraToEdit] = useState(null);
 
@@ -41,6 +45,12 @@ const AmostraLista = () => {
     const handleOpenDeleteOverlay = (amostra) => {
         setSelectedAmostra(amostra);
         setOpenDeleteOverlay(true);
+    };
+    const handleOpenAmostraOverlay = () => setOpenAmostraOverlay(true);
+
+    const handleCloseAmostraOverlay = () => {
+        setOpenAmostraOverlay(false);
+        //navigate("/amostraCadastro"); // Redireciona para a rota de cadastro
     };
 
     const handleCloseDeleteOverlay = () => {
@@ -185,12 +195,22 @@ const AmostraLista = () => {
                     <Button
                         variant="contained"
                         color="success"
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
+                        style={{
+                            backgroundColor: '#4CAF50',
+                            color: '#fff',
+                            textTransform: 'none',
+                            fontWeight: 'bold'
+                        }}
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={() => navigate('/amostraCadastro')}
+                        onClick={handleOpenAmostraOverlay} // Abre o overlay
                     >
                         Cadastrar Amostra
                     </Button>
+                    <SelectAnaliseDaAmostra
+                        open={openAmostraOverlay}
+                        handleClose={handleCloseAmostraOverlay}
+                    />
+
 
                     <Button
                         variant="contained"

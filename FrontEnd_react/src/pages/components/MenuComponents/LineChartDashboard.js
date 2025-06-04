@@ -96,7 +96,7 @@ const LineChartDashboard = () => {
 
 
       <div className="w-full max-w-6xl bg-white shadow-lg rounded-xl p-4">
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={300}>
           <LineChart data={dadosMock[tipo]} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="mes" />

@@ -1,57 +1,111 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Box, Typography } from '@mui/material';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import {
+  Box,
+  Typography,
+  Container,
+  Divider,
+  useTheme,
+} from '@mui/material';
 
-// Dados para o gráfico de barras
 const barData = [
-    { name: 'Análises Atrasadas', valueAtrasadas: 40, valueEmAndamento: 30, valueConcluidas: 30 },
+  {
+    name: 'Análises',
+    valueAtrasadas: 40,
+    valueEmAndamento: 30,
+    valueConcluidas: 30,
+  },
 ];
 
-// Cores para as barras
-const COLORS = ['#D32F2F', '#FFEB3B', '#66BB6A'];
+const COLORS = {
+  valueAtrasadas: '#ef5350',
+  valueEmAndamento: '#ffca28',
+  valueConcluidas: '#66bb6a',
+};
+
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          padding: 1,
+          borderRadius: 1,
+          boxShadow: 1,
+        }}
+      >
+        {payload.map((entry, index) => (
+          <Typography key={index} sx={{ color: entry.fill, fontSize: 14 }}>
+            <strong>{entry.name}:</strong> {entry.value}
+          </Typography>
+        ))}
+      </Box>
+    );
+  }
+  return null;
+};
 
 const Dashboard = () => {
-    return (
-        <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                mt: 4,
-            }}
+  return (
+    <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
+      <Box
+        sx={{
+          backgroundColor: '#fff',
+          padding: 4,
+          borderRadius: 3,
+          boxShadow: 5,
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            mb: 1,
+            color: '#333',
+          }}
         >
-            {/* Gráfico de Barras */}
-            <Box
-                sx={{
-                    backgroundColor: 'white',
-                    padding: 2, // Menor padding
-                    borderRadius: 3,
-                    boxShadow: 5,
-                    width: '450px', // Reduzir a largura do gráfico
-                    textAlign: 'center',
-                }}
-            >
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                    Status das Análises
-                </Typography>
+          Dashboard de Análises
+        </Typography>
+        <Divider sx={{ mb: 4 }} />
 
-                <ResponsiveContainer width="100%" height={300}> {/* Reduzir a altura do gráfico */}
-                    <BarChart data={barData}>
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        {/* Barra para Análises Atrasadas */}
-                        <Bar dataKey="valueAtrasadas" fill={COLORS[0]} />
-                        {/* Barra para Em Andamento */}
-                        <Bar dataKey="valueEmAndamento" fill={COLORS[1]} />
-                        {/* Barra para Concluídas */}
-                        <Bar dataKey="valueConcluidas" fill={COLORS[2]} />
-                    </BarChart>
-                </ResponsiveContainer>
-            </Box>
-        </Box>
-    );
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Bar
+              dataKey="valueAtrasadas"
+              name="Atrasadas"
+              fill={COLORS.valueAtrasadas}
+              radius={[10, 10, 0, 0]}
+            />
+            <Bar
+              dataKey="valueEmAndamento"
+              name="Em Andamento"
+              fill={COLORS.valueEmAndamento}
+              radius={[10, 10, 0, 0]}
+            />
+            <Bar
+              dataKey="valueConcluidas"
+              name="Concluídas"
+              fill={COLORS.valueConcluidas}
+              radius={[10, 10, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    </Container>
+  );
 };
 
 export default Dashboard;
