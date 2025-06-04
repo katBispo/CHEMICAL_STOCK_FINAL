@@ -11,6 +11,7 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
     const [open, setOpen] = useState(false);
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [reagenteToEdit, setReagenteToEdit] = useState(null);
+    const [showOverlay, setShowOverlay] = useState(true); // controla a exibição do overlay
 
     const handleOpenDeleteOverlay = (reagente) => {
         setSelectedReagente(reagente);
@@ -29,7 +30,6 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
 
         if (response.ok) {
             console.log('Reagente excluído com sucesso');
-            // Ideal: recarregar a lista de reagentes via props ou outro mecanismo
         } else {
             console.error('Erro ao excluir reagente');
         }
@@ -50,12 +50,57 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
             <Paper
                 elevation={3}
                 sx={{
+                    position: 'relative',
                     overflowX: 'auto',
                     borderRadius: '10px',
                     width: '600px',
                     margin: '0 auto',
                 }}
             >
+                {/* Overlay de destaque */}
+                {showOverlay && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            background: 'rgba(255, 255, 255, -55)',
+                            backdropFilter: 'blur(8px)',
+                            borderRadius: '16px',
+                            padding: '30px 40px',
+                            zIndex: 10,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                        }}
+                    >
+                        <p style={{ fontSize: '18px', fontWeight: '500', marginBottom: '16px' }}>
+                            Visualização rápida da lista de reagentes
+                        </p>
+                        <button
+                            style={{
+                                backgroundColor: '#4CAF50',
+                                color: 'white',
+                                padding: '10px 20px',
+                                fontSize: '16px',
+                                borderRadius: '999px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
+                                transition: 'all 0.3s ease',
+                            }}
+                            onClick={() => setShowOverlay(false)}
+                            onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
+                            onMouseLeave={(e) => (e.target.style.transform = 'scale(1.0)')}
+                        >
+                            Ver mais
+                        </button>
+                    </div>
+                )}
+
                 <table style={{ width: '100%' }}>
                     <thead style={{ backgroundColor: '#4CAF50' }}>
                         <tr>

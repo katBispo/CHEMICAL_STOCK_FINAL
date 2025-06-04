@@ -70,27 +70,43 @@ const LineChartDashboard = () => {
 
   return (
     <div className="flex flex-col items-center gap-4 mt-4">
-      {/* Botões */}
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-6">
+        {/* Amostras Atrasadas */}
         <button
           onClick={() => handleButtonClick("amostrasAtrasadas")}
-          className="flex items-center gap-2 bg-green-500 text-white font-semibold py-2 px-5 rounded-full shadow-md hover:bg-green-600 hover:scale-105 transition-transform duration-300 ease-in-out"
+          className="group flex items-center gap-4 bg-white text-gray-800 border border-gray-200 px-6 py-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:bg-green-50 hover:border-green-400"
         >
-          📊 Amostras Atrasadas
+          <div className="bg-green-500 text-white rounded-full p-3 group-hover:scale-110 transform transition duration-300">
+            📊
+          </div>
+          <span className="font-semibold text-lg">Amostras Atrasadas</span>
         </button>
+
+        {/* Reagentes Vencidos */}
         <button
           onClick={() => handleButtonClick("reagentesVencidos")}
-          className="flex items-center gap-2 bg-green-500 text-white font-semibold py-2 px-5 rounded-full shadow-md hover:bg-green-600 hover:scale-105 transition-transform duration-300 ease-in-out"
+          className="group flex items-center gap-4 bg-white text-gray-800 border border-gray-200 px-6 py-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:bg-green-50 hover:border-green-400"
         >
-          ⏰ Reagentes Vencidos
+          <div className="bg-green-500 text-white rounded-full p-3 group-hover:scale-110 transform transition duration-300">
+            ⏰
+          </div>
+          <span className="font-semibold text-lg">Reagentes Vencidos</span>
         </button>
+
+        {/* Reagentes Cadastrados */}
         <button
           onClick={() => handleButtonClick("reagentesCadastrados")}
-          className="flex items-center gap-2 bg-green-500 text-white font-semibold py-2 px-5 rounded-full shadow-md hover:bg-green-600 hover:scale-105 transition-transform duration-300 ease-in-out"
+          className="group flex items-center gap-4 bg-white text-gray-800 border border-gray-200 px-6 py-4 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:bg-green-50 hover:border-green-400"
         >
-          🧪 Reagentes Cadastrados
+          <div className="bg-green-500 text-white rounded-full p-3 group-hover:scale-110 transform transition duration-300">
+            🧪
+          </div>
+          <span className="font-semibold text-lg">Reagentes Cadastrados</span>
         </button>
       </div>
+
+
+
 
       {/* Gráfico */}
       <div className="bg-white shadow-lg rounded-xl p-4">
@@ -108,8 +124,8 @@ const LineChartDashboard = () => {
                 tipo === "amostrasAtrasadas"
                   ? "#3b82f6"
                   : tipo === "reagentesVencidos"
-                  ? "#ef4444"
-                  : "#22c55e"
+                    ? "#ef4444"
+                    : "#22c55e"
               }
               activeDot={{ r: 8 }}
               strokeWidth={3}

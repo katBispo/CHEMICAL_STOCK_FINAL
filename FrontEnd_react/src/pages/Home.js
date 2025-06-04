@@ -217,19 +217,24 @@ function Menu() {
 
           {/* Segundo grupo: CardReabastecimentoEstoque e Dashboard + LineChartDashboard lado a lado */}
           <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, width: '100%' }}>
+            <Box sx={{ display: 'flex', gap: 2, width: '100%', alignItems: 'stretch' }}>
+              {/* Novo Box com título e gráfico */}
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flexGrow: 1 }}>
+                  <LineChartDashboard />
+                </Box>
+              </Box>
 
-            {/* Novo Box com título e gráfico */}
-            <Box sx={{ flex: 1 }}>
-              <div>
-                <h1 className="text-xl font-bold mb-4">Dashboard</h1>
-                <LineChartDashboard />
-              </div>
+              {/* Card de Reabastecimento */}
+              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', mt: 5 /* margem topo */ }}>
+                <CardReabastecimentoEstoque reagentes={reagentes} />
+              </Box>
+
+
+
+
             </Box>
 
-            {/* Card de Reabastecimento */}
-            <Box sx={{ flex: 1 }}>
-              <CardReabastecimentoEstoque reagentes={reagentes} />
-            </Box>
 
 
 
