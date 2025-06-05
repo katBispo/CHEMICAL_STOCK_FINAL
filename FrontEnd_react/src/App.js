@@ -29,6 +29,8 @@ import SelectAnaliseDaAmostra from './pages/components/SelectAnaliseDaAmostra';
 import ReposicaoReagentOverlay from './pages/components/ReposicaoReagentOverlay';
 
 
+import ListaReagenteCompleta from './pages/estoque/tabelas/overlayTabelas/ListaReagentesCompleta';
+
 import Perfil from './pages/Perfil';
 
 import { Link } from 'react-router-dom';
@@ -65,6 +67,7 @@ function App() {
         <Route path="/analiseAmostra" element={<SelectAnaliseDaAmostra />} />
         <Route path="/reposicaoReagente" element={<ReposicaoReagentOverlay />} />
         <Route path="/estoque" element={<Estoque />} />
+        <Route path="/listaReagentesCompleta" element={<ListaReagenteCompleta />} />
 
 
 

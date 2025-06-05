@@ -4,6 +4,9 @@ import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import ReagenteDetailOverlay from '../../components/ReagenteListaIcons/ReagenteDetailOverlay';
 import ReagenteEditOverlay from '../../components/ReagenteListaIcons/ReagenteEditOverlay';
 import ReagenteExcluirOverlay from '../../components/ReagenteListaIcons/ReagenteExcluirOverlay';
+import ListaReagentesCompleta from './overlayTabelas/ListaReagentesCompleta';
+
+
 
 const TabelaListaReagentes = ({ reagentes, onSave }) => {
     const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
@@ -11,7 +14,8 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
     const [open, setOpen] = useState(false);
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [reagenteToEdit, setReagenteToEdit] = useState(null);
-    const [showOverlay, setShowOverlay] = useState(true); // controla a exibição do overlay
+    const [showFullTable, setShowFullTable] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(true); 
 
     const handleOpenDeleteOverlay = (reagente) => {
         setSelectedReagente(reagente);
@@ -89,15 +93,21 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
                                 borderRadius: '999px',
                                 border: 'none',
                                 cursor: 'pointer',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.0)',
                                 transition: 'all 0.3s ease',
                             }}
-                            onClick={() => setShowOverlay(false)}
+                            onClick={() => {
+                                setShowOverlay(false);
+                                setShowFullTable(true);
+                            }}
                             onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
                             onMouseLeave={(e) => (e.target.style.transform = 'scale(1.0)')}
                         >
                             Ver mais
                         </button>
+
+
+
                     </div>
                 )}
 
@@ -168,6 +178,14 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
                     reagente={selectedReagente}
                 />
             )}
+            {showFullTable && (
+                <ListaReagentesCompleta
+                    reagentes={reagentes}
+                    onClose={() => setShowFullTable(false)}
+                    onSave={onSave}
+                />
+            )}
+
         </>
     );
 };

@@ -213,8 +213,8 @@ const EstoqueReagentes = () => {
                     display="flex"
                     gap={2}
                     flexWrap="wrap"
-                    mt={-70}  // ← Levanta o bloco
-                    mb={4}   // ← Espaço abaixo para não grudar no próximo
+                    mt={-70}  
+                    mb={4}   
                     ml={10}
                 >
                     <Box
