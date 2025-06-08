@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.controller;
 
+import com.laboratorio.labanalise.DTO.ReagenteDTO;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.enums.TipoReagente;
 import com.laboratorio.labanalise.model.enums.UnidadeReagente;
@@ -101,4 +102,8 @@ public class ReagenteController {
         return service.contarReagentesControlados();
     }
 
+    @GetMapping("/buscarReagente")
+    public List<ReagenteDTO> buscarPorNome(@RequestParam String nome) {
+        return service.buscarPorNome(nome);
+    }
 }

@@ -28,4 +28,6 @@ public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
     @Query("SELECT COUNT(r) FROM Reagente r WHERE r.controlado = true")
     long contarReagentesControlados();
 
+    List<Reagente> findByNomeContainingIgnoreCase(String nome);
+
 }

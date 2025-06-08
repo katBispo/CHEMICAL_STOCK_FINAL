@@ -1,15 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, IconButton } from '@mui/material';
 import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import ReagenteDetailOverlay from '../../../components/ReagenteListaIcons/ReagenteDetailOverlay';
 import ReagenteEditOverlay from '../../../components/ReagenteListaIcons/ReagenteEditOverlay';
 import ReagenteExcluirOverlay from '../../../components/ReagenteListaIcons/ReagenteExcluirOverlay';
+import axios from 'axios';
+
 
 const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
     const [selectedReagente, setSelectedReagente] = React.useState(null);
     const [editOverlayOpen, setEditOverlayOpen] = React.useState(false);
     const [deleteOverlayOpen, setDeleteOverlayOpen] = React.useState(false);
     const [detailOpen, setDetailOpen] = React.useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredReagentes, setFilteredReagentes] = useState(reagentes);
+    const [allReagentes, setAllReagentes] = useState([]);
+
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            axios.get('http://localhost:8080/reagente')
+                .then(res => {
+                    setAllReagentes(res.data);
+                    setFilteredReagentes(res.data); // mostra todos se campo estiver vazio
+                })
+                .catch(err => console.error(err));
+        } else {
+            axios.get(`http://localhost:8080/reagente/buscarReagente?nome=${encodeURIComponent(searchTerm)}`)
+                .then(res => {
+                    setAllReagentes(res.data);
+                    setFilteredReagentes(res.data); // filtra automaticamente enquanto digita
+                })
+                .catch(err => console.error(err));
+        }
+    }, [searchTerm]);
+
+
+    const handleSearch = () => {
+        if (searchTerm.trim() === '') {
+            setFilteredReagentes(allReagentes); // mostra tudo
+        } else {
+            const term = searchTerm.toLowerCase();
+            const filtered = allReagentes.filter(r =>
+                r.nome.toLowerCase().includes(term)
+            );
+            setFilteredReagentes(filtered); // mostra só os filtrados ao clicar
+        }
+    };
 
 
     const handleEdit = (reagente) => {
@@ -59,6 +95,36 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                 >
                     ✕
                 </button>
+
+                {/* Campo de busca e botão de filtrar */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nome..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            flex: 1,
+                            padding: '10px',
+                            borderRadius: '8px',
+                            border: '1px solid #ccc'
+                        }}
+                    />
+                    <button
+                        onClick={handleSearch}
+                        style={{
+                            backgroundColor: '#4CAF50',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '10px 20px',
+                            borderRadius: '8px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Buscar
+                    </button>
+                </div>
+
                 <Paper elevation={4} sx={{ overflowX: 'auto', borderRadius: '12px', width: '100%' }}>
                     <table style={{ width: '100%' }}>
                         <thead style={{ backgroundColor: '#4CAF50' }}>
@@ -73,7 +139,7 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {reagentes.map((r) => (
+                            {filteredReagentes.map((r) => (
                                 <tr
                                     key={r.id}
                                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}

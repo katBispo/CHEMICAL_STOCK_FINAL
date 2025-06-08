@@ -1,5 +1,7 @@
 package com.laboratorio.labanalise.services;
 
+import com.laboratorio.labanalise.DTO.ReagenteDTO;
+import com.laboratorio.labanalise.mapper.ReagenteMapper;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.enums.TipoReagente;
 import com.laboratorio.labanalise.repositories.ReagenteRepository;
@@ -7,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -20,7 +23,14 @@ public class ReagenteService {
 
     @Autowired
     private MovimentacaoReagenteService movimentacaoReagenteService;
+    private final ReagenteMapper reagenteMapper;
 
+
+
+    public ReagenteService(ReagenteRepository reagenteRepository, ReagenteMapper reagenteMapper) {
+        this.repository = reagenteRepository;
+        this.reagenteMapper = reagenteMapper;
+    }
     public Reagente salvar(Reagente reagente) {
 
         reagente = repository.save(reagente);
@@ -97,21 +107,29 @@ public class ReagenteService {
         LocalDate hoje = LocalDate.now();
         LocalDate quinzeDias = hoje.plusDays(15);
         LocalDate trintaDias = hoje.plusDays(30);
-    
+
         long vencidos = repository.reagentesVencidos().size();
         long vencemEm15Dias = repository.proximosAVencer15Dias(hoje, quinzeDias).size();
         long vencemEntre15e30Dias = repository.vencemEm30Dias(quinzeDias, trintaDias).size();
-    
+
         Map<String, Long> resultado = new HashMap<>();
         resultado.put("vencidos", vencidos);
         resultado.put("vencemEm15Dias", vencemEm15Dias);
         resultado.put("vencemEntre15e30Dias", vencemEntre15e30Dias);
-       
+
         return resultado;
     }
 
     public long contarReagentesControlados() {
         return repository.contarReagentesControlados();
     }
+
+
+       public List<ReagenteDTO> buscarPorNome(String nome) {
+        return repository.findByNomeContainingIgnoreCase(nome).stream()
+                .map(reagenteMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     
 }
