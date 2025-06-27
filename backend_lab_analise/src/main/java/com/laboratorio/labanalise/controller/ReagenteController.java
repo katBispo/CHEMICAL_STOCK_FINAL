@@ -6,6 +6,7 @@ import com.laboratorio.labanalise.model.enums.TipoReagente;
 import com.laboratorio.labanalise.model.enums.UnidadeReagente;
 import com.laboratorio.labanalise.services.ReagenteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,4 +108,14 @@ public class ReagenteController {
     public List<ReagenteDTO> buscarPorNome(@RequestParam String nome) {
         return service.buscarPorNome(nome);
     }
+
+    @GetMapping("/filtroReagente")
+    public List<ReagenteDTO> buscarReagentesFiltrados(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) TipoReagente tipo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+        return service.buscarFiltrados(nome, tipo, dataInicio, dataFim);
+    }
+
 }

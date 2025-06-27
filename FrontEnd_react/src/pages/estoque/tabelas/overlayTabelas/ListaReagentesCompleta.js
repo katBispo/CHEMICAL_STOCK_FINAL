@@ -4,6 +4,7 @@ import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import ReagenteDetailOverlay from '../../../components/ReagenteListaIcons/ReagenteDetailOverlay';
 import ReagenteEditOverlay from '../../../components/ReagenteListaIcons/ReagenteEditOverlay';
 import ReagenteExcluirOverlay from '../../../components/ReagenteListaIcons/ReagenteExcluirOverlay';
+import OverlayFiltroReagente from '../../../components/OverlayFiltroReagente';
 import axios from 'axios';
 
 
@@ -15,6 +16,9 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredReagentes, setFilteredReagentes] = useState(reagentes);
     const [allReagentes, setAllReagentes] = useState([]);
+    const [showFiltroOverlay, setShowFiltroOverlay] = useState(false);
+    const [filtrosAtuais, setFiltrosAtuais] = useState({});
+
 
     useEffect(() => {
         if (searchTerm.trim() === '') {
@@ -46,6 +50,23 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
             setFilteredReagentes(filtered); // mostra só os filtrados ao clicar
         }
     };
+    const handleFiltroAplicado = async (filtros) => {
+        const queryParams = new URLSearchParams();
+
+        if (filtros.nome) queryParams.append('nome', filtros.nome);
+        if (filtros.tipo) queryParams.append('tipo', filtros.tipo);
+        if (filtros.dataInicio) queryParams.append('dataInicio', filtros.dataInicio);
+        if (filtros.dataFim) queryParams.append('dataFim', filtros.dataFim);
+
+        try {
+            const response = await fetch(`http://localhost:8080/reagente/filtroReagente?${queryParams.toString()}`);
+            const data = await response.json();
+            setFilteredReagentes(data);
+        } catch (error) {
+            console.error('Erro ao buscar reagentes filtrados:', error);
+        }
+    };
+
 
 
     const handleEdit = (reagente) => {
@@ -111,7 +132,7 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                         }}
                     />
                     <button
-                        onClick={handleSearch}
+                        onClick={() => setShowFiltroOverlay(true)}
                         style={{
                             backgroundColor: '#4CAF50',
                             color: '#fff',
@@ -123,6 +144,7 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                     >
                         Buscar
                     </button>
+
                 </div>
 
                 <Paper elevation={4} sx={{ overflowX: 'auto', borderRadius: '12px', width: '100%' }}>
@@ -195,6 +217,13 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                     reagente={selectedReagente}
                 />
             )}
+            {showFiltroOverlay && (
+                <OverlayFiltroReagente
+                    onApplyFilters={handleFiltroAplicado}
+                    onClose={() => setShowFiltroOverlay(false)}
+                />
+            )}
+
         </div>
     );
 };

@@ -30,6 +30,8 @@ import {
 
 const AmostraLista = () => {
     const [amostras, setAmostras] = useState([]);
+    const [analises, setAnalises] = useState([]);
+
 
     const [selectedAmostra, setSelectedAmostra] = useState(null); // Amostra selecionada
     const [open, setOpen] = useState(false);
@@ -59,7 +61,7 @@ const AmostraLista = () => {
     };
     const [selectedAmostras, setSelectedAmostras] = useState([]);
 
-    const handleCheckboxChange = (amostraId) => {
+    const handleCheckboxChange = (amostraId) => {//tenho que chamar ele la na frente
         setSelectedAmostras((prevSelected) => {
             if (prevSelected.includes(amostraId)) {
                 // Desmarcar
@@ -137,15 +139,29 @@ const AmostraLista = () => {
                 console.error('Erro ao buscar amostras:', error);
             }
         };
+        const fetchAnalises = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/analise');
+                const data = await response.json();
+                setAnalises(data);
+            } catch (error) {
+                console.error('Erro ao buscar análises:', error);
+            }
+        };
+
 
         // Função para buscar as análises do backend
 
 
         // Chamando ambas as funções de busca
         fetchAmostras();
-        //fetchAnalises();
+        fetchAnalises();
     }, []);
 
+    const getAnaliseNomeById = (id) => {
+        const analise = analises.find(a => a.id === id);
+        return analise ? analise.nome : '';
+    };
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
@@ -268,8 +284,10 @@ const AmostraLista = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
-                                            {amostra.analise ? amostra.analise.nome : ''}
+                                            {getAnaliseNomeById(amostra.analiseId)}
                                         </TableCell>
+
+
                                         <TableCell>
                                             <Box
                                                 sx={{

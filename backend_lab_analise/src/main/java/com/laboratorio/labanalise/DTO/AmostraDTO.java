@@ -3,6 +3,9 @@ package com.laboratorio.labanalise.DTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.laboratorio.labanalise.model.Amostra;
 
 public class AmostraDTO {
     private Long id;
@@ -11,13 +14,14 @@ public class AmostraDTO {
     private LocalDate dataColeta;
     private String coordenadaColeta;
     private LocalDate prazoFinalizacao;
-    private String status; // Pode usar o nome do enum como string
+    private String status; 
     private String descricao;
-    private Long analiseId; // ID da análise associada
-    private List<Long> analitos; // IDs dos analitos
-    private List<Long> procedimentos; // IDs dos procedimentos associados
+    private Long analiseId; 
+    private List<Long> analitos; 
+    private List<Long> procedimentos; 
 
-    // Getters e Setters
+    private String analiseNome;
+
     public Long getId() {
         return id;
     }
@@ -105,4 +109,36 @@ public class AmostraDTO {
     public void setProcedimentos(List<Long> procedimentos) {
         this.procedimentos = procedimentos;
     }
+    public String  getAnaliseNome(){
+        return analiseNome;
+    }
+
+    public void setAnaliseNome (String analiseNome){
+        this.analiseNome = analiseNome;
+    
+    }
+
+    public AmostraDTO(Amostra amostra) {
+    this.id = amostra.getId();
+    this.nome = amostra.getNome();
+    this.enderecoColeta = amostra.getEnderecoColeta();
+    this.dataColeta = amostra.getDataColeta();
+    this.coordenadaColeta = amostra.getCoordenadaColeta();
+    this.prazoFinalizacao = amostra.getPrazoFinalizacao();
+    this.status = amostra.getStatus().name();
+    this.descricao = amostra.getDescricao();
+
+    if (amostra.getAnalise() != null) {
+        this.analiseId = amostra.getAnalise().getId();
+        this.analiseNome = amostra.getAnalise().getNome(); 
+    }
+
+    if (amostra.getAnalitos() != null) {
+        this.analitos = amostra.getAnalitos().stream()
+            .map(a -> a.getId())
+            .collect(Collectors.toList());
+    }
+
+}
+
 }

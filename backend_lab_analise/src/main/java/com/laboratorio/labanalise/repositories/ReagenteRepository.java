@@ -1,6 +1,8 @@
 package com.laboratorio.labanalise.repositories;
 
 import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.enums.TipoReagente;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,5 +31,15 @@ public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
     long contarReagentesControlados();
 
     List<Reagente> findByNomeContainingIgnoreCase(String nome);
+
+    @Query("SELECT r FROM Reagente r WHERE "
+            + "(:nome IS NULL OR LOWER(r.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND "
+            + "(:tipo IS NULL OR r.tipo = :tipo) AND "
+            + "(:dataInicio IS NULL OR r.criadoEm >= :dataInicio) AND "
+            + "(:dataFim IS NULL OR r.criadoEm <= :dataFim)")
+    List<Reagente> buscarFiltrados(@Param("nome") String nome,
+            @Param("tipo") TipoReagente tipo,
+            @Param("dataInicio") LocalDate dataInicio,
+            @Param("dataFim") LocalDate dataFim);
 
 }

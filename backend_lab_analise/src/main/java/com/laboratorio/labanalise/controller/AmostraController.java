@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.controller;
 
+import com.laboratorio.labanalise.DTO.AmostraDTO;
 import com.laboratorio.labanalise.model.Amostra;
 import com.laboratorio.labanalise.model.Analise;
 import com.laboratorio.labanalise.model.Analito;
@@ -80,9 +81,8 @@ public class AmostraController {
                 .toUri();
         return ResponseEntity.created(uri).body(amostra);
     }
-    
-@GetMapping
-public ResponseEntity<List<Amostra>> listarAmostras() {
+ @GetMapping
+public ResponseEntity<List<AmostraDTO>> listarAmostras() {
     List<Amostra> amostras = service.buscarTodos();
 
     // Atualiza status dinamicamente
@@ -90,11 +90,16 @@ public ResponseEntity<List<Amostra>> listarAmostras() {
         StatusAmostra novoStatus = amostra.verificarStatusAtual();
         if (amostra.getStatus() != novoStatus) {
             amostra.setStatus(novoStatus);
-            service.salvar(amostra); // salva a alteração
+            service.salvar(amostra);
         }
     }
 
-    return ResponseEntity.ok().body(amostras);
+    // Converte para DTO
+    List<AmostraDTO> dtos = amostras.stream()
+            .map(AmostraDTO::new) // <- Você precisa ter um construtor que aceite Amostra
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(dtos);
 }
 
 

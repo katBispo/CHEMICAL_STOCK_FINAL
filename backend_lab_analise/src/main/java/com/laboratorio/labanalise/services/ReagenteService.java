@@ -25,12 +25,11 @@ public class ReagenteService {
     private MovimentacaoReagenteService movimentacaoReagenteService;
     private final ReagenteMapper reagenteMapper;
 
-
-
     public ReagenteService(ReagenteRepository reagenteRepository, ReagenteMapper reagenteMapper) {
         this.repository = reagenteRepository;
         this.reagenteMapper = reagenteMapper;
     }
+
     public Reagente salvar(Reagente reagente) {
 
         reagente = repository.save(reagente);
@@ -124,12 +123,17 @@ public class ReagenteService {
         return repository.contarReagentesControlados();
     }
 
-
-       public List<ReagenteDTO> buscarPorNome(String nome) {
+    public List<ReagenteDTO> buscarPorNome(String nome) {
         return repository.findByNomeContainingIgnoreCase(nome).stream()
                 .map(reagenteMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    
+    public List<ReagenteDTO> buscarFiltrados(String nome, TipoReagente tipo, LocalDate dataInicio, LocalDate dataFim) {
+        List<Reagente> reagentes = repository.buscarFiltrados(nome, tipo, dataInicio, dataFim);
+        return reagentes.stream()
+                .map(reagenteMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }
