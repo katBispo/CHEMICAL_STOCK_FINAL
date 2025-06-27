@@ -74,7 +74,6 @@ const AmostraLista = () => {
     };
     const [selectedRows, setSelectedRows] = useState([]);
 
-    // Exemplo de como selecionar uma amostra
     const handleSelectRow = (id) => {
         setSelectedAmostras(prevSelected => {
             if (prevSelected.includes(id)) {
@@ -85,15 +84,13 @@ const AmostraLista = () => {
         });
     };
 
-
     const handleSelectAll = () => {
-        if (selectedRows.length === amostras.length) {
-            setSelectedRows([]);
+        if (selectedAmostras.length === amostras.length) {
+            setSelectedAmostras([]);
         } else {
-            setSelectedRows(amostras.map((amostra) => amostra.id));
+            setSelectedAmostras(amostras.map((amostra) => amostra.id));
         }
     };
-
 
 
     const handleDeleteAmostra = async (id) => {
@@ -236,11 +233,11 @@ const AmostraLista = () => {
                             selectedAmostras.forEach(amostraId => {
                                 handleDeleteAmostra(amostraId); // Exclui as amostras selecionadas
                             });
+                            setSelectedAmostras([]); // limpa seleção após deletar
                         }}
                     >
                         Excluir Selecionados
                     </Button>
-
 
                 </Box>
 
@@ -252,10 +249,12 @@ const AmostraLista = () => {
                                     {/* Adiciona a coluna de checkbox */}
                                     <TableCell style={{ textAlign: 'center' }}>
                                         <Checkbox
-                                            checked={selectedRows.length === amostras.length}
+                                            checked={selectedAmostras.length === amostras.length && amostras.length > 0}
+                                            indeterminate={selectedAmostras.length > 0 && selectedAmostras.length < amostras.length}
                                             onChange={handleSelectAll}
                                             color="primary"
                                         />
+
                                     </TableCell>
                                     {['Nome', 'Prazo Finalização', 'Endereço', 'Análise', 'Status', 'Ações'].map((header) => (
                                         <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
@@ -275,7 +274,7 @@ const AmostraLista = () => {
                                         {/* Checkbox para cada linha */}
                                         <TableCell style={{ textAlign: 'center' }}>
                                             <Checkbox
-                                                checked={selectedRows.includes(amostra.id)}
+                                                checked={selectedAmostras.includes(amostra.id)}
                                                 onChange={() => handleSelectRow(amostra.id)}
                                                 color="primary"
                                             />
