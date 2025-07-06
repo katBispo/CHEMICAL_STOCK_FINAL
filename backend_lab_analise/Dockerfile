@@ -1,14 +1,17 @@
-# Etapa 1: Usar imagem base com Java 17
-FROM eclipse-temurin:17-jdk-alpine
-
-# Etapa 2: Criar diretório de trabalho dentro do container
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Etapa 3: Copiar o .jar gerado no build para dentro do container
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/labanalise-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
 COPY target/labanalise-0.0.1-SNAPSHOT.jar app.jar
 
-# Etapa 4: Expor a porta 8080 (padrão do Spring Boot)
 EXPOSE 8080
 
-# Etapa 5: Comando para iniciar o app
 ENTRYPOINT ["java", "-jar", "app.jar"]
