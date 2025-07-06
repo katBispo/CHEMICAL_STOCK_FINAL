@@ -64,6 +64,10 @@ public class Amostra implements Serializable {
             )}
     )
     private List<Analito> analitos = new ArrayList();
+
+
+
+    
     @ManyToOne
     @JoinColumn(
             name = "ID_ANALISE",

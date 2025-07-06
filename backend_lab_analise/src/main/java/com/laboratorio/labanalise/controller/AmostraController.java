@@ -56,7 +56,6 @@ public class AmostraController {
         // Associar a análise à amostra
         amostra.setAnalise(analise);
 
-        // Verificar e associar Analitos
         if (amostra.getAnalitos() != null && !amostra.getAnalitos().isEmpty()) {
             List<Long> idsAnalitos = amostra.getAnalitos().stream()
                     .map(Analito::getId)
@@ -71,10 +70,8 @@ public class AmostraController {
             amostra.setAnalitos(analitosAssociados);
         }
 
-        // Salvar a amostra
         amostra = service.salvar(amostra);
 
-        // Adicionar a amostra à lista da análise e salvar a análise
         analise.getAmostras().add(amostra);
         analiseService.salvar(analise);
 
@@ -90,7 +87,6 @@ public class AmostraController {
     public ResponseEntity<List<AmostraDTO>> listarAmostras() {
         List<Amostra> amostras = service.buscarTodos();
 
-        // Atualiza status dinamicamente
         for (Amostra amostra : amostras) {
             StatusAmostra novoStatus = amostra.verificarStatusAtual();
             if (amostra.getStatus() != novoStatus) {
@@ -99,9 +95,8 @@ public class AmostraController {
             }
         }
 
-        // Converte para DTO
         List<AmostraDTO> dtos = amostras.stream()
-                .map(AmostraDTO::new) // <- Você precisa ter um construtor que aceite Amostra
+                .map(AmostraDTO::new) 
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);

@@ -23,13 +23,9 @@ public class Analito implements Serializable {
     @Column(name = "SUBTIPO")
     private List<String> subtipoAnalito = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-        name = "AMOSTRA_ANALITO",
-        joinColumns = @JoinColumn(name = "ID_ANALITO"),
-        inverseJoinColumns = @JoinColumn(name = "ID_AMOSTRA")
-    )
-    private List<Amostra> amostras = new ArrayList<>();
+@ManyToMany(mappedBy = "analitos")
+private List<Amostra> amostras = new ArrayList<>();
+
 
     public Analito() {}
 
