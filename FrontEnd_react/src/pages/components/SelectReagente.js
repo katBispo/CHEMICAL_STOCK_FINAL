@@ -14,131 +14,73 @@ import {
     ListItem,
     ListItemText
 } from '@mui/material';
+
 import { Add, Delete } from '@mui/icons-material';
 import { listarReagentes } from '../../services/reagenteService.js';
-
 function SelectReagente({ open, onClose, onSave }) {
-    const [reagentes, setReagentes] = useState([]);
-    const [reagenteSelecionado, setReagenteSelecionado] = useState(null);
-    const [quantidade, setQuantidade] = useState('');
-    const [listaReagentes, setListaReagentes] = useState([]); // Lista de reagentes selecionados (id e quantidade)
+    const [reagentesDisponiveis, setReagentesDisponiveis] = useState([]);
+    const [selecionados, setSelecionados] = useState([]);
 
-    // Carregar reagentes ao abrir o modal
     useEffect(() => {
-        if (open) {
-            const carregarDados = async () => {
-                try {
-                    const dadosReagentes = await listarReagentes();
-                    setReagentes(dadosReagentes);
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                }
-            };
-            carregarDados();
-        }
-    }, [open]);
+        // Carrega os reagentes do backend
+        fetch('http://localhost:8080/reagente')
+            .then((res) => res.json())
+            .then((data) => setReagentesDisponiveis(data))
+            .catch((error) => console.error('Erro ao buscar reagentes:', error));
+    }, []);
 
-    // Adicionar reagente à lista (agora apenas ID e quantidade)
-    const handleAdicionarReagente = () => {
-        if (reagenteSelecionado && quantidade) {
-            // Armazenar apenas id do reagente e a quantidade
-            setListaReagentes([
-                ...listaReagentes,
-                { id: reagenteSelecionado.id, quantidade }
-            ]);
-            // Resetar os campos
-            setReagenteSelecionado(null);
-            setQuantidade('');
+    const handleSelecionar = (reagente) => {
+        const jaSelecionado = selecionados.find((item) => item.reagente.id === reagente.id);
+        if (!jaSelecionado) {
+            setSelecionados([...selecionados, { reagente, quantidade: 1 }]);
         }
     };
 
-    // Remover reagente da lista
-    const handleRemoverReagente = (index) => {
-        setListaReagentes((prevLista) => prevLista.filter((_, i) => i !== index));
+    const handleQuantidadeChange = (index, novaQuantidade) => {
+        const novos = [...selecionados];
+        novos[index].quantidade = Number(novaQuantidade);
+        setSelecionados(novos);
     };
 
-    // Salvar reagentes selecionados (passando apenas id e quantidade para o componente pai)
-    const handleSave = () => {
-        if (listaReagentes.length > 0 && typeof onSave === 'function') {
-            // Criar um array com id do reagente e a quantidade
-            const reagentesComIdEQuantidade = listaReagentes.map(item => ({
-                idReagente: item.id,
-                quantidade: item.quantidade
-            }));
-            onSave(reagentesComIdEQuantidade); // Passa para o componente pai
-        } else {
-            console.warn('onSave não foi passado como função.');
-        }
-        onClose();
+    const handleSalvar = () => {
+        onSave(selecionados); // Envia para o componente pai
+        onClose(); // Fecha o modal
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Selecionar Reagentes</DialogTitle>
             <DialogContent>
-                <Box display="flex" gap={2} alignItems="center" marginBottom={2}>
-                    <Autocomplete
-                        options={reagentes}
-                        getOptionLabel={(option) => option.nome}
-                        onChange={(event, newValue) => setReagenteSelecionado(newValue)}
-                        value={reagenteSelecionado}
-                        renderInput={(params) => <TextField {...params} label="Reagentes Cadastrados" />}
-                        fullWidth
-                    />
-                    <TextField
-                        label="Quantidade"
-                        type="number"
-                        value={quantidade}
-                        onChange={(e) => setQuantidade(e.target.value)}
-                        variant="outlined"
-                        sx={{ width: '100px' }}
-                    />
-                    <IconButton color="primary" onClick={handleAdicionarReagente} disabled={!reagenteSelecionado || !quantidade}>
-                        <Add />
-                    </IconButton>
-                </Box>
-
-                {/* Lista de reagentes adicionados */}
                 <List>
-                    {listaReagentes.map((item, index) => {
-                        // Buscar o nome do reagente pelo ID na lista original de reagentes
-                        const reagenteEncontrado = reagentes.find(r => r.id === item.id);
-
-                        return (
-                            <ListItem key={index} secondaryAction={
-                                <IconButton edge="end" color="error" onClick={() => handleRemoverReagente(index)}>
-                                    <Delete />
-                                </IconButton>
-                            }>
-                                <ListItemText primary={`${reagenteEncontrado ? reagenteEncontrado.nome : 'Desconhecido'} - ${item.quantidade}`} />
-                            </ListItem>
-                        );
-                    })}
+                    {reagentesDisponiveis.map((reagente) => (
+                        <ListItem key={reagente.id} button onClick={() => handleSelecionar(reagente)}>
+                            <ListItemText primary={reagente.nome} />
+                        </ListItem>
+                    ))}
                 </List>
 
+                <h4>Selecionados:</h4>
+                {selecionados.map((item, index) => (
+                    <div key={item.reagente.id}>
+                        {item.reagente.nome}
+                        <TextField
+                            label="Quantidade"
+                            type="number"
+                            value={item.quantidade}
+                            onChange={(e) => handleQuantidadeChange(index, e.target.value)}
+                            style={{ marginLeft: '10px', width: '100px' }}
+                        />
+                    </div>
+                ))}
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="primary" onClick={handleSave} disabled={listaReagentes.length === 0}>
-                    Salvar
-                </Button>
-                <Button variant="outlined" color="secondary" onClick={onClose}>
-                    Fechar
+                <Button onClick={onClose}>Cancelar</Button>
+                <Button onClick={handleSalvar} variant="contained" color="primary">
+                    Salvar Seleção
                 </Button>
             </DialogActions>
         </Dialog>
     );
 }
-
-// Definição de tipos das props para evitar erros
-SelectReagente.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onSave: PropTypes.func
-};
-
-// Valor padrão para `onSave`, caso não seja passado
-SelectReagente.defaultProps = {
-    onSave: () => console.warn('onSave não foi passado.')
-};
 
 export default SelectReagente;

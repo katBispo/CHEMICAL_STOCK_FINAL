@@ -11,15 +11,15 @@ import {
     Dialog,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import FeedbackDialog from '../components/FeedbackDialog'; 
-import SideBar from '../components/SideBar.js'; 
+import FeedbackDialog from '../components/FeedbackDialog';
+import SideBar from '../components/SideBar.js';
 import SelectReagente from '../components/SelectReagente';
 import { useNavigate } from 'react-router-dom';
 
 function ProcedimentoCadastro() {
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [nomeProcedimento, setNomeProcedimento] = useState('');
-    const [descricao, setDescricao] = useState('');
+    const [descricaoProcedimento, setDescricao] = useState('');
     const [pdfFile, setPdfFile] = useState(null);
     const [dataCadastro, setDataCadastro] = useState(new Date().toISOString().split('T')[0]);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -36,35 +36,42 @@ function ProcedimentoCadastro() {
     const handleSaveReagentes = (reagentes) => {
         console.log('Reagentes selecionados:', reagentes);
 
-        setReagentesSelecionados(reagentes); // Atualiza a lista de reagentes selecionados
+        setReagentesSelecionados(reagentes);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         if (reagentesSelecionados.length === 0) {
             setDialogMessage('Selecione pelo menos um reagente.');
             setDialogOpen(true);
             return;
         }
-    
-        // Pegando o primeiro reagente da lista (ou ajustar para múltiplos)
-        const { idReagente, quantidade } = reagentesSelecionados[0];
-    
+
         const requestBody = {
-            nomeProcedimento: nomeProcedimento,
-            descricaoProcedimento: descricao,
+            procedimento: {
+                nomeProcedimento: nomeProcedimento,
+                descricaoProcedimento: descricaoProcedimento
+            },
+            reagentesQuantidades: reagentesSelecionados.map(r => ({
+                idReagente: r.reagente.id,
+                quantidade: r.quantidade
+            }))
+
         };
-    
+
+        // 🔍 Aqui você vê exatamente o que está sendo enviado
+        console.log('Corpo da requisição que será enviado:', JSON.stringify(requestBody, null, 2));
+
         try {
-            const response = await fetch(`http://localhost:8080/procedimento?id=${idReagente}&quantidade=${quantidade}`, {
+            const response = await fetch(`http://localhost:8080/procedimento`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestBody),
             });
-    
+
             if (response.ok) {
                 setDialogMessage('Procedimento cadastrado com sucesso!');
             } else {
@@ -76,9 +83,9 @@ function ProcedimentoCadastro() {
             setDialogMessage('Erro ao salvar o procedimento no banco de dados.');
             console.error('Erro:', error);
         }
+
         setDialogOpen(true);
     };
-    
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -125,7 +132,7 @@ function ProcedimentoCadastro() {
                     />
                     <TextField
                         label="Descrição Geral"
-                        value={descricao}
+                        value={descricaoProcedimento}
                         onChange={(e) => setDescricao(e.target.value)}
                         required
                         margin="normal"

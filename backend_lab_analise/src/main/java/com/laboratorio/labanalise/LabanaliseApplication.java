@@ -20,8 +20,9 @@ public class LabanaliseApplication {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("hello");
 		ConfigurableApplicationContext context = SpringApplication.run(LabanaliseApplication.class, args);
-		AnaliseService analiseService = (AnaliseService)context.getBean(AnaliseService.class);
+		/* AnaliseService analiseService = (AnaliseService)context.getBean(AnaliseService.class);
 		Analise analise = analiseService.buscarPorId(1L);
 		Amostra amostra = new Amostra("Amostra 01", "Rua das Flores, 123", LocalDate.of(2025, 2, 1), "-23.55052, -46.63331", LocalDate.of(2025, 2, 15), StatusAmostra.EM_ANDAMENTO, "Amostra coletada para análise química.");
 		amostra.setAnalise(analise);
@@ -32,6 +33,6 @@ public class LabanaliseApplication {
 		procedimentoRepository.save(procedimento);
 		amostraRepository.save(amostra);
 		AmostraProcedimento amostraProcedimento = new AmostraProcedimento(amostra, procedimento);
-		aamostraProcedimentoRepository.save(amostraProcedimento);
+		aamostraProcedimentoRepository.save(amostraProcedimento); */
 	}
 }

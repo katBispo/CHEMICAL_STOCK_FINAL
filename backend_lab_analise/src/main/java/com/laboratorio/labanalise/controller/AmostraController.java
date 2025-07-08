@@ -41,47 +41,49 @@ public class AmostraController {
     @Autowired
     private ProcedimentoService procedimentoService;
 
-    @PostMapping
-    public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
-        if (amostra.getAnalise() == null || amostra.getAnalise().getId() == null) {
-            return ResponseEntity.badRequest().body(null); // Retorna 400 se não tiver análise associada
-        }
-
-        // Buscar a análise no banco
-        Analise analise = analiseService.buscarPorId(amostra.getAnalise().getId());
-        if (analise == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        // Associar a análise à amostra
-        amostra.setAnalise(analise);
-
-        if (amostra.getAnalitos() != null && !amostra.getAnalitos().isEmpty()) {
-            List<Long> idsAnalitos = amostra.getAnalitos().stream()
-                    .map(Analito::getId)
-                    .collect(Collectors.toList());
-            List<Analito> analitosAssociados = analitoService.buscarAnalitosPorIds(idsAnalitos);
-
-            // Adiciona a amostra nos analitos (evita problema de não persistir a relação)
-            for (Analito analito : analitosAssociados) {
-                analito.getAmostras().add(amostra);
-            }
-
-            amostra.setAnalitos(analitosAssociados);
-        }
-
-        amostra = service.salvar(amostra);
-
-        analise.getAmostras().add(amostra);
-        analiseService.salvar(analise);
-
-        // Retorna a amostra criada com status 201 (Created)
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(amostra.getId())
-                .toUri();
-        return ResponseEntity.created(uri).body(amostra);
+   @PostMapping
+public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
+    if (amostra.getAnalise() == null || amostra.getAnalise().getId() == null) {
+        return ResponseEntity.badRequest().body(null); // 400 se não tiver análise associada
     }
+
+    // Buscar a análise no banco
+    Analise analise = analiseService.buscarPorId(amostra.getAnalise().getId());
+    if (analise == null) {
+        return ResponseEntity.badRequest().body(null);
+    }
+
+    // Associar a análise à amostra
+    amostra.setAnalise(analise);
+
+    // Aqui usamos o campo auxiliar que o frontend envia no JSON
+    if (amostra.getAnalitosAuxiliares() != null && !amostra.getAnalitosAuxiliares().isEmpty()) {
+        List<Long> idsAnalitos = amostra.getAnalitosAuxiliares().stream()
+                .map(Analito::getId)
+                .collect(Collectors.toList());
+
+        List<Analito> analitosAssociados = analitoService.buscarAnalitosPorIds(idsAnalitos);
+
+        // Monta os AmostraAnalito corretamente
+        amostra.setAnalitos(analitosAssociados);
+    }
+
+    // Salva a amostra
+    amostra = service.salvar(amostra);
+
+    // Atualiza a análise com a nova amostra
+    analise.getAmostras().add(amostra);
+    analiseService.salvar(analise);
+
+    // Retorna status 201 com URI da nova amostra
+    URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(amostra.getId())
+            .toUri();
+
+    return ResponseEntity.created(uri).body(amostra);
+}
+
 
     @GetMapping
     public ResponseEntity<List<AmostraDTO>> listarAmostras() {

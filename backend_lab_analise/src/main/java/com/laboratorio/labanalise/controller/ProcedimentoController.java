@@ -30,16 +30,6 @@ public class ProcedimentoController {
 
     // Endpoint para salvar o procedimento
     @PostMapping
-    /*public ResponseEntity<Procedimento> salvar(@RequestBody Procedimento procedimento, @RequestParam Long id, @RequestParam Double quantidade) {
-        Reagente reagente = reagenteService.buscarPorId(id);
-        procedimento = service.salvar(procedimento, reagente, quantidade);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(procedimento.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(procedimento);
-    }*/
     public ResponseEntity<Procedimento> salvar(@RequestBody ProcedimentoRequest request) {
         Procedimento procedimento = request.getProcedimento();
         List<ReagenteQuantidadeRequest> reagenteQuantidadeRequests = request.getReagentesQuantidades();
@@ -56,44 +46,7 @@ public class ProcedimentoController {
         return ResponseEntity.created(uri).body(procedimento);
     }
 
-    /*public ResponseEntity<Procedimento> salvarProcedimento(
-            @RequestParam("nomeProcedimento") String nomeProcedimento,
-            @RequestParam("descricaoProcedimento") String descricaoProcedimento,
-            @RequestParam("pdfFile") MultipartFile pdfFile,
-            @RequestParam("reagenteId") Long reagenteId,
-            @RequestParam("quantidadeReagente") Double quantidadeReagente) {
-        try {
-            // Verificar se o arquivo PDF não está vazio
-            if (pdfFile.isEmpty()) {
-                return ResponseEntity.badRequest().body(null); // Retorna 400 se o PDF estiver vazio
-            }
-
-            // Convertendo o arquivo PDF para um array de bytes
-            byte[] pdfData = pdfFile.getBytes();
-
-            // Criando o objeto Procedimento
-            Procedimento procedimento = new Procedimento(nomeProcedimento, descricaoProcedimento);
-            procedimento.setPdfData(pdfData); // Salvando os dados do PDF no objeto
-
-            // Criando um objeto Reagente apenas com o ID
-            Reagente reagente = new Reagente();
-            reagente.setId(reagenteId);
-
-            // Chamando o serviço para salvar o procedimento e registrar a saída do reagente
-            Procedimento procedimentoSalvo = service.salvar(procedimento, reagente, quantidadeReagente);
-
-            // Construindo a URI do novo procedimento criado
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(procedimentoSalvo.getId())
-                    .toUri();
-
-            return ResponseEntity.created(uri).body(procedimentoSalvo); // Retorna 201 com o procedimento salvo
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Retorna 500 em caso de erro
-        }
-    }*/
-
+  
     // Endpoint para listar todos os procedimentos
     @GetMapping
     public ResponseEntity<List<Procedimento>> listarProcedimentos() {

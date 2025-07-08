@@ -43,7 +43,6 @@ public class AnalitoController {
         return ResponseEntity.noContent().build();
     }
 
-    // Novo endpoint para buscar classificações, tipos e subtipos
     @GetMapping("/classificacoes")
     public ResponseEntity<List<String>> listarClassificacoes() {
         List<String> classificacoes = service.buscarClassificacoesDistintas();
@@ -88,7 +87,7 @@ public class AnalitoController {
     
         Analito analito = analitoOpt.get();
         analito.adicionarTipo(request.getTipoAnalito(), request.getSubtipoAnalito());
-        analitoRepository.save(analito); // Persistir as alterações no banco
+        analitoRepository.save(analito);
     
         return ResponseEntity.ok(analito);
     }

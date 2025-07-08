@@ -8,7 +8,6 @@ import com.laboratorio.labanalise.DTO.*;
 import com.laboratorio.labanalise.model.enums.*;
 import java.util.Optional;
 
-
 import java.util.List;
 
 @Service
@@ -33,47 +32,49 @@ public class AmostraService {
         return amostraRepository.findAll();
     }
 
-   public void remover(Long id) {
-    Optional<Amostra> amostraOpt = amostraRepository.findById(id);
-    if (amostraOpt.isPresent()) {
-        Amostra amostra = amostraOpt.get();
-        Analise analise = amostra.getAnalise();
-        amostraRepository.deleteById(id);
-        if (analise != null) {
-            int novaQuantidade = amostraRepository.countByAnaliseId(analise.getId());
-            analise.setQuantidadeAmostras(novaQuantidade);
-            analiseRepository.save(analise);
+    public void remover(Long id) {
+        Optional<Amostra> amostraOpt = amostraRepository.findById(id);
+        if (amostraOpt.isPresent()) {
+            Amostra amostra = amostraOpt.get();
+            Analise analise = amostra.getAnalise();
+            amostraRepository.deleteById(id);
+            if (analise != null) {
+                int novaQuantidade = amostraRepository.countByAnaliseId(analise.getId());
+                analise.setQuantidadeAmostras(novaQuantidade);
+                analiseRepository.save(analise);
+            }
         }
     }
-}
-
 
     public Amostra saveAmostra(AmostraDTO dto) {
-         Amostra amostra = new Amostra();
-    amostra.setNome(dto.getNome());
-    amostra.setEnderecoColeta(dto.getEnderecoColeta());
-    amostra.setDataColeta(dto.getDataColeta());
-    amostra.setCoordenadaColeta(dto.getCoordenadaColeta());
-    amostra.setPrazoFinalizacao(dto.getPrazoFinalizacao());
-    amostra.setStatus(StatusAmostra.valueOf(dto.getStatus()));
-    amostra.setDescricao(dto.getDescricao());
+        Amostra amostra = new Amostra();
+        amostra.setNome(dto.getNome());
+        amostra.setEnderecoColeta(dto.getEnderecoColeta());
+        amostra.setDataColeta(dto.getDataColeta());
+        amostra.setCoordenadaColeta(dto.getCoordenadaColeta());
+        amostra.setPrazoFinalizacao(dto.getPrazoFinalizacao());
+        amostra.setStatus(StatusAmostra.valueOf(dto.getStatus()));
+        amostra.setDescricao(dto.getDescricao());
 
-    if (dto.getAnaliseId() != null) {
-        Analise analise = analiseRepository.findById(dto.getAnaliseId())
-                                           .orElseThrow(() -> new RuntimeException("Analise não encontrada!"));
-        amostra.setAnalise(analise);
+        if (dto.getAnaliseId() != null) {
+            Analise analise = analiseRepository.findById(dto.getAnaliseId())
+                    .orElseThrow(() -> new RuntimeException("Analise não encontrada!"));
+            amostra.setAnalise(analise);
 
-        // Atualizar a quantidade de amostras na análise
-        int novaQuantidade = amostraRepository.countByAnaliseId(analise.getId());
-        analise.setQuantidadeAmostras(novaQuantidade + 1); // +1 porque ainda não salvou essa amostra
-        analiseRepository.save(analise);
-    }
+            // Atualizar a quantidade de amostras na análise
+            int novaQuantidade = amostraRepository.countByAnaliseId(analise.getId());
+            analise.setQuantidadeAmostras(novaQuantidade + 1); // +1 porque ainda não salvou essa amostra
+            analiseRepository.save(analise);
+        }
 
-    if (dto.getAnalitos() != null && !dto.getAnalitos().isEmpty()) {
+        if (dto.getAnalitos() != null && !dto.getAnalitos().isEmpty()) {
         List<Analito> analitos = analitoRepository.findAllById(dto.getAnalitos());
+        if (analitos.size() != dto.getAnalitos().size()) {
+            throw new RuntimeException("Um ou mais analitos não foram encontrados!");
+        }
         amostra.setAnalitos(analitos);
     }
 
-    return amostraRepository.save(amostra);
+        return amostraRepository.save(amostra);
     }
 }

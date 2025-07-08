@@ -34,10 +34,12 @@ public class Procedimento implements Serializable {
     private String descricaoProcedimento;
     @Lob
     private byte[] pdfData;
+
     @OneToMany(
             mappedBy = "id.procedimento"
     )
     private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
+    
     @Column(
             name = "data_cadastro",
             nullable = false

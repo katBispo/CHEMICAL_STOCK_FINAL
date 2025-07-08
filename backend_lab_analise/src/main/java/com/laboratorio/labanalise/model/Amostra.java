@@ -1,82 +1,55 @@
 package com.laboratorio.labanalise.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.enums.StatusAmostra;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(
-        name = "AMOSTRA"
-)
+@Table(name = "AMOSTRA")
 public class Amostra implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private String nome;
     private String enderecoColeta;
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private LocalDate dataColeta;
     private String coordenadaColeta;
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private LocalDate prazoFinalizacao;
     @Enumerated(EnumType.STRING)
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private StatusAmostra status;
-    @Column(
-            length = 500
-    )
+    @Column(length = 500)
     private String descricao;
-    @Column(
-            nullable = false,
-            updatable = false
-    )
+    @Column(nullable = false, updatable = false)
     private LocalDate dataCadastro;
-    @OneToMany(
-            mappedBy = "id.amostra"
-    )
+
+    @Transient
+    private List<Analito> analitosAuxiliares;
+
+    @OneToMany(mappedBy = "id.amostra")
     private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
-    @ManyToMany(
-            cascade = {CascadeType.ALL}
-    )
-    @JoinTable(
-            name = "AMOSTRA_ANALITO",
-            joinColumns = {@JoinColumn(
-                    name = "ID_AMOSTRA"
-            )},
-            inverseJoinColumns = {@JoinColumn(
-                    name = "ID_ANALITO"
-            )}
-    )
-    private List<Analito> analitos = new ArrayList();
 
+    @OneToMany(mappedBy = "amostra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AmostraAnalito> amostraAnalitos = new HashSet<>();
 
-
-    
     @ManyToOne
-    @JoinColumn(
-            name = "ID_ANALISE",
-            nullable = true//setar como false dps
+    @JoinColumn(name = "ID_ANALISE", nullable = true// setar como false dps
     )
     @JsonBackReference
     private Analise analise;
 
-    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta, LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
+    public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
+            LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
         this.enderecoColeta = enderecoColeta;
         this.dataColeta = dataColeta;
@@ -172,12 +145,34 @@ public class Amostra implements Serializable {
         this.analise = analise;
     }
 
+    @JsonIgnore
     public List<Analito> getAnalitos() {
-        return this.analitos;
+        return amostraAnalitos.stream()
+                .map(AmostraAnalito::getAnalito)
+                .collect(Collectors.toList());
+    }
+
+    public void setAmostraAnalitos(Set<AmostraAnalito> amostraAnalitos) {
+        this.amostraAnalitos = amostraAnalitos;
     }
 
     public void setAnalitos(List<Analito> analitos) {
-        this.analitos = analitos;
+        this.amostraAnalitos.clear(); // limpa os anteriores
+
+        for (Analito analito : analitos) {
+            AmostraAnalito aa = new AmostraAnalito();
+            aa.setAmostra(this);
+            aa.setAnalito(analito);
+            this.amostraAnalitos.add(aa);
+        }
+    }
+
+    public List<Analito> getAnalitosAuxiliares() {
+        return analitosAuxiliares;
+    }
+
+    public void setAnalitosAuxiliares(List<Analito> analitosAuxiliares) {
+        this.analitosAuxiliares = analitosAuxiliares;
     }
 
     public boolean equals(Object o) {
@@ -202,13 +197,14 @@ public class Amostra implements Serializable {
     public void setAmostraProcedimentos(Set<AmostraProcedimento> amostraProcedimentos) {
         this.amostraProcedimentos = amostraProcedimentos;
     }
+
     public StatusAmostra verificarStatusAtual() {
-    if (this.status != StatusAmostra.CONCLUIDA && prazoFinalizacao != null) {
-        if (prazoFinalizacao.isBefore(LocalDate.now())) {
-            return StatusAmostra.ATRASADA;
+        if (this.status != StatusAmostra.CONCLUIDA && prazoFinalizacao != null) {
+            if (prazoFinalizacao.isBefore(LocalDate.now())) {
+                return StatusAmostra.ATRASADA;
+            }
         }
+        return this.status;
     }
-    return this.status;
-}
 
 }

@@ -2,9 +2,7 @@ package com.laboratorio.labanalise.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "ANALITO")
@@ -23,18 +21,18 @@ public class Analito implements Serializable {
     @Column(name = "SUBTIPO")
     private List<String> subtipoAnalito = new ArrayList<>();
 
-@ManyToMany(mappedBy = "analitos")
-private List<Amostra> amostras = new ArrayList<>();
 
+    @OneToMany(mappedBy = "analito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AmostraAnalito> amostraAnalitos = new HashSet<>();
 
-    public Analito() {}
+    public Analito() {
+    }
 
     public Analito(Long id, String classificacao) {
         this.id = id;
         this.classificacao = classificacao;
     }
 
-    // Getters e setters para id, classificacao, tipoAnalito e subtipoAnalito
     public Long getId() {
         return id;
     }
@@ -67,13 +65,7 @@ private List<Amostra> amostras = new ArrayList<>();
         this.subtipoAnalito = subtipoAnalito;
     }
 
-    public List<Amostra> getAmostras() {
-        return amostras;
-    }
-
-    public void setAmostras(List<Amostra> amostras) {
-        this.amostras = amostras;
-    }
+   
 
     // Método para adicionar tipo e subtipos ao Analito
     public void adicionarTipo(String tipo, List<String> subtipos) {
@@ -83,8 +75,10 @@ private List<Amostra> amostras = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Analito analito = (Analito) o;
         return Objects.equals(id, analito.id);
     }
