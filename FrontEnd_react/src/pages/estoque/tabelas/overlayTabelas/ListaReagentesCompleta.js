@@ -25,14 +25,14 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
             axios.get('http://localhost:8080/reagente')
                 .then(res => {
                     setAllReagentes(res.data);
-                    setFilteredReagentes(res.data); // mostra todos se campo estiver vazio
+                    setFilteredReagentes(res.data);
                 })
                 .catch(err => console.error(err));
         } else {
             axios.get(`http://localhost:8080/reagente/buscarReagente?nome=${encodeURIComponent(searchTerm)}`)
                 .then(res => {
                     setAllReagentes(res.data);
-                    setFilteredReagentes(res.data); // filtra automaticamente enquanto digita
+                    setFilteredReagentes(res.data);
                 })
                 .catch(err => console.error(err));
         }
@@ -41,13 +41,13 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
-            setFilteredReagentes(allReagentes); // mostra tudo
+            setFilteredReagentes(allReagentes);
         } else {
             const term = searchTerm.toLowerCase();
             const filtered = allReagentes.filter(r =>
                 r.nome.toLowerCase().includes(term)
             );
-            setFilteredReagentes(filtered); // mostra só os filtrados ao clicar
+            setFilteredReagentes(filtered);
         }
     };
     const handleFiltroAplicado = async (filtros) => {
@@ -103,7 +103,10 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
         <div style={overlayStyle}>
             <div style={modalStyle}>
                 <button
-                    onClick={onClose}
+                    onClick={() => {
+                        onClose(); // se quiser fechar algo, como um modal
+                        window.location.reload(); // recarrega a página
+                    }}
                     style={{
                         alignSelf: 'flex-end',
                         background: 'transparent',
@@ -116,6 +119,7 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
                 >
                     ✕
                 </button>
+
 
                 {/* Campo de busca e botão de filtrar */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>

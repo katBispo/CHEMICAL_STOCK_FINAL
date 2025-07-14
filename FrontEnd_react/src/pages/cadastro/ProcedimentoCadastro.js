@@ -157,9 +157,9 @@ function ProcedimentoCadastro() {
 
                         {/* Componente Overlay com a lista de reagentes */}
                         <SelectReagente
-                            open={overlayOpen}               // Controla a abertura do overlay
-                            onClose={() => setOverlayOpen(false)} // Fecha o overlay
-                            onSave={handleSaveReagentes}     // Passa a função de salvar para o componente filho
+                            open={overlayOpen}              
+                            onClose={() => setOverlayOpen(false)}
+                            onSave={handleSaveReagentes}     
                         />
 
                         {/* Exibe os reagentes selecionados */}

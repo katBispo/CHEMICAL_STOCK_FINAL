@@ -15,7 +15,14 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
         doc.text(`Endereço de Coleta: ${amostra.enderecoColeta}`, 10, 50);
         doc.text(`Data de Coleta: ${amostra.dataColeta}`, 10, 60);
         doc.text(`Descrição: ${amostra.descricao}`, 10, 70);
-        doc.text(`Procedimento: ${amostra.procedimento ? amostra.procedimento.nomeProcedimento : 'N/A'}`, 10, 80);
+        doc.text(
+            `Procedimentos: ${amostra.procedimentosNomes && amostra.procedimentosNomes.length > 0
+                ? amostra.procedimentosNomes.join(', ')
+                : 'Nenhum procedimento'
+            }`,
+            10,
+            80
+        );
         doc.text(`Análise: ${amostra.analise?.nome || 'N/A'}`, 10, 90);
 
         doc.text(`Analitos Selecionados:`, 10, 100);
@@ -75,8 +82,12 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                     <strong>Descrição:</strong> {amostra.descricao}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Procedimento:</strong> {amostra.procedimento?.nome || 'N/A'}
+                    <strong>Procedimentos:</strong>{' '}
+                    {amostra.procedimentosNomes && amostra.procedimentosNomes.length > 0
+                        ? amostra.procedimentosNomes.join(', ')
+                        : 'Nenhum procedimento'}
                 </Typography>
+
                 <Typography variant="body1">
                     <strong>Análise:</strong> {amostra.analise?.nome || 'N/A'}
                 </Typography>
@@ -84,11 +95,11 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                     <strong>Analitos:</strong>{' '}
                     {amostra.analitos && amostra.analitos.length > 0
                         ? amostra.analitos.map((analito, index) => (
-                              <span key={index}>
-                                  {analito.classificacao}
-                                  {index < amostra.analitos.length - 1 && ', '}
-                              </span>
-                          ))
+                            <span key={index}>
+                                {analito.classificacao}
+                                {index < amostra.analitos.length - 1 && ', '}
+                            </span>
+                        ))
                         : 'Nenhum analito selecionado'}
                 </Typography>
 

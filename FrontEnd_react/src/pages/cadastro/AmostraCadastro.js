@@ -111,37 +111,20 @@ function AmostraCadastro({ }) {
 
         const currentDate = new Date().toISOString().split("T")[0];
 
-        // Montar o payload completo
         const payload = {
             nome,
             dataColeta,
             prazoFinalizacao,
             enderecoColeta,
             descricao,
-            dataCadastro: currentDate, // Adiciona a data atual
-            procedures: selectedProcedures.map((procedure) => ({
-                id: procedure.id,
-                classificacao: procedure.classificacao,
-                tipos: (procedure.tipos || []).map((tipo) => ({
-                    tipo: tipo.tipo,
-                    subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
-                })),
-            })),
-            analise: { id: selectedAnalise.id },  // Passando apenas o ID da análise
-            coordenadaColeta, // Usar diretamente a string "latitude;longitude"
-
-            analitos: selectedAnalitos.map((analito) => ({
-                id: analito.id,
-                classificacao: analito.classificacao,
-                tipos: (analito.tipos || []).map((tipo) => ({
-                    tipo: tipo.tipo,
-                    subtipos: tipo.subtipos || [], // Garantir array válido para subtipos
-                })),
-            })),
-
+            dataCadastro: currentDate,
+            coordenadaColeta,
+            analiseId: selectedAnalise.id,
+            proceduresIds: selectedProcedures.map((p) => p.id),
+            analitosIds: selectedAnalitos.map((a) => a.id),
+            status: "EM_ANDAMENTO"
         };
 
-        // Exibir payload no console antes de enviar
         console.log("Payload enviado:", JSON.stringify(payload, null, 2));
 
         try {
@@ -167,7 +150,7 @@ function AmostraCadastro({ }) {
             setCoordenadaColeta("");
             setSelectedProcedures([]);
             setSelectedAnalitos([]);
-            handleClose(); // Fechar modal ou interface
+            handleClose(); 
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
         }
@@ -186,16 +169,16 @@ function AmostraCadastro({ }) {
 
 
     const handleOverlayClose = () => {
-        setShowOverlay(false); // Fecha o overlay
+        setShowOverlay(false); 
     };
     const handleAnalitoSelection = (analitosSelecionados) => {
         console.log("Analitos recebidos:", analitosSelecionados);
-        setSelectedAnalitos(analitosSelecionados || []); // Garante que não seja undefined
+        setSelectedAnalitos(analitosSelecionados || []); 
     };
 
     const handleSaveProcedures = (procedures) => {
         console.log("Procedimentos recebidos:", procedures);
-        setSelectedProcedures(procedures || []); // Garante que não seja undefined
+        setSelectedProcedures(procedures || []); 
     };
 
 

@@ -25,6 +25,7 @@ public class AmostraDTO {
     private List<Long> proceduresIds;
 
     private String analiseNome;
+    private List<String> procedimentosNomes;
 
     public Long getId() {
         return id;
@@ -123,13 +124,6 @@ public class AmostraDTO {
 
     }
 
-
-
-
-
-
-
-    
     public List<Long> getAnalitosIds() {
         return analitosIds;
     }
@@ -144,6 +138,14 @@ public class AmostraDTO {
 
     public void setProceduresIds(List<Long> proceduresIds) {
         this.proceduresIds = proceduresIds;
+    }
+
+    public List<String> getProcedimentosNomes() {
+        return procedimentosNomes;
+    }
+
+    public void setProcedimentosNomes(List<String> procedimentosNomes) {
+        this.procedimentosNomes = procedimentosNomes;
     }
 
     public AmostraDTO() {
@@ -167,6 +169,15 @@ public class AmostraDTO {
         if (amostra.getAnalitos() != null) {
             this.analitos = amostra.getAnalitos().stream()
                     .map(a -> a.getId())
+                    .collect(Collectors.toList());
+        }
+        if (amostra.getProcedimentos() != null) {
+            this.procedimentosIds = amostra.getProcedimentos().stream()
+                    .map(p -> p.getId())
+                    .collect(Collectors.toList());
+
+            this.procedimentosNomes = amostra.getProcedimentos().stream()
+                    .map(p -> p.getNomeProcedimento()) 
                     .collect(Collectors.toList());
         }
 
