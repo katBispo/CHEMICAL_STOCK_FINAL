@@ -152,6 +152,10 @@ public class Amostra implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public Set<AmostraAnalito> getAmostraAnalitos() {
+        return amostraAnalitos;
+    }
+
     public void setAmostraAnalitos(Set<AmostraAnalito> amostraAnalitos) {
         this.amostraAnalitos = amostraAnalitos;
     }
@@ -205,6 +209,28 @@ public class Amostra implements Serializable {
             }
         }
         return this.status;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public void setProcedimentos(List<Procedimento> procedimentos) {
+        this.amostraProcedimentos.clear(); // limpa os existentes
+
+        for (Procedimento procedimento : procedimentos) {
+            AmostraProcedimento ap = new AmostraProcedimento();
+            ap.setAmostra(this);
+            ap.setProcedimento(procedimento);
+            this.amostraProcedimentos.add(ap);
+        }
+    }
+
+    @JsonIgnore
+    public List<Procedimento> getProcedimentos() {
+        return amostraProcedimentos.stream()
+                .map(AmostraProcedimento::getProcedimento)
+                .collect(Collectors.toList());
     }
 
 }

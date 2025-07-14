@@ -2,10 +2,13 @@ package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.DTO.AmostraDTO;
 import com.laboratorio.labanalise.model.Amostra;
+import com.laboratorio.labanalise.model.AmostraAnalito;
 import com.laboratorio.labanalise.model.Analise;
 import com.laboratorio.labanalise.model.Analito;
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.enums.StatusAmostra;
+import com.laboratorio.labanalise.repositories.*;
+
 import com.laboratorio.labanalise.services.AmostraService;
 import com.laboratorio.labanalise.services.AnaliseService;
 import com.laboratorio.labanalise.services.ProcedimentoService;
@@ -14,6 +17,7 @@ import com.laboratorio.labanalise.services.AnalitoService; // Serviço para mani
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,57 +38,30 @@ public class AmostraController {
     private AmostraService service;
 
     @Autowired
+    private AmostraRepository repository;
+
+    @Autowired
     private AnalitoService analitoService;
 
     @Autowired
+    private AnalitoRepository analitoRepository;
+
+    @Autowired
     private AnaliseService analiseService;
+    @Autowired
+    private AnaliseRepository analiseRepository;
 
     @Autowired
     private ProcedimentoService procedimentoService;
 
-   @PostMapping
-public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
-    if (amostra.getAnalise() == null || amostra.getAnalise().getId() == null) {
-        return ResponseEntity.badRequest().body(null); // 400 se não tiver análise associada
+    @Autowired
+    private ProcedimentoRepository procedimentoRepository;
+
+    @PostMapping
+    public ResponseEntity<Amostra> salvarAmostra(@RequestBody AmostraDTO dto) {
+        Amostra novaAmostra = service.saveAmostra(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaAmostra);
     }
-
-    // Buscar a análise no banco
-    Analise analise = analiseService.buscarPorId(amostra.getAnalise().getId());
-    if (analise == null) {
-        return ResponseEntity.badRequest().body(null);
-    }
-
-    // Associar a análise à amostra
-    amostra.setAnalise(analise);
-
-    // Aqui usamos o campo auxiliar que o frontend envia no JSON
-    if (amostra.getAnalitosAuxiliares() != null && !amostra.getAnalitosAuxiliares().isEmpty()) {
-        List<Long> idsAnalitos = amostra.getAnalitosAuxiliares().stream()
-                .map(Analito::getId)
-                .collect(Collectors.toList());
-
-        List<Analito> analitosAssociados = analitoService.buscarAnalitosPorIds(idsAnalitos);
-
-        // Monta os AmostraAnalito corretamente
-        amostra.setAnalitos(analitosAssociados);
-    }
-
-    // Salva a amostra
-    amostra = service.salvar(amostra);
-
-    // Atualiza a análise com a nova amostra
-    analise.getAmostras().add(amostra);
-    analiseService.salvar(analise);
-
-    // Retorna status 201 com URI da nova amostra
-    URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(amostra.getId())
-            .toUri();
-
-    return ResponseEntity.created(uri).body(amostra);
-}
-
 
     @GetMapping
     public ResponseEntity<List<AmostraDTO>> listarAmostras() {
@@ -98,7 +76,7 @@ public ResponseEntity<Amostra> salvarAmostra(@RequestBody Amostra amostra) {
         }
 
         List<AmostraDTO> dtos = amostras.stream()
-                .map(AmostraDTO::new) 
+                .map(AmostraDTO::new)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);

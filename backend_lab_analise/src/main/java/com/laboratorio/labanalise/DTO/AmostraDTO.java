@@ -14,11 +14,15 @@ public class AmostraDTO {
     private LocalDate dataColeta;
     private String coordenadaColeta;
     private LocalDate prazoFinalizacao;
-    private String status; 
+    private String status;
     private String descricao;
-    private Long analiseId; 
-    private List<Long> analitos; 
-    private List<Long> procedimentos; 
+    private Long analiseId;
+    private List<Long> analitos;
+    private List<Long> procedimentos;
+
+    private List<Long> procedimentosIds;
+    private List<Long> analitosIds;
+    private List<Long> proceduresIds;
 
     private String analiseNome;
 
@@ -109,36 +113,71 @@ public class AmostraDTO {
     public void setProcedimentos(List<Long> procedimentos) {
         this.procedimentos = procedimentos;
     }
-    public String  getAnaliseNome(){
+
+    public String getAnaliseNome() {
         return analiseNome;
     }
 
-    public void setAnaliseNome (String analiseNome){
+    public void setAnaliseNome(String analiseNome) {
         this.analiseNome = analiseNome;
+
+    }
+
+
+
+
+
+
+
     
+    public List<Long> getAnalitosIds() {
+        return analitosIds;
+    }
+
+    public void setAnalitosIds(List<Long> analitosIds) {
+        this.analitosIds = analitosIds;
+    }
+
+    public List<Long> getProceduresIds() {
+        return proceduresIds;
+    }
+
+    public void setProceduresIds(List<Long> proceduresIds) {
+        this.proceduresIds = proceduresIds;
+    }
+
+    public AmostraDTO() {
     }
 
     public AmostraDTO(Amostra amostra) {
-    this.id = amostra.getId();
-    this.nome = amostra.getNome();
-    this.enderecoColeta = amostra.getEnderecoColeta();
-    this.dataColeta = amostra.getDataColeta();
-    this.coordenadaColeta = amostra.getCoordenadaColeta();
-    this.prazoFinalizacao = amostra.getPrazoFinalizacao();
-    this.status = amostra.getStatus().name();
-    this.descricao = amostra.getDescricao();
+        this.id = amostra.getId();
+        this.nome = amostra.getNome();
+        this.enderecoColeta = amostra.getEnderecoColeta();
+        this.dataColeta = amostra.getDataColeta();
+        this.coordenadaColeta = amostra.getCoordenadaColeta();
+        this.prazoFinalizacao = amostra.getPrazoFinalizacao();
+        this.status = amostra.getStatus().name();
+        this.descricao = amostra.getDescricao();
 
-    if (amostra.getAnalise() != null) {
-        this.analiseId = amostra.getAnalise().getId();
-        this.analiseNome = amostra.getAnalise().getNome(); 
+        if (amostra.getAnalise() != null) {
+            this.analiseId = amostra.getAnalise().getId();
+            this.analiseNome = amostra.getAnalise().getNome();
+        }
+
+        if (amostra.getAnalitos() != null) {
+            this.analitos = amostra.getAnalitos().stream()
+                    .map(a -> a.getId())
+                    .collect(Collectors.toList());
+        }
+
     }
 
-    if (amostra.getAnalitos() != null) {
-        this.analitos = amostra.getAnalitos().stream()
-            .map(a -> a.getId())
-            .collect(Collectors.toList());
+    public List<Long> getProcedimentosIds() {
+        return procedimentosIds;
     }
 
-}
+    public void setProcedimentosIds(List<Long> procedimentosIds) {
+        this.procedimentosIds = procedimentosIds;
+    }
 
 }
