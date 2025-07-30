@@ -2,6 +2,7 @@
 package com.laboratorio.labanalise.DTO;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class AmostraDTO {
     private List<Long> procedimentos;
 
     private List<Long> procedimentosIds;
-    private List<Long> analitosIds;
+    private List<AnalitoSubtipoDTO> analitosSelecionados = new ArrayList<>();
     private List<Long> proceduresIds;
 
     private String analiseNome;
@@ -124,14 +125,6 @@ public class AmostraDTO {
 
     }
 
-    public List<Long> getAnalitosIds() {
-        return analitosIds;
-    }
-
-    public void setAnalitosIds(List<Long> analitosIds) {
-        this.analitosIds = analitosIds;
-    }
-
     public List<Long> getProceduresIds() {
         return proceduresIds;
     }
@@ -177,7 +170,7 @@ public class AmostraDTO {
                     .collect(Collectors.toList());
 
             this.procedimentosNomes = amostra.getProcedimentos().stream()
-                    .map(p -> p.getNomeProcedimento()) 
+                    .map(p -> p.getNomeProcedimento())
                     .collect(Collectors.toList());
         }
 
@@ -189,6 +182,14 @@ public class AmostraDTO {
 
     public void setProcedimentosIds(List<Long> procedimentosIds) {
         this.procedimentosIds = procedimentosIds;
+    }
+
+    public List<AnalitoSubtipoDTO> getAnalitosSelecionados() {
+        return analitosSelecionados;
+    }
+
+    public void setAnalitosSelecionados(List<AnalitoSubtipoDTO> analitosSelecionados) {
+        this.analitosSelecionados = analitosSelecionados;
     }
 
 }

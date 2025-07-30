@@ -13,12 +13,12 @@ public class AmostraProcedimento implements Serializable {
     private AmostraProcedimentoPK id = new AmostraProcedimentoPK();
 
     @ManyToOne
-    @MapsId("amostra") // refere-se a id.amostra (Long)
+    @MapsId("amostra") 
     @JoinColumn(name = "amostra_id")
     private Amostra amostra;
 
     @ManyToOne
-    @MapsId("procedimento") // refere-se a id.procedimento (Long)
+    @MapsId("procedimento") 
     @JoinColumn(name = "procedimento_id")
     private Procedimento procedimento;
 

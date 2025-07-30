@@ -39,10 +39,6 @@ public class AmostraService {
         return amostraRepository.save(amostra);
     }
 
-    public List<Amostra> buscarTodos() {
-        return amostraRepository.findAll();
-    }
-
     public void remover(Long id) {
         Optional<Amostra> amostraOpt = amostraRepository.findById(id);
         if (amostraOpt.isPresent()) {
@@ -55,6 +51,53 @@ public class AmostraService {
                 analiseRepository.save(analise);
             }
         }
+    }
+
+    private AmostraDTO converterParaDTO(Amostra amostra) {
+        AmostraDTO dto = new AmostraDTO();
+        dto.setId(amostra.getId());
+        dto.setNome(amostra.getNome());
+        dto.setEnderecoColeta(amostra.getEnderecoColeta());
+        dto.setDataColeta(amostra.getDataColeta());
+        dto.setCoordenadaColeta(amostra.getCoordenadaColeta());
+        dto.setPrazoFinalizacao(amostra.getPrazoFinalizacao());
+
+        if (amostra.getStatus() != null) {
+            dto.setStatus(amostra.getStatus().name());
+        }
+
+        dto.setDescricao(amostra.getDescricao());
+
+        if (amostra.getAmostraAnalitos() != null) {
+            List<Long> analitosIds = amostra.getAmostraAnalitos().stream()
+                    .map(aa -> aa.getAnalito().getId())
+                    .collect(Collectors.toList());
+            dto.setAnalitos(analitosIds);
+
+            List<AnalitoSubtipoDTO> analitosSelecionados = amostra.getAmostraAnalitos()
+                    .stream()
+                    .map(aa -> new AnalitoSubtipoDTO(
+                            aa.getAnalito().getId(),
+                            aa.getAnalito().getClassificacao(),
+                            aa.getSubtipo()))
+                    .collect(Collectors.toList());
+            dto.setAnalitosSelecionados(analitosSelecionados);
+        }
+
+        if (amostra.getAmostraProcedimentos() != null) {
+            List<Long> procedimentosIds = amostra.getAmostraProcedimentos().stream()
+                    .map(ap -> ap.getProcedimento().getId())
+                    .collect(Collectors.toList());
+            dto.setProcedimentosIds(procedimentosIds);
+
+            List<String> procedimentosNomes = amostra.getAmostraProcedimentos().stream()
+                    .map(ap -> ap.getProcedimento().getNomeProcedimento())
+                    .collect(Collectors.toList());
+            dto.setProcedimentosNomes(procedimentosNomes);
+
+        }
+
+        return dto;
     }
 
     @Transactional
@@ -119,6 +162,45 @@ public class AmostraService {
             amostra.setStatus(StatusAmostra.EM_ANDAMENTO); // default
         }
 
+        // --- Subtipo ANalito ---
+        for (AnalitoSubtipoDTO analitoSubtipoDTO : dto.getAnalitosSelecionados()) {
+            Long analitoId = analitoSubtipoDTO.getAnalitoId();
+            String subtipoSelecionado = analitoSubtipoDTO.getSubtipo();
+
+            Analito analito = analitoRepository.findById(analitoId)
+                    .orElseThrow(() -> new RuntimeException("Analito não encontrado: " + analitoId));
+
+            // Verifica se o subtipo existe para esse analito
+            if (!analito.getSubtipoAnalito().contains(subtipoSelecionado)) {
+                throw new RuntimeException(
+                        "Subtipo " + subtipoSelecionado + " não pertence ao analito com ID " + analitoId);
+            }
+
+            AmostraAnalito amostraAnalito = new AmostraAnalito();
+            amostraAnalito.setAmostra(amostra); // já criada
+            amostraAnalito.setAnalito(analito);
+            amostraAnalito.setSubtipo(subtipoSelecionado);
+
+            amostra.getAmostraAnalitos().add(amostraAnalito);
+
+        }
         return amostra;
+
     }
+
+    public List<Amostra> buscarEntidades() {
+        return amostraRepository.findAll();
+    }
+
+    public List<AmostraDTO> buscarTodos() {
+        List<Amostra> amostras = amostraRepository.findAll();
+
+        return amostras.stream().map(this::converterParaDTO).collect(Collectors.toList());
+    }
+
+    /*
+     * public List<Amostra> buscarTodos() {
+     * return amostraRepository.findAll();
+     * }
+     */
 }

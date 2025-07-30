@@ -1,38 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import {
-    TextField,
-    Button,
-    Box,
-    Autocomplete,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Checkbox,
-    FormControlLabel,
-    FormGroup,
-    Typography
-} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Autocomplete, Box, Typography, FormGroup, FormControlLabel, Checkbox, Button } from '@mui/material';
 
-const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => {
-    const [selectedProcedure, setSelectedProcedure] = useState(null);
-    const [procedures, setProcedures] = useState([]);
+const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect, open }) => {
+    const [analitos, setAnalitos] = useState([]);
     const [tiposESubtipos, setTiposESubtipos] = useState([]);
     const [showTiposESubtipos, setShowTiposESubtipos] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState({});
+    const [selectedClassificacao, setSelectedClassificacao] = useState(null);
 
     useEffect(() => {
-        // Função para buscar analitos
-        const fetchProcedures = async () => {
+        const fetchAnalitos = async () => {
             try {
                 const response = await fetch('http://localhost:8080/analito');
                 if (!response.ok) {
                     throw new Error('Erro ao buscar analitos');
                 }
                 const data = await response.json();
-                setProcedures(data);
+                setAnalitos(data);
 
-                // Organiza os dados em tipos e subtipos por classificação
                 const tiposMap = {};
                 data.forEach(item => {
                     if (item.classificacao && item.tipoAnalito && item.subtipoAnalito) {
@@ -41,87 +26,109 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => 
                         }
                         tiposMap[item.classificacao].push({
                             tipo: item.tipoAnalito,
-                            subtipos: item.subtipoAnalito
+                            subtipos: item.subtipoAnalito,
+                            analitoId: item.id
                         });
                     }
                 });
 
-                setTiposESubtipos(Object.entries(tiposMap).map(([classificacao, tipos]) => ({
+                const tiposESubtiposData = Object.entries(tiposMap).map(([classificacao, tipos]) => ({
                     classificacao,
                     tipos
-                })));
+                }));
+                setTiposESubtipos(tiposESubtiposData);
+                console.log("🔍 Tipos e Subtipos carregados:", JSON.stringify(tiposESubtiposData, null, 2));
             } catch (error) {
-                console.error(error);
+                console.error('Erro ao buscar analitos:', error);
             }
         };
 
-        fetchProcedures();
-    }, []);
+        if (open) {
+            fetchAnalitos();
+        }
+    }, [open]);
 
     const handleAnalitoSelection = (event, value) => {
-        setSelectedProcedure(value);
-        setShowTiposESubtipos(true); // Mostrar a próxima etapa após a seleção
+        setSelectedClassificacao(value);
+        setShowTiposESubtipos(!!value);
+        console.log("🔍 Classificação selecionada:", value ? value.classificacao : null);
     };
 
     const handleOptionChange = (classificacao, tipo, subtipo, checked) => {
         setSelectedOptions((prev) => ({
             ...prev,
             [classificacao]: {
-                ...prev[classificacao],
+                ...(prev[classificacao] || {}),
                 [tipo]: {
-                    ...prev[classificacao]?.[tipo],
+                    ...(prev[classificacao]?.[tipo] || {}),
                     [subtipo]: checked
                 }
             }
         }));
+        console.log("🔍 Opções selecionadas:", JSON.stringify({
+            ...selectedOptions,
+            [classificacao]: {
+                ...(selectedOptions[classificacao] || {}),
+                [tipo]: {
+                    ...(selectedOptions[classificacao]?.[tipo] || {}),
+                    [subtipo]: checked
+                }
+            }
+        }, null, 2));
     };
 
     const handleSave = () => {
-        // Construindo a estrutura dos analitos selecionados
-        const analitosSelecionados = tiposESubtipos.map((classObj) => {
-            const tiposSelecionados = classObj.tipos.map((tipoObj) => {
+        const analitosSelecionados = [];
+
+        tiposESubtipos.forEach((classObj) => {
+            const tiposSelecionados = [];
+
+            classObj.tipos.forEach((tipoObj) => {
                 const subtiposSelecionados = tipoObj.subtipos.filter(
                     (subtipo) => selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo]
                 );
-    
+
                 if (subtiposSelecionados.length > 0) {
-                    return {
-                        id: tipoObj.id, // Adiciona o ID do analito aqui
+                    tiposSelecionados.push({
                         tipo: tipoObj.tipo,
                         subtipos: subtiposSelecionados,
-                    };
+                        analitoId: tipoObj.analitoId
+                    });
                 }
-    
-                return null;
-            }).filter(Boolean); // Remove os nulos
-    
+            });
+
             if (tiposSelecionados.length > 0) {
-                return {
+                analitosSelecionados.push({
                     classificacao: classObj.classificacao,
-                    tipos: tiposSelecionados,
-                };
+                    analitoId: tiposSelecionados[0].analitoId,
+                    tipos: tiposSelecionados
+                });
             }
-    
-            return null;
-        }).filter(Boolean); // Remove os nulos
-    
-        onAnalitoSelect(analitosSelecionados); // Envia os dados para o componente pai
-        handleClose(); // Fecha o modal
+        });
+
+        if (analitosSelecionados.length === 0) {
+            alert("Por favor, selecione pelo menos um subtipo de analito.");
+            return;
+        }
+
+        console.log("🔍 Analitos selecionados:", JSON.stringify(analitosSelecionados, null, 2));
+        onAnalitoSelect(analitosSelecionados);
+        handleClose();
     };
-    
+
     return (
-        <Dialog open={true} onClose={handleClose} maxWidth="md" fullWidth>
+        <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>Escolha o Analito</DialogTitle>
             <DialogContent>
-                {/* Primeiro passo: seleção de classificação */}
                 <Autocomplete
-                    options={procedures}
+                    options={tiposESubtipos}
                     getOptionLabel={(option) => option.classificacao || ""}
                     onChange={handleAnalitoSelection}
+                    value={selectedClassificacao}
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Analitos"
+                            label="Classificação"
                             required
                             margin="normal"
                             style={{ width: '350px' }}
@@ -129,10 +136,9 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect }) => 
                     )}
                 />
 
-                {/* Segundo passo: exibição dos tipos e subtipos apenas após seleção de classificação */}
-                {showTiposESubtipos && selectedProcedure && (
+                {showTiposESubtipos && selectedClassificacao && (
                     tiposESubtipos
-                        .filter(item => item.classificacao === selectedProcedure.classificacao)
+                        .filter(item => item.classificacao === selectedClassificacao.classificacao)
                         .map((classObj, index) => (
                             <Box
                                 key={index}

@@ -2,6 +2,8 @@ package com.laboratorio.labanalise.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.pk.AmostraAnalitoPK;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -27,6 +29,11 @@ public class AmostraAnalito implements Serializable {
     @MapsId("analitoId") 
     @JoinColumn(name = "analito_id")
     private Analito analito;
+
+    @Column(name = "SUBTIPO_ANALITO")
+    private String subtipo;
+
+
 
     public AmostraAnalito() {
     }
@@ -61,5 +68,14 @@ public class AmostraAnalito implements Serializable {
 
     public void setId(AmostraAnalitoPK id) {
         this.id = id;
+    }
+
+
+    public String getSubtipo() {
+        return subtipo;
+    }
+
+    public void setSubtipo(String subtipo) {
+        this.subtipo = subtipo;
     }
 }

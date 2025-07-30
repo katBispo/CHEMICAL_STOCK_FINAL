@@ -1,113 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Typography,
-    Button,
-    TextField,
-    Autocomplete,
-    List,
-    ListItem
-
-} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Box, Typography, List, ListItem, TextField, AppBar, Toolbar, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SideBar from '../components/SideBar';
-import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra'
 import AnalitoSelector from '../components/AnalitoSelector';
 import ProcedimentoSelector from '../components/ProcedimentoSelector';
+import SideBar from '../components/SideBar'; 
 
-import { useNavigate, useLocation } from 'react-router-dom';
-
-function AmostraCadastro({ }) {
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(true);
-    const location = useLocation();
-    const { selectedAnalise } = location.state || {}; // Pegando a análise do estado
-
-    const [procedimentos, setProcedimentos] = useState([]);
-    const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-    const [selectedProcedimentos, setSelectedProcedimentos] = useState([]); // Definindo o estado para armazenar os procedimentos selecionados
-    const [showProcedureSelector, setShowProcedureSelector] = useState(false);
-    const [selectedProcedures, setSelectedProcedures] = useState([]);
-
-
-    console.log("Procedimentos recebidos na tela de amostra:", selectedProcedures); // Debug
-
-
-    console.log("Análise selecionada:", selectedAnalise);
-
-
-    const [procedures, setProcedures] = useState([]);
-    const [analise, setAnalise] = useState([]);
-    const [selectedProcedure, setSelectedProcedure] = useState(null);
-    //const [selectedAnalise] = useState(location.state?.selectedAnalise || null);
-    const [coordenadaColeta, setCoordenadaColeta] = useState('');
+function AmostraCadastro() {
     const [showAnalitoSelector, setShowAnalitoSelector] = useState(false);
+    const [showProcedureSelector, setShowProcedureSelector] = useState(false);
+    const [selectedAnalitos, setSelectedAnalitos] = useState([]);
+    const [selectedProcedures, setSelectedProcedures] = useState([]);
+    const [procedimentos, setProcedimentos] = useState([]);
+    const [analise, setAnalise] = useState([]);
     const [nome, setNome] = useState('');
     const [dataColeta, setDataColeta] = useState('');
     const [prazoFinalizacao, setPrazoFinalizacao] = useState('');
     const [descricao, setDescricao] = useState('');
     const [enderecoColeta, setEnderecoColeta] = useState('');
+    const [coordenadaColeta, setCoordenadaColeta] = useState('');
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const [selectedAnalitos, setSelectedAnalitos] = useState([]);
-    const [showOverlay, setShowOverlay] = useState(true); // Controle do overlay
-
-
+    const location = useLocation();
+    const { selectedAnalise } = location.state || {};
     const navigate = useNavigate();
 
-    const fetchProcedures = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/procedimento');
-            if (response.ok) {
-                const data = await response.json();
-                setProcedures(data);
-            } else {
-                console.error('Erro ao buscar procedimentos');
-            }
-        } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
-        }
-    };
-
-    const fetchAnalises = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/analise');
-            if (response.ok) {
-                const data = await response.json();
-                setAnalise(data);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar análises:', error);
-        }
-    };
-
     useEffect(() => {
+        console.log("🔍 Estado showAnalitoSelector:", showAnalitoSelector);
+        console.log("🔍 Estado showProcedureSelector:", showProcedureSelector);
+        console.log("🔍 Análise selecionada:", selectedAnalise);
+        console.log("🔍 Procedimentos selecionados:", selectedProcedures);
+        console.log("🔍 Analitos selecionados:", selectedAnalitos);
+
+        const fetchProcedures = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/procedimento');
+                if (response.ok) {
+                    const data = await response.json();
+                    setProcedimentos(data);
+                } else {
+                    console.error('Erro ao buscar procedimentos');
+                }
+            } catch (error) {
+                console.error('Erro ao conectar ao backend:', error);
+            }
+        };
+
+        const fetchAnalises = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/analise');
+                if (response.ok) {
+                    const data = await response.json();
+                    setAnalise(data);
+                }
+            } catch (error) {
+                console.error('Erro ao buscar análises:', error);
+            }
+        };
+
         fetchAnalises();
         fetchProcedures();
-    }, []);
-
-
+    }, [showAnalitoSelector, showProcedureSelector, selectedAnalise, selectedProcedures, selectedAnalitos]);
 
     const handleCloseOverlay = () => {
-        // Lógica para fechar o modal
-        setShowAnalitoSelector(false); // Exemplo
+        setShowAnalitoSelector(false);
+        console.log("🔍 Fechando overlay do AnalitoSelector, showAnalitoSelector:", false);
     };
+
+    const handleCloseProcedureSelector = () => {
+        setShowProcedureSelector(false);
+        console.log("🔍 Fechando overlay do ProcedimentoSelector, showProcedureSelector:", false);
+    };
+
+    const handleSaveProcedures = (procedures) => {
+        console.log("🔍 Procedimentos recebidos:", procedures);
+        setSelectedProcedures(procedures || []);
+        setShowProcedureSelector(false);
+    };
+
+    function montarAnalitosSelecionados(selectedAnalitos) {
+        const resultado = [];
+
+        selectedAnalitos.forEach(analito => {
+            if (!analito.analitoId) {
+                console.warn(`AnalitoId ausente para classificação '${analito.classificacao}'`);
+                return;
+            }
+
+            analito.tipos.forEach(tipo => {
+                tipo.subtipos.forEach(subtipo => {
+                    resultado.push({
+                        analitoId: analito.analitoId,
+                        subtipo: subtipo,
+                        classificacao: analito.classificacao
+                    });
+                });
+            });
+        });
+
+        console.log("🔍 Analitos selecionados formatados:", JSON.stringify(resultado, null, 2));
+        return resultado;
+    }
+
+    const analitosSelecionados = montarAnalitosSelecionados(selectedAnalitos);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Verificar se os objetos necessários estão definidos
-        if (!selectedProcedures || !selectedAnalise || !selectedAnalitos || selectedAnalitos.length === 0) {
-            console.error("Por favor, selecione todos os campos necessários.");
+        if (!selectedProcedures || selectedProcedures.length === 0) {
+            alert("Por favor, selecione pelo menos um procedimento.");
             return;
         }
 
-        // Logs para depuração
-        console.log("Selected Procedures:", selectedProcedures);
-        console.log("Selected Analise:", selectedAnalise);
-        console.log("Selected Analitos:", selectedAnalitos);
+        if (!selectedAnalise) {
+            alert("Por favor, selecione uma análise.");
+            return;
+        }
+
+        if (!selectedAnalitos || selectedAnalitos.length === 0 || analitosSelecionados.length === 0) {
+            alert("Por favor, selecione pelo menos um analito com subtipo.");
+            return;
+        }
 
         const currentDate = new Date().toISOString().split("T")[0];
 
@@ -121,11 +133,11 @@ function AmostraCadastro({ }) {
             coordenadaColeta,
             analiseId: selectedAnalise.id,
             proceduresIds: selectedProcedures.map((p) => p.id),
-            analitosIds: selectedAnalitos.map((a) => a.id),
-            status: "EM_ANDAMENTO"
+            status: "EM_ANDAMENTO",
+            analitosSelecionados
         };
 
-        console.log("Payload enviado:", JSON.stringify(payload, null, 2));
+        console.log("🔍 Payload enviado:", JSON.stringify(payload, null, 2));
 
         try {
             const response = await fetch("http://localhost:8080/amostra", {
@@ -143,44 +155,19 @@ function AmostraCadastro({ }) {
             }
 
             console.log("Amostra salva com sucesso!");
-
-            // Limpar formulário após sucesso
             setNome("");
             setDescricao("");
             setCoordenadaColeta("");
             setSelectedProcedures([]);
             setSelectedAnalitos([]);
-            handleClose(); 
+            setShowAnalitoSelector(false);
+            setShowProcedureSelector(false);
+            navigate('/'); 
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
+            alert("Erro ao salvar a amostra. Verifique o console para detalhes.");
         }
     };
-
-
-
-
-    const handleClose = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleProcedureSelection = (procedimentosSelecionados) => {
-        setSelectedProcedures(procedimentosSelecionados);
-    };
-
-
-    const handleOverlayClose = () => {
-        setShowOverlay(false); 
-    };
-    const handleAnalitoSelection = (analitosSelecionados) => {
-        console.log("Analitos recebidos:", analitosSelecionados);
-        setSelectedAnalitos(analitosSelecionados || []); 
-    };
-
-    const handleSaveProcedures = (procedures) => {
-        console.log("Procedimentos recebidos:", procedures);
-        setSelectedProcedures(procedures || []); 
-    };
-
 
     const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
@@ -201,9 +188,6 @@ function AmostraCadastro({ }) {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
                 <Toolbar />
-
-
-
                 <Box
                     sx={{
                         backgroundColor: 'white',
@@ -218,7 +202,6 @@ function AmostraCadastro({ }) {
                         Cadastrar Amostra
                     </Typography>
 
-                    {/* Exibe a análise selecionada */}
                     {selectedAnalise && (
                         <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
                             <Typography variant="subtitle1">
@@ -226,6 +209,7 @@ function AmostraCadastro({ }) {
                             </Typography>
                         </Box>
                     )}
+
                     <form onSubmit={handleSubmit}>
                         <Box display="flex" justifyContent="flex-start" gap={2}>
                             <TextField
@@ -270,9 +254,11 @@ function AmostraCadastro({ }) {
                         </Box>
 
                         <Box display="flex" flexDirection="column" gap={2}>
-                            {/* Botão para abrir o ProcedimentoSelector */}
                             <Button
-                                onClick={() => setShowProcedureSelector(true)}
+                                onClick={() => {
+                                    setShowProcedureSelector(true);
+                                    console.log("🔍 Botão Selecionar Procedimentos clicado, showProcedureSelector:", true);
+                                }}
                                 sx={{
                                     width: '350px',
                                     height: '50px',
@@ -284,7 +270,6 @@ function AmostraCadastro({ }) {
                                 Selecionar Procedimentos
                             </Button>
 
-                            {/* Lista de Procedimentos Selecionados*/}
                             {selectedProcedures?.length > 0 && (
                                 <Box
                                     sx={{
@@ -297,17 +282,17 @@ function AmostraCadastro({ }) {
                                 >
                                     <Typography variant="subtitle1">Procedimentos Selecionados:</Typography>
                                     <List>
-                                        {selectedProcedures?.map((procedure, index) => (
+                                        {selectedProcedures.map((procedure, index) => (
                                             <ListItem key={index}>
                                                 <Typography variant="body2">
                                                     {procedure.classificacao || "Classificação não disponível"} -{" "}
                                                     {procedure.tipos?.length > 0
                                                         ? procedure.tipos
-                                                            .map(
-                                                                (tipo) =>
-                                                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
-                                                            )
-                                                            .join("; ")
+                                                              .map(
+                                                                  (tipo) =>
+                                                                      `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                                                              )
+                                                              .join("; ")
                                                         : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>
@@ -316,9 +301,11 @@ function AmostraCadastro({ }) {
                                 </Box>
                             )}
 
-                            {/* Botão para abrir o AnalitoSelector */}
                             <Button
-                                onClick={() => setShowAnalitoSelector(true)}
+                                onClick={() => {
+                                    setShowAnalitoSelector(true);
+                                    console.log("🔍 Botão Selecionar Analitos clicado, showAnalitoSelector:", true);
+                                }}
                                 sx={{
                                     width: '350px',
                                     height: '50px',
@@ -330,7 +317,6 @@ function AmostraCadastro({ }) {
                                 Selecionar Analitos
                             </Button>
 
-                            {/* Lista de Analitos Selecionados */}
                             {selectedAnalitos?.length > 0 && (
                                 <Box
                                     sx={{
@@ -349,9 +335,9 @@ function AmostraCadastro({ }) {
                                                     {analito.classificacao || "Classificação não disponível"} -{" "}
                                                     {analito.tipos?.length > 0
                                                         ? analito.tipos.map(
-                                                            (tipo) =>
-                                                                `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
-                                                        ).join("; ")
+                                                              (tipo) =>
+                                                                  `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                                                          ).join("; ")
                                                         : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>
@@ -360,22 +346,23 @@ function AmostraCadastro({ }) {
                                 </Box>
                             )}
 
-                            {/* Modais de Seleção */}
                             {showProcedureSelector && (
                                 <ProcedimentoSelector
+                                    open={showProcedureSelector}
                                     onSave={handleSaveProcedures}
-                                    onClose={() => setShowProcedureSelector(false)}
+                                    onClose={handleCloseProcedureSelector}
                                 />
                             )}
+
                             {showAnalitoSelector && (
                                 <AnalitoSelector
+                                    open={showAnalitoSelector}
                                     selectedAnalitos={selectedAnalitos}
-                                    handleClose={() => setShowAnalitoSelector(false)}
-                                    onAnalitoSelect={handleAnalitoSelection}
+                                    onAnalitoSelect={setSelectedAnalitos}
+                                    handleClose={handleCloseOverlay}
                                 />
                             )}
                         </Box>
-
 
                         <Box display="flex" justifyContent="center" marginTop={2}>
                             <Button type="submit" variant="contained" color="primary">

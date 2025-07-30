@@ -26,13 +26,19 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
         doc.text(`Análise: ${amostra.analise?.nome || 'N/A'}`, 10, 90);
 
         doc.text(`Analitos Selecionados:`, 10, 100);
-        if (amostra.analitos && amostra.analitos.length > 0) {
-            amostra.analitos.forEach((analito, index) => {
-                doc.text(`- ${analito.classificacao || 'N/A'}`, 10, 110 + index * 10);
+
+        if (amostra.analitosSelecionados && amostra.analitosSelecionados.length > 0) {
+            amostra.analitosSelecionados.forEach((analito, index) => {
+                doc.text(
+                    `- ${analito.classificacao || 'N/A'} (${analito.subtipo || 'Subtipo não informado'})`,
+                    10,
+                    110 + index * 10
+                );
             });
         } else {
             doc.text(`Nenhum analito selecionado`, 10, 110);
         }
+
 
         doc.save('detalhes_amostra.pdf');
     };
@@ -93,15 +99,18 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                 </Typography>
                 <Typography variant="body1">
                     <strong>Analitos:</strong>{' '}
-                    {amostra.analitos && amostra.analitos.length > 0
-                        ? amostra.analitos.map((analito, index) => (
+                    {amostra.analitosSelecionados && amostra.analitosSelecionados.length > 0 ? (
+                        amostra.analitosSelecionados.map((analito, index) => (
                             <span key={index}>
-                                {analito.classificacao}
-                                {index < amostra.analitos.length - 1 && ', '}
+                                {analito.classificacao} ({analito.subtipo})
+                                {index < amostra.analitosSelecionados.length - 1 && ', '}
                             </span>
                         ))
-                        : 'Nenhum analito selecionado'}
+                    ) : (
+                        'Nenhum analito selecionado'
+                    )}
                 </Typography>
+
 
                 <Box mt={3} display="flex" justifyContent="flex-end">
                     <Button variant="contained" color="primary" onClick={handleDownloadPDF}>

@@ -37,7 +37,7 @@ public class Amostra implements Serializable {
     private List<Analito> analitosAuxiliares;
 
     @OneToMany(mappedBy = "id.amostra")
-    private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
+    private Set<AmostraProcedimento> amostraProcedimentos = new HashSet<>();
 
     @OneToMany(mappedBy = "amostra", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AmostraAnalito> amostraAnalitos = new HashSet<>();

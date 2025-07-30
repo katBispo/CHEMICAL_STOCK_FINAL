@@ -65,8 +65,10 @@ public class AmostraController {
 
     @GetMapping
     public ResponseEntity<List<AmostraDTO>> listarAmostras() {
-        List<Amostra> amostras = service.buscarTodos();
+        // Primeiro, buscar todas as entidades
+        List<Amostra> amostras = service.buscarEntidades(); // método que retorna List<Amostra>
 
+        // Atualizar status se necessário e salvar
         for (Amostra amostra : amostras) {
             StatusAmostra novoStatus = amostra.verificarStatusAtual();
             if (amostra.getStatus() != novoStatus) {
@@ -75,9 +77,8 @@ public class AmostraController {
             }
         }
 
-        List<AmostraDTO> dtos = amostras.stream()
-                .map(AmostraDTO::new)
-                .collect(Collectors.toList());
+        // Agora sim buscar os DTOs pelo método já existente que faz a conversão
+        List<AmostraDTO> dtos = service.buscarTodos(); // retorna List<AmostraDTO> usando converterParaDTO internamente
 
         return ResponseEntity.ok(dtos);
     }
