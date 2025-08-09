@@ -39,19 +39,20 @@ public class Analise implements Serializable {
     @JoinColumn(name = "ID_MATRIZ", nullable = false)
     private Matriz matriz;
 
-    @OneToMany(mappedBy = "analise")
+    @OneToMany(mappedBy = "analise", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Amostra> amostras = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_CONTRATO", nullable = false)
     private Contrato contrato;
 
     public Analise() {
     }
 
-    public Analise(String nome, LocalDate dataCadastro, LocalDate dataInicio, String descricaoGeral, StatusAnalise statusAnalise, 
-                   Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, Contrato contrato) {
+    public Analise(String nome, LocalDate dataCadastro, LocalDate dataInicio, String descricaoGeral,
+            StatusAnalise statusAnalise,
+            Integer quantidadeAmostras, LocalDate prazoFinalizacao, Matriz matriz, Contrato contrato) {
         this.nome = nome;
         this.dataCadastro = dataCadastro;
         this.dataInicio = dataInicio;
@@ -142,18 +143,21 @@ public class Analise implements Serializable {
     public void setContrato(Contrato contrato) {
         this.contrato = contrato;
     }
+
     public List<Amostra> getAmostras() {
         return amostras;
     }
-    
+
     public void setAmostras(List<Amostra> amostras) {
         this.amostras = amostras;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Analise analise = (Analise) o;
         return Objects.equals(id, analise.id);
     }

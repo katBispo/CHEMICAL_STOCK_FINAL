@@ -49,7 +49,7 @@ const AnaliseLista = () => {
 
         if (response.ok) {
             console.log('Análise excluída com sucesso');
-            
+
         } else {
             console.error('Erro ao excluir a análise');
         }
@@ -83,14 +83,13 @@ const AnaliseLista = () => {
     const fetchAnalises = async () => {
         try {
             const response = await fetch('http://localhost:8080/analise');
-            if (response.ok) {
-                const data = await response.json();
-                setAnalise(data);
-            } else {
-                console.error('Erro ao buscar análsies');
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar análises: ${response.status} ${response.statusText}`);
             }
+            const data = await response.json();
+            setAnalise(data);
         } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
+            console.error('Erro ao conectar ao backend:', error.message);
         }
     };
 
@@ -249,7 +248,7 @@ const AnaliseLista = () => {
                                         analise={selectedAnalise}
                                     />
                                 )}
-                                
+
                             </TableBody>
                         </Table>
                     </TableContainer>

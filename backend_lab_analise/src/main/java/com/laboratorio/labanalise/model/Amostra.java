@@ -43,7 +43,7 @@ public class Amostra implements Serializable {
     private Set<AmostraAnalito> amostraAnalitos = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "ID_ANALISE", nullable = true// setar como false dps
+    @JoinColumn(name = "ID_ANALISE", nullable = false// setar como false dps
     )
     @JsonBackReference
     private Analise analise;

@@ -1,5 +1,7 @@
 package com.laboratorio.labanalise.controller;
 
+import com.laboratorio.labanalise.DTO.AnaliseDTO;
+import com.laboratorio.labanalise.model.Amostra;
 import com.laboratorio.labanalise.model.Analise;
 import com.laboratorio.labanalise.services.AnaliseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import com.laboratorio.labanalise.repositories.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000") // Altere para o seu frontend
 @RestController
@@ -96,9 +99,24 @@ public class AnaliseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Analise>> listarAnalise() {
+    public ResponseEntity<List<AnaliseDTO>> listarAnalise() {
         List<Analise> analises = service.buscarTodos();
-        return ResponseEntity.ok().body(analises);
+        List<AnaliseDTO> analiseDTOs = analises.stream().map(analise -> {
+            AnaliseDTO dto = new AnaliseDTO();
+            dto.setId(analise.getId());
+            dto.setNome(analise.getNome());
+            dto.setDataCadastro(analise.getDataCadastro());
+            dto.setDataInicio(analise.getDataInicio());
+            dto.setDescricaoGeral(analise.getDescricaoGeral());
+            dto.setStatusAnalise(analise.getStatusAnalise());
+            dto.setQuantidadeAmostras(analise.getQuantidadeAmostras());
+            dto.setPrazoFinalizacao(analise.getPrazoFinalizacao());
+            dto.setMatrizId(analise.getMatriz() != null ? analise.getMatriz().getId() : null);
+            dto.setContratoId(analise.getContrato() != null ? analise.getContrato().getId() : null);
+            dto.setAmostraIds(analise.getAmostras().stream().map(Amostra::getId).collect(Collectors.toList()));
+            return dto;
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(analiseDTOs);
     }
 
     @DeleteMapping(path = "/{id}")
