@@ -59,7 +59,7 @@ public class Amostra implements Serializable {
         this.descricao = descricao;
         this.dataCadastro = LocalDate.now();
     }
-
+///testetstetst
     public Amostra() {
         this.dataCadastro = LocalDate.now();
         this.status = StatusAmostra.EM_ANDAMENTO;
