@@ -228,7 +228,7 @@ const AnaliseLista = () => {
                                     <AnaliseDetailOverlay
                                         open={open}
                                         onClose={handleClose}
-                                        analise={selectedAnalise} // Passa a análise selecionada para o modal
+                                        analise={selectedAnalise} 
                                     />
 
                                 )}

@@ -61,10 +61,10 @@ function AnaliseCadastro() {
 
     const fetchContracts = async () => {
         try {
-            const response = await fetch('http://localhost:8080/contrato'); // Endpoint que retorna todos os contratos
+            const response = await fetch('http://localhost:8080/contrato'); 
             if (response.ok) {
                 const data = await response.json();
-                setContracts(data); // Armazena a lista de contratos no estado
+                setContracts(data); 
             } else {
                 console.error('Erro ao buscar contratos');
             }

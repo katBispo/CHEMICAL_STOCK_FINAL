@@ -24,6 +24,7 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
         }
     }, [analise]);
 
+
     const handleDownloadPDF = () => {
         const doc = new jsPDF({
             orientation: 'portrait',
@@ -31,49 +32,40 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
             format: 'a4'
         });
 
-        const labelWidth = 60; // Tamanho reduzido para estética
-        const labelHeight = 100;
+        const labelWidth = 60; 
+        const labelHeight = 70;
         const margin = 5;
         let x = margin;
         let y = margin;
 
         for (let i = 0; i < quantidadeEtiquetas; i++) {
-            // Fundo verde com borda
-            doc.setFillColor(40, 167, 69); // #28a745
+            doc.setFillColor(40, 167, 69); // #28a745  fundo
             doc.setDrawColor(0, 0, 0); // Borda preta
             doc.setLineWidth(0.5);
             doc.rect(x, y, labelWidth, labelHeight, 'FD');
 
-            // Cabeçalho estilizado
             doc.setTextColor(255, 255, 255);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(16);
-            doc.text('conforlab', x + labelWidth / 2, y + 10, { align: 'center' });
+            doc.text('ChemLab', x + labelWidth / 2, y + 10, { align: 'center' });
 
-            // Campos organizados
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             const fields = [
-                { label: 'Nº Pedido', value: analise.id?.toString() || 'N/A' },
-                { label: 'Cliente', value: analise.contrato?.nomeContrato?.toString() || 'N/A' },
-                { label: 'Coleta', value: analise.localColeta?.toString() || 'N/A' },
-                { label: 'Coletor', value: analise.coletor?.toString() || 'N/A' },
-                { label: 'Data', value: analise.dataCadastro?.toString() || 'N/A' },
-                { label: 'Hora', value: analise.horaColeta?.toString() || 'N/A' },
-                { label: 'Matriz', value: analise.matriz?.nomeMatriz?.toString() || 'N/A' },
-                { label: 'Qtd Amostras', value: quantidadeAmostras?.toString() || '0' }
-            ];
+                { label: 'Nº Análise', value: analise.id?.toString() || 'N/A' },
+                { label: 'Cliente', value: analise.nomeCliente || 'N/A' },
+                { label: 'Data', value: analise.dataCadastro || 'N/A' },
+                { label: 'Matriz', value: analise.nomeMatriz || 'N/A' },
+                { label: 'Qtd Amostras', value: analise.quantidadeAmostras?.toString() || quantidadeAmostras?.toString() || '0' }];
 
             fields.forEach((field, index) => {
                 doc.text(field.label + ':', x + 5, y + 20 + (index * 10));
                 doc.text(field.value, x + labelWidth - 5, y + 20 + (index * 10), { align: 'right' });
             });
 
-            // Linha divisória
             doc.setDrawColor(255, 255, 255);
             doc.line(x + 5, y + 15, x + labelWidth - 5, y + 15);
 
-            // Ajuste para nova etiqueta
             x += labelWidth + margin;
             if (x + labelWidth > doc.internal.pageSize.width - margin) {
                 x = margin;
@@ -131,10 +123,13 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
                     <strong>Analitos:</strong> {analise.analitos ? analise.analitos.join(', ') : 'N/A'}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Quantidade de Amostras:</strong> {quantidadeAmostras}
+                    <strong>Quantidade de Amostras:</strong> {analise.quantidadeAmostras}
                 </Typography>
                 <Typography variant="body1">
                     <strong>Status:</strong> {analise.statusAnalise || 'N/A'}
+                </Typography>
+                <Typography variant="body1">
+                    <strong>contrato:</strong> {analise.contrato ? analise.contrato.nomeContrato : '' || 'N/A'}
                 </Typography>
 
                 <Box mt={3} display="flex" alignItems="center">
