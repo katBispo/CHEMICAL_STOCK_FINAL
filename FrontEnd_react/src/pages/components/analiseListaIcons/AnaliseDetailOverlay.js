@@ -9,45 +9,79 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
 
     useEffect(() => {
         if (analise?.id) {
-            fetch(`/analises/${analise.id}/quantidade-amostras`)
-                .then(res => res.json())
+            fetch(`http://localhost:8080/analise/${analise.id}/quantidade-amostras`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`Erro HTTP: ${res.status} ${res.statusText}`);
+                    }
+                    return res.json();
+                })
                 .then(qtd => setQuantidadeAmostras(qtd))
-                .catch(err => console.error("Erro ao buscar quantidade de amostras:", err));
+                .catch(err => {
+                    console.error("Erro ao buscar quantidade de amostras:", err.message);
+                    setQuantidadeAmostras(0);
+                });
         }
     }, [analise]);
 
-    // Função para gerar o PDF com as etiquetas
     const handleDownloadPDF = () => {
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-        // Margens e dimensões para o quadrado da etiqueta
-        const squareWidth = 80;
-        const squareHeight = 60;
-        const margin = 10;
-        let x = 10;
-        let y = 10;
+        const labelWidth = 60; // Tamanho reduzido para estética
+        const labelHeight = 100;
+        const margin = 5;
+        let x = margin;
+        let y = margin;
 
         for (let i = 0; i < quantidadeEtiquetas; i++) {
-            // Desenha o quadrado
-            doc.rect(x, y, squareWidth, squareHeight);
+            // Fundo verde com borda
+            doc.setFillColor(40, 167, 69); // #28a745
+            doc.setDrawColor(0, 0, 0); // Borda preta
+            doc.setLineWidth(0.5);
+            doc.rect(x, y, labelWidth, labelHeight, 'FD');
 
-            // Adiciona informações dentro do quadrado
-            doc.text(`Nome: ${analise.nome}`, x + 5, y + 10);
-            doc.text(`Data Cadastro: ${analise.dataCadastro}`, x + 5, y + 20);
-            doc.text(`Cliente: ${analise.contrato ? analise.contrato.nomeContrato : ''}`, x + 5, y + 30);
-            doc.text(`Matriz: ${analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}`, x + 5, y + 40);
-            doc.text(`Analito: ${analise.analito}`, x + 5, y + 50);
-            doc.text(`Qtd Amostras: ${analise.qtdAmostras}`, x + 5, y + 60);
+            // Cabeçalho estilizado
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('conforlab', x + labelWidth / 2, y + 10, { align: 'center' });
 
-            // Ajuste para criar uma nova linha de etiquetas
-            x += squareWidth + margin;
-            if (x + squareWidth > doc.internal.pageSize.width) {
-                x = 10;
-                y += squareHeight + margin;
-                if (y + squareHeight > doc.internal.pageSize.height) {
-                    doc.addPage();  // Adiciona uma nova página se não houver mais espaço
-                    x = 10;
-                    y = 10;
+            // Campos organizados
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const fields = [
+                { label: 'Nº Pedido', value: analise.id?.toString() || 'N/A' },
+                { label: 'Cliente', value: analise.contrato?.nomeContrato?.toString() || 'N/A' },
+                { label: 'Coleta', value: analise.localColeta?.toString() || 'N/A' },
+                { label: 'Coletor', value: analise.coletor?.toString() || 'N/A' },
+                { label: 'Data', value: analise.dataCadastro?.toString() || 'N/A' },
+                { label: 'Hora', value: analise.horaColeta?.toString() || 'N/A' },
+                { label: 'Matriz', value: analise.matriz?.nomeMatriz?.toString() || 'N/A' },
+                { label: 'Qtd Amostras', value: quantidadeAmostras?.toString() || '0' }
+            ];
+
+            fields.forEach((field, index) => {
+                doc.text(field.label + ':', x + 5, y + 20 + (index * 10));
+                doc.text(field.value, x + labelWidth - 5, y + 20 + (index * 10), { align: 'right' });
+            });
+
+            // Linha divisória
+            doc.setDrawColor(255, 255, 255);
+            doc.line(x + 5, y + 15, x + labelWidth - 5, y + 15);
+
+            // Ajuste para nova etiqueta
+            x += labelWidth + margin;
+            if (x + labelWidth > doc.internal.pageSize.width - margin) {
+                x = margin;
+                y += labelHeight + margin;
+                if (y + labelHeight > doc.internal.pageSize.height - margin) {
+                    doc.addPage();
+                    x = margin;
+                    y = margin;
                 }
             }
         }
@@ -82,26 +116,25 @@ const AnaliseDetailOverlay = ({ open, onClose, analise }) => {
                 </Box>
 
                 <Typography variant="body1">
-                    <strong>Nome:</strong> {analise.nome}
+                    <strong>Nome:</strong> {analise.nome || 'N/A'}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Data de Cadastro:</strong> {analise.dataCadastro}
+                    <strong>Data de Cadastro:</strong> {analise.dataCadastro || 'N/A'}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Cliente:</strong> {analise.contrato ? analise.contrato.nomeContrato : ''}
+                    <strong>Cliente:</strong> {analise.nomeCliente || 'N/A'}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Matriz:</strong> {analise.matriz ? analise.matriz.nomeMatriz : 'N/A'}
+                    <strong>Matriz:</strong> {analise.nomeMatriz || 'N/A'}
                 </Typography>
                 <Typography variant="body1">
-                    <strong>Analito:</strong> {analise.analito}
+                    <strong>Analitos:</strong> {analise.analitos ? analise.analitos.join(', ') : 'N/A'}
                 </Typography>
                 <Typography variant="body1">
                     <strong>Quantidade de Amostras:</strong> {quantidadeAmostras}
                 </Typography>
-
                 <Typography variant="body1">
-                    <strong>Status:</strong> {analise.status}
+                    <strong>Status:</strong> {analise.statusAnalise || 'N/A'}
                 </Typography>
 
                 <Box mt={3} display="flex" alignItems="center">

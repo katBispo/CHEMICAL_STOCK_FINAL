@@ -1,0 +1,34 @@
+.label-container {
+  width: 200px; /* Adjust based on your label size */
+  height: 300px; /* Adjust based on your label size */
+  background-color: #28a745; /* Green color from the image */
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.label-header {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.label-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label-field {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.label-field span:first-child {
+  font-weight: bold;
+}

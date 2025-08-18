@@ -112,7 +112,18 @@ public class AnaliseController {
             dto.setQuantidadeAmostras(analise.getQuantidadeAmostras());
             dto.setPrazoFinalizacao(analise.getPrazoFinalizacao());
             dto.setMatrizId(analise.getMatriz() != null ? analise.getMatriz().getId() : null);
+            dto.setNomeMatriz(analise.getMatriz() != null ? analise.getMatriz().getNomeMatriz() : null);
             dto.setContratoId(analise.getContrato() != null ? analise.getContrato().getId() : null);
+            dto.setNomeContrato(analise.getContrato() != null ? analise.getContrato().getNomeContrato() : null);
+            dto.setNomeCliente(analise.getContrato() != null && analise.getContrato().getCliente() != null 
+                ? analise.getContrato().getCliente().getNome() : null);
+            // Mapear analitos das amostras
+            List<String> analitos = analise.getAmostras().stream()
+                .flatMap(amostra -> amostra.getAmostraAnalitos().stream()
+                    .map(amostraAnalito -> amostraAnalito.getAnalito().getClassificacao()))
+                .distinct()
+                .collect(Collectors.toList());
+            dto.setAnalitos(analitos);
             dto.setAmostraIds(analise.getAmostras().stream().map(Amostra::getId).collect(Collectors.toList()));
             return dto;
         }).collect(Collectors.toList());
