@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip,
     ResponsiveContainer, CartesianGrid, Pie, Cell, Legend, PieChart
@@ -26,9 +28,15 @@ const EstoqueHeader = ({ onAdd }) => (
             Estoque de Reagentes
         </Typography>
         <Button
-            onClick={onAdd}
+            component={Link}
+            to="/reagenteCadastro"
             variant="contained"
-            style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
+            style={{
+                backgroundColor: "#4CAF50",
+                color: "#fff",
+                textTransform: "none",
+                fontWeight: "bold",
+            }}
             startIcon={<FaPlus />}
         >
             Novo Reagente
@@ -47,7 +55,7 @@ const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal, controlados }) 
             gap={3}
             mb={4}
             flexWrap="wrap"
-            sx={{ ml: '120px' }} 
+            sx={{ ml: '120px' }}
         >
             <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #4CAF50' }}>
                 <Typography variant="h6" color="success.main">Total de Frascos</Typography>
@@ -175,7 +183,7 @@ const EstoqueReagentes = () => {
                     p: 3,
                     bgcolor: '#f5f5f5',
                     minHeight: '100vh',
-                    pt: 12 
+                    pt: 12
                 }}
             >
                 <EstoqueHeader onAdd={handleAdd} />
@@ -199,8 +207,8 @@ const EstoqueReagentes = () => {
                             flex={1}
                             minWidth={300}
                             mt={6}
-                            height="900px" 
-                            sx={{ overflowY: 'auto' }}  
+                            height="900px"
+                            sx={{ overflowY: 'auto' }}
                         >
                             <TabelaListaReagentes reagentes={reagentes} />
                         </Box>
@@ -213,8 +221,8 @@ const EstoqueReagentes = () => {
                     display="flex"
                     gap={2}
                     flexWrap="wrap"
-                    mt={-70}  
-                    mb={4}   
+                    mt={-70}
+                    mb={4}
                     ml={10}
                 >
                     <Box

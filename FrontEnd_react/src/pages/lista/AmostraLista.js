@@ -27,57 +27,50 @@ import {
     Typography,
     Paper,
 } from '@mui/material';
-
 const AmostraLista = () => {
     const [amostras, setAmostras] = useState([]);
     const [analises, setAnalises] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-
-    const [selectedAmostra, setSelectedAmostra] = useState(null); // Amostra selecionada
+    const [selectedAmostra, setSelectedAmostra] = useState(null);
     const [open, setOpen] = useState(false);
-
-    const [openAmostraOverlay, setOpenAmostraOverlay] = useState(false); // Controla o modal
-
-
+    const [openAmostraOverlay, setOpenAmostraOverlay] = useState(false);
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [amostraToEdit, setAmostraToEdit] = useState(null);
-
     const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
+    const [selectedAmostras, setSelectedAmostras] = useState([]);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleOpenDeleteOverlay = (amostra) => {
         setSelectedAmostra(amostra);
         setOpenDeleteOverlay(true);
     };
     const handleOpenAmostraOverlay = () => setOpenAmostraOverlay(true);
-
     const handleCloseAmostraOverlay = () => {
         setOpenAmostraOverlay(false);
-        //navigate("/amostraCadastro"); // Redireciona para a rota de cadastro
+        // navigate("/amostraCadastro");
     };
-
     const handleCloseDeleteOverlay = () => {
         setOpenDeleteOverlay(false);
         setSelectedAmostra(null);
     };
-    const [selectedAmostras, setSelectedAmostras] = useState([]);
 
-    const handleCheckboxChange = (amostraId) => {//tenho que chamar ele la na frente
+    const handleCheckboxChange = (amostraId) => {
         setSelectedAmostras((prevSelected) => {
             if (prevSelected.includes(amostraId)) {
-                // Desmarcar
                 return prevSelected.filter((id) => id !== amostraId);
             } else {
-                // Marcar
                 return [...prevSelected, amostraId];
             }
         });
     };
-    const [selectedRows, setSelectedRows] = useState([]);
 
     const handleSelectRow = (id) => {
-        setSelectedAmostras(prevSelected => {
+        setSelectedAmostras((prevSelected) => {
             if (prevSelected.includes(id)) {
-                return prevSelected.filter(selectedId => selectedId !== id);
+                return prevSelected.filter((selectedId) => selectedId !== id);
             } else {
                 return [...prevSelected, id];
             }
@@ -92,7 +85,6 @@ const AmostraLista = () => {
         }
     };
 
-
     const handleDeleteAmostra = async (id) => {
         const response = await fetch(`http://localhost:8080/amostra/${id}`, {
             method: 'DELETE',
@@ -100,7 +92,7 @@ const AmostraLista = () => {
 
         if (response.ok) {
             console.log('Amostra excluída com sucesso');
-            setAmostras(prevAmostras => prevAmostras.filter(amostra => amostra.id !== id)); // Remove da lista local
+            setAmostras((prevAmostras) => prevAmostras.filter((amostra) => amostra.id !== id));
         } else {
             console.error('Erro ao excluir a amostra');
         }
@@ -108,60 +100,13 @@ const AmostraLista = () => {
         handleCloseDeleteOverlay();
     };
 
-
-
-    // Função para abrir o modal
     const handleOpen = () => setOpen(true);
-
-    // Função para fechar o modal
     const handleClose = () => setOpen(false);
 
     const handleEditClick = (amostra) => {
         setAmostraToEdit(amostra);
         setEditOverlayOpen(true);
     };
-
-
-
-    useEffect(() => {
-        // Função para buscar as amostras do backend
-        const fetchAmostras = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/amostra');
-                const data = await response.json();
-                console.log("Amostras carregadas:", data); // Verifique o formato no console
-
-                setAmostras(data);
-            } catch (error) {
-                console.error('Erro ao buscar amostras:', error);
-            }
-        };
-        const fetchAnalises = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analise');
-                const data = await response.json();
-                setAnalises(data);
-            } catch (error) {
-                console.error('Erro ao buscar análises:', error);
-            }
-        };
-
-
-        // Função para buscar as análises do backend
-
-
-        // Chamando ambas as funções de busca
-        fetchAmostras();
-        fetchAnalises();
-    }, []);
-
-    const getAnaliseNomeById = (id) => {
-        const analise = analises.find(a => a.id === id);
-        return analise ? analise.nome : '';
-    };
-
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const navigate = useNavigate();
 
     const toggleDrawer = () => {
         setDrawerOpen((prev) => !prev);
@@ -176,8 +121,42 @@ const AmostraLista = () => {
             case 'ATRASADA':
                 return { backgroundColor: 'red', color: '#fff' };
             default:
-                return { backgroundColor: 'gray', color: '#fff' }; // Cor padrão para status desconhecido
+                return { backgroundColor: 'gray', color: '#fff' };
         }
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [amostrasResponse, analisesResponse] = await Promise.all([
+                    fetch('http://localhost:8080/amostra'),
+                    fetch('http://localhost:8080/analise')
+                ]);
+
+                const amostrasData = await amostrasResponse.json();
+                const analisesData = await analisesResponse.json();
+
+                console.log("Amostras carregadas:", amostrasData);
+                console.log("Análises carregadas:", analisesData);
+
+                setAmostras(amostrasData);
+                setAnalises(analisesData);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []); // Removido 'amostra' da dependência, pois não é necessário aqui
+
+    const getAnaliseNomeById = (id) => {
+        console.log('Buscando análise para id:', id, 'Loading:', loading, 'Analises:', analises);
+        if (loading) return 'Carregando...';
+        if (!id) return 'ID não fornecido';
+        const analise = analises.find((a) => a.id === id);
+        return analise ? analise.nome : 'Não associada';
     };
 
     return (
@@ -215,7 +194,7 @@ const AmostraLista = () => {
                             fontWeight: 'bold'
                         }}
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={handleOpenAmostraOverlay} // Abre o overlay
+                        onClick={handleOpenAmostraOverlay}
                     >
                         Cadastrar Amostra
                     </Button>
@@ -282,10 +261,12 @@ const AmostraLista = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.nome}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
-                                            {getAnaliseNomeById(amostra.analiseId)}
-                                        </TableCell>
-
+                               <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
+    {getAnaliseNomeById(amostra.analise)}
+    <div style={{ fontSize: '10px', color: 'gray' }}>
+        Debug: Loading={loading.toString()}, AnaliseId={amostra.analise || 'null'}, Analises Length={analises.length}
+    </div>
+</TableCell>
 
                                         <TableCell>
                                             <Box

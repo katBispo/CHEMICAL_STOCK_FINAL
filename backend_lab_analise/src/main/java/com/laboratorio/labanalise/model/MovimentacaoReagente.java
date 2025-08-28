@@ -35,8 +35,7 @@ public class MovimentacaoReagente {
     private Double quantidadeFinal; // Quanto ficou no estoque após essa movimentação
 
     @Column(nullable = true)
-    private String motivo; // Opcional: Exemplo "Uso em experimento X"
-
+    private String motivo; 
 
     public Long getId() {
         return id;

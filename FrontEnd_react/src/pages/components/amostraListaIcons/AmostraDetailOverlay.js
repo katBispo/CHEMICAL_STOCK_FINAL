@@ -3,44 +3,69 @@ import { Box, Modal, Typography, IconButton, Button, TextField } from '@mui/mate
 import { FaTimes } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
-
 const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
+    const [quantidadeEtiquetas, setQuantidadeEtiquetas] = useState(1);
+
     const handleDownloadPDF = () => {
-        const doc = new jsPDF();
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-        doc.text(`Detalhes da Amostra`, 10, 10);
-        doc.text(`Nome: ${amostra.nome}`, 10, 20);
-        doc.text(`Data de Cadastro: ${amostra.dataCadastro}`, 10, 30);
-        doc.text(`Prazo de Finalização: ${amostra.prazoFinalizacao}`, 10, 40);
-        doc.text(`Endereço de Coleta: ${amostra.enderecoColeta}`, 10, 50);
-        doc.text(`Data de Coleta: ${amostra.dataColeta}`, 10, 60);
-        doc.text(`Descrição: ${amostra.descricao}`, 10, 70);
-        doc.text(
-            `Procedimentos: ${amostra.procedimentosNomes && amostra.procedimentosNomes.length > 0
-                ? amostra.procedimentosNomes.join(', ')
-                : 'Nenhum procedimento'
-            }`,
-            10,
-            80
-        );
-        doc.text(`Análise: ${amostra.analise?.nome || 'N/A'}`, 10, 90);
+        const labelWidth = 60;
+        const labelHeight = 70; // Altura ajustada para 70mm
+        const margin = 5;
+        let x = margin;
+        let y = margin;
 
-        doc.text(`Analitos Selecionados:`, 10, 100);
+        for (let i = 0; i < quantidadeEtiquetas; i++) {
+            // Fundo verde com borda
+            doc.setFillColor(40, 167, 69); // #28a745
+            doc.setDrawColor(0, 0, 0); // Borda preta
+            doc.setLineWidth(0.5);
+            doc.rect(x, y, labelWidth, labelHeight, 'FD');
 
-        if (amostra.analitosSelecionados && amostra.analitosSelecionados.length > 0) {
-            amostra.analitosSelecionados.forEach((analito, index) => {
-                doc.text(
-                    `- ${analito.classificacao || 'N/A'} (${analito.subtipo || 'Subtipo não informado'})`,
-                    10,
-                    110 + index * 10
-                );
+            // Cabeçalho estilizado
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('ChemLab', x + labelWidth / 2, y + 10, { align: 'center' });
+
+        
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const fields = [
+                { label: 'Nº Amostra', value: amostra.id?.toString() || 'N/A' },
+                { label: 'Nome', value: amostra.nome?.toString() || 'N/A' },
+                { label: 'Prazo Final', value: amostra.prazoFinalizacao|| 'N/A' },
+                { label: 'Endereço Coleta', value: amostra.enderecoColeta?.toString() || 'N/A' },
+                { label: 'Data Coleta', value: amostra.dataColeta?.toString() || 'N/A' }
+            ];
+
+            fields.forEach((field, index) => {
+                doc.text(field.label + ':', x + 5, y + 20 + (index * 10));
+                doc.text(field.value, x + labelWidth - 5, y + 20 + (index * 10), { align: 'right' });
             });
-        } else {
-            doc.text(`Nenhum analito selecionado`, 10, 110);
+
+            // Linha divisória
+            doc.setDrawColor(255, 255, 255);
+            doc.line(x + 5, y + 15, x + labelWidth - 5, y + 15);
+
+            // Ajuste para nova etiqueta
+            x += labelWidth + margin;
+            if (x + labelWidth > doc.internal.pageSize.width - margin) {
+                x = margin;
+                y += labelHeight + margin;
+                if (y + labelHeight > doc.internal.pageSize.height - margin) {
+                    doc.addPage();
+                    x = margin;
+                    y = margin;
+                }
+            }
         }
 
-
-        doc.save('detalhes_amostra.pdf');
+        doc.save('etiquetas_amostra.pdf');
     };
 
     return (
@@ -93,7 +118,6 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                         ? amostra.procedimentosNomes.join(', ')
                         : 'Nenhum procedimento'}
                 </Typography>
-
                 <Typography variant="body1">
                     <strong>Análise:</strong> {amostra.analise?.nome || 'N/A'}
                 </Typography>
@@ -111,10 +135,16 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                     )}
                 </Typography>
 
-
-                <Box mt={3} display="flex" justifyContent="flex-end">
+                <Box mt={3} display="flex" alignItems="center">
+                    <TextField
+                        label="Quantidade de Etiquetas"
+                        type="number"
+                        value={quantidadeEtiquetas}
+                        onChange={(e) => setQuantidadeEtiquetas(parseInt(e.target.value) || 1)}
+                        sx={{ mr: 2 }}
+                    />
                     <Button variant="contained" color="primary" onClick={handleDownloadPDF}>
-                        Baixar Detalhes em PDF
+                        Baixar Etiquetas
                     </Button>
                 </Box>
             </Box>
