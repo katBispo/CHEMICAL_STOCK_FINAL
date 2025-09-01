@@ -1,4 +1,5 @@
 package com.laboratorio.labanalise.services;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,12 @@ public class UsuarioService {
     // BUSCAR POR ID
     public Optional<UsuarioDTO> buscarPorId(Long id) {
         return usuarioRepository.findById(id).map(this::toDTO);
+    }
+
+    // BUSCAR POR EMAIL
+
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 
     // CRIAR USUÁRIO
@@ -86,7 +93,6 @@ public class UsuarioService {
                 usuario.getEmail(),
                 usuario.getCrq(),
                 usuario.getDataAdmissao(),
-                usuario.getCargo()
-        );
+                usuario.getCargo());
     }
 }

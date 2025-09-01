@@ -15,7 +15,7 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, unique = true, length = 16)
     private String cpf;
 
     @Column(nullable = false, unique = true)

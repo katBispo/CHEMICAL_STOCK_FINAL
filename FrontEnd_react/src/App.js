@@ -1,7 +1,12 @@
 // App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+
+
 import Home from './pages/Home';
+import LoginPage from './pages/Login/LoginPage';
+
 import AnaliseLista from './pages/lista/AnaliseLista';
 import ContratoLista from './pages/lista/ContratoLista';
 import ProcedimentoLista from './pages/lista/ProcedimentoLista';
@@ -21,7 +26,7 @@ import ContAnaliseCadastro from './pages/cadastro/ContAnaliseCadastro';
 import AmostraCadastro from './pages/cadastro/AmostraCadastro';
 import ReagenteCadastro from './pages/cadastro/ReagenteCadastro';
 import AnalitoExistenteCadastro from './pages/cadastro/AnalitoExistenteCadastro';
-import CadastrarProcesso from './pages/cadastro/CadastrarProcesso'; 
+import CadastrarProcesso from './pages/cadastro/CadastrarProcesso';
 
 import Estoque from './pages/estoque/Estoque';
 
@@ -41,7 +46,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/loginPage" element={<LoginPage />} />
+
+        <Route path="/" element={<LoginPage />} />
+
+        <Route path="/home" element={<Home />} />
+
+
         <Route path="/analiseLista" element={<AnaliseLista />} />
         <Route path="/contratoLista" element={<ContratoLista />} />
         <Route path="/procedimentoLista" element={<ProcedimentoLista />} />
@@ -72,7 +83,7 @@ function App() {
 
 
 
-        <Route path="/perfil" element={<Perfil/>} />
+        <Route path="/perfil" element={<Perfil />} />
 
 
 
