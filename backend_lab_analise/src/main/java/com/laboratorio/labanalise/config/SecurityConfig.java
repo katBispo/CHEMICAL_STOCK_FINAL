@@ -23,12 +23,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()   // habilita CORS
-            .csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // libera rotas de login/cadastro
-                .anyRequest().authenticated()
-            );
+                .cors().and() // habilita CORS
+                .csrf().disable()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/usuarios").permitAll() // libera criação de usuário
+
+                        .anyRequest().authenticated());
         return http.build();
     }
 
