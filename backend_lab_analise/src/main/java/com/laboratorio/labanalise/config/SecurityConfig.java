@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/usuarios").permitAll() // libera criação de usuário
                         .requestMatchers("/usuarios/aprovar/**").permitAll() // aprovação
+                        .requestMatchers("/usuarios/negar/**").permitAll() // negar usuário
+                        .requestMatchers("/usuarios/pendentes/**").permitAll()
 
                         .anyRequest().authenticated());
         return http.build();

@@ -77,4 +77,26 @@ public class UsuarioController {
         return ResponseEntity.ok("Usuário aprovado com sucesso!");
     }
 
+    // Negar usuário pelo ID
+    @PutMapping("/negar/{id}")
+    public ResponseEntity<String> negarUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        usuario.setStatus(StatusUsuario.REJEITADO); // ou outro status
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Usuário negado com sucesso!");
+    }
+
+    // Busca usuário pendente pelo ID
+   @GetMapping("/pendentes/{id}")
+public ResponseEntity<UsuarioDTO> buscarUsuarioPendente(@PathVariable Long id) {
+    return usuarioRepository.findById(id)
+        .filter(u -> u.getStatus() == StatusUsuario.PENDENTE)
+        .map(u -> ResponseEntity.ok(usuarioService.converterParaDTO(u)))
+        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+}
+
+
 }

@@ -3,7 +3,7 @@ package com.laboratorio.labanalise.services;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import com.laboratorio.labanalise.model.*;
+import com.laboratorio.labanalise.model.Usuario;
 
 @Service
 public class EmailService {
@@ -18,12 +18,14 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(emailAdmin);
         message.setSubject("Novo cadastro pendente");
-        message.setText("Um novo usuário se cadastrou:\n\n"
-                + "Nome: " + usuario.getNome() + "\n"
-                + "Email: " + usuario.getEmail() + "\n\n"
-                + "Aprove aqui: http://localhost:3000/aprovar-usuario/" + usuario.getId());
+        message.setText(
+            "Um novo usuário se cadastrou:\n\n"
+            + "Nome: " + usuario.getNome() + "\n"
+            + "Email: " + usuario.getEmail() + "\n\n"
+            + "Para aprovar ou negar, acesse: "
+            + "http://localhost:3000/aprovar-usuario/" + usuario.getId()
+        );
 
         mailSender.send(message);
     }
-
 }

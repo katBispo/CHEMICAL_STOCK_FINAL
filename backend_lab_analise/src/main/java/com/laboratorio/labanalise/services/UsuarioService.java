@@ -113,4 +113,19 @@ public class UsuarioService {
                 usuario.getStatus() // Inclui status no DTO
         );
     }
+
+    // Adicione no UsuarioService
+public UsuarioDTO converterParaDTO(Usuario usuario) {
+    return new UsuarioDTO(
+        usuario.getId(),
+        usuario.getNome(),
+        usuario.getCpf(),
+        usuario.getEmail(),
+        usuario.getCrq(),
+        usuario.getDataAdmissao(),
+        usuario.getCargo(),
+        usuario.getStatus()
+    );
+}
+
 }
