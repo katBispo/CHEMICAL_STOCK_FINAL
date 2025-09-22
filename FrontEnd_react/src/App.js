@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import LoginPage from './pages/Login/LoginPage';
 
+import AprovarUsuarios from './pages/Login/AprovarUsuarios';
+
 import AnaliseLista from './pages/lista/AnaliseLista';
 import ContratoLista from './pages/lista/ContratoLista';
 import ProcedimentoLista from './pages/lista/ProcedimentoLista';
@@ -51,6 +53,8 @@ function App() {
         <Route path="/" element={<LoginPage />} />
 
         <Route path="/home" element={<Home />} />
+
+        <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
 
 
         <Route path="/analiseLista" element={<AnaliseLista />} />

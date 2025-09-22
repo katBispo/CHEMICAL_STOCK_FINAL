@@ -3,15 +3,13 @@ package com.laboratorio.labanalise.services;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.laboratorio.labanalise.repositories.*;
-import com.laboratorio.labanalise.model.*;
-import org.springframework.stereotype.Service;
-import com.laboratorio.labanalise.DTO.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.laboratorio.labanalise.repositories.UsuarioRepository;
+import com.laboratorio.labanalise.model.Usuario;
+import com.laboratorio.labanalise.model.enums.StatusUsuario;
+import com.laboratorio.labanalise.DTO.UsuarioDTO;
+import com.laboratorio.labanalise.DTO.UsuarioCreateDTO;
+import com.laboratorio.labanalise.services.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,10 +19,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+            EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     // LISTAR TODOS
@@ -41,12 +42,11 @@ public class UsuarioService {
     }
 
     // BUSCAR POR EMAIL
-
     public Optional<Usuario> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
 
-    // CRIAR USUÁRIO
+    // CRIAR USUÁRIO (status PENDENTE)
     public UsuarioDTO salvar(UsuarioCreateDTO dto) {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.getNome());
@@ -55,12 +55,21 @@ public class UsuarioService {
         usuario.setCrq(dto.getCrq());
         usuario.setDataAdmissao(dto.getDataAdmissao());
         usuario.setCargo(dto.getCargo());
-        usuario.setSenha(passwordEncoder.encode(dto.getSenha())); // 🔒 Criptografa senha
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        usuario.setStatus(StatusUsuario.PENDENTE);
 
-        return toDTO(usuarioRepository.save(usuario));
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        // gerando link de aprovação
+        String linkAprovacao = "http://localhost:8080/usuarios/aprovar/" + usuarioSalvo.getId();
+
+        // envio de email pra adm
+        emailService.enviarEmailAprovacao("katerinybispo06@gmail.com", usuarioSalvo);
+
+        return toDTO(usuarioSalvo);
     }
 
-    // ATUALIZAR USUÁRIO
+    // ATUALIZAR USUARIO
     public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
         return usuarioRepository.findById(id).map(usuario -> {
             usuario.setNome(dto.getNome());
@@ -70,11 +79,18 @@ public class UsuarioService {
             usuario.setDataAdmissao(dto.getDataAdmissao());
             usuario.setCargo(dto.getCargo());
 
-            // Se veio uma senha nova, criptografa e atualiza
             if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
                 usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
             }
 
+            return toDTO(usuarioRepository.save(usuario));
+        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
+    // APROVAR USUÁRIO (método novo)
+    public UsuarioDTO aprovarUsuario(Long id) {
+        return usuarioRepository.findById(id).map(usuario -> {
+            usuario.setStatus(StatusUsuario.ATIVO);
             return toDTO(usuarioRepository.save(usuario));
         }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
@@ -93,6 +109,8 @@ public class UsuarioService {
                 usuario.getEmail(),
                 usuario.getCrq(),
                 usuario.getDataAdmissao(),
-                usuario.getCargo());
+                usuario.getCargo(),
+                usuario.getStatus() // Inclui status no DTO
+        );
     }
 }

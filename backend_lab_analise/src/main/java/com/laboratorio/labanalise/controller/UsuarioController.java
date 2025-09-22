@@ -2,6 +2,10 @@ package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.services.*;
 import com.laboratorio.labanalise.model.*;
+import com.laboratorio.labanalise.model.enums.StatusUsuario;
+import com.laboratorio.labanalise.repositories.UsuarioRepository;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,16 +13,17 @@ import com.laboratorio.labanalise.DTO.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    
 
-    public UsuarioController(UsuarioService usuarioService) {
+    private final UsuarioRepository usuarioRepository;
+
+    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
         this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     // LISTAR TODOS
@@ -59,4 +64,17 @@ public class UsuarioController {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    // Aprovar usuário pelo ID
+    @PutMapping("/aprovar/{id}")
+    public ResponseEntity<String> aprovarUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        usuario.setStatus(StatusUsuario.ATIVO);
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Usuário aprovado com sucesso!");
+    }
+
 }

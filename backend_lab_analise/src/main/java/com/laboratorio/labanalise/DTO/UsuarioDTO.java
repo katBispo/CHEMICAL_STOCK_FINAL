@@ -1,6 +1,6 @@
 package com.laboratorio.labanalise.DTO;
-import com.laboratorio.labanalise.model.enums.*;
 
+import com.laboratorio.labanalise.model.enums.*;
 import java.time.LocalDate;
 
 public class UsuarioDTO {
@@ -11,8 +11,9 @@ public class UsuarioDTO {
     private String crq;
     private LocalDate dataAdmissao;
     private Cargo cargo;
+    private StatusUsuario status; // NOVO CAMPO
 
-    public UsuarioDTO(Long id, String nome, String cpf, String email, String crq, LocalDate dataAdmissao, Cargo cargo) {
+    public UsuarioDTO(Long id, String nome, String cpf, String email, String crq, LocalDate dataAdmissao, Cargo cargo, StatusUsuario status) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -20,6 +21,7 @@ public class UsuarioDTO {
         this.crq = crq;
         this.dataAdmissao = dataAdmissao;
         this.cargo = cargo;
+        this.status = status;
     }
 
     // Getters
@@ -30,4 +32,5 @@ public class UsuarioDTO {
     public String getCrq() { return crq; }
     public LocalDate getDataAdmissao() { return dataAdmissao; }
     public Cargo getCargo() { return cargo; }
+    public StatusUsuario getStatus() { return status; } // GETTER NOVO
 }

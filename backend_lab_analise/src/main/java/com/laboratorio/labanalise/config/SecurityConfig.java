@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/usuarios").permitAll() // libera criação de usuário
+                        .requestMatchers("/usuarios/aprovar/**").permitAll() // aprovação
 
                         .anyRequest().authenticated());
         return http.build();
