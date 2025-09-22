@@ -21,18 +21,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTAuthenticationFilter jwtFilter) throws Exception {
         http
-                .cors().and() // habilita CORS
-                .csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/usuarios").permitAll() // libera criação de usuário
-                        .requestMatchers("/usuarios/aprovar/**").permitAll() // aprovação
-                        .requestMatchers("/usuarios/negar/**").permitAll() // negar usuário
-                        .requestMatchers("/usuarios/pendentes/**").permitAll()
+            .cors().and()
+            .csrf().disable()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/usuarios").permitAll() // cadastro público
+                .requestMatchers("/usuarios/aprovar/**").permitAll()
+                .requestMatchers("/usuarios/negar/**").permitAll()
+                .requestMatchers("/usuarios/pendentes/**").permitAll()
+                .requestMatchers("/reagente/**").authenticated() // precisa de login
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
-                        .anyRequest().authenticated());
         return http.build();
     }
 
