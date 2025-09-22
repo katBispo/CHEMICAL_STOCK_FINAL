@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 const AprovarUsuario = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,13 +22,19 @@ const AprovarUsuario = () => {
 
   const handleAprovar = () => {
     axios.put(`http://localhost:8080/usuarios/aprovar/${id}`)
-      .then(() => alert("Usuário aprovado com sucesso!"))
+      .then(() => {
+        alert("Usuário aprovado com sucesso!");
+        navigate("/loginPage"); // redireciona após aprovar
+      })
       .catch(() => alert("Erro ao aprovar usuário."));
   };
 
   const handleNegar = () => {
     axios.put(`http://localhost:8080/usuarios/negar/${id}`)
-      .then(() => alert("Usuário negado com sucesso!"))
+      .then(() => {
+        alert("Usuário negado com sucesso!");
+        navigate("/loginPage"); // redireciona após negar
+      })
       .catch(() => alert("Erro ao negar usuário."));
   };
 
