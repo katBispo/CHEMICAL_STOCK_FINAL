@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/aprovar/**").permitAll()
                 .requestMatchers("/usuarios/negar/**").permitAll()
                 .requestMatchers("/usuarios/pendentes/**").permitAll()
-                .requestMatchers("/reagente/**").authenticated() // precisa de login
+                //.requestMatchers("/reagente/**").authenticated() // precisa de login
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);

@@ -32,6 +32,12 @@ export default function LoginRegister() {
       const data = await res.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("nome", data.nome);
+      // se o backend retornar o exp (timestamp ou segundos UNIX)
+      if (data.exp) {
+        localStorage.setItem("tokenExp", data.exp);
+      }
+
+
       navigate("/home");
     } catch (err) {
       setError(err.message || "Erro ao fazer login");

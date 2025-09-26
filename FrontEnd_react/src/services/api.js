@@ -59,9 +59,13 @@ export async function apiDelete(endpoint) {
 // Tratamento centralizado de erros
 function handleApiError(error) {
   if (error.response?.status === 401) {
-    throw new Error("Sessão expirada, faça login novamente.");
+    localStorage.removeItem("token");
+    localStorage.removeItem("tokenExp");
+    window.location.href = "/loginPage"; // força logout
+    return;
   }
   throw error.response?.data?.message || error.message || "Erro inesperado";
 }
+
 
 export default api;

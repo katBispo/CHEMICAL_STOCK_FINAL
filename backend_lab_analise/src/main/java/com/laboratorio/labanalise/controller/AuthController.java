@@ -29,7 +29,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-  @PostMapping("/login")
+ @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
     Optional<Usuario> userOpt = usuarioService.buscarPorEmail(loginDTO.getEmail());
     if (userOpt.isEmpty())
@@ -37,19 +37,23 @@ public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
 
     Usuario user = userOpt.get();
 
-    // Verifica senha
     if (!passwordEncoder.matches(loginDTO.getSenha(), user.getSenha()))
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha inválidos");
 
-    // Verifica se o usuário foi aprovado
     if (user.getStatus() != StatusUsuario.ATIVO)
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .body("Cadastro pendente: aguarde aprovação do administrador");
 
-    // Gerar token JWT
-    String token = JWTUtil.gerarToken(user);
+    // gerar token + exp
+    JWTUtil.TokenInfo tokenInfo = JWTUtil.gerarToken(user);
 
-    return ResponseEntity.ok(new LoginResponseDTO(user.getNome(), user.getEmail(), token));
+    return ResponseEntity.ok(new LoginResponseDTO(
+        user.getNome(),
+        user.getEmail(),
+        tokenInfo.getToken(),
+        tokenInfo.getExp()
+    ));
 }
+
 
 }
