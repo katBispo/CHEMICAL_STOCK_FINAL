@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../css/login.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { cadastrarUsuario } from "../../services/usuarioService";
 
 export default function CadastroUsuario({ onCadastroSucesso }) {
   const [nome, setNome] = useState("");
@@ -13,33 +14,16 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  
   const handleCadastro = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/usuarios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome,
-          cpf,
-          email,
-          crq,
-          dataAdmissao,
-          cargo,
-          senha,
-        }),
-      });
-
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg);
-      }
-
-      alert("Cadastro realizado! Aguarde aprovação do administrador para acessar o sistema.");
-      onCadastroSucesso(); // volta para login
+      await cadastrarUsuario({ nome, cpf, email, crq, dataAdmissao, cargo, senha });
+      alert("Cadastro realizado! Aguarde aprovação do administrador.");
+      onCadastroSucesso();
     } catch (err) {
       setError(err.message || "Erro ao cadastrar usuário");
     } finally {

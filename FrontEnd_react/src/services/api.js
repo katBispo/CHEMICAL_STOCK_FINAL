@@ -58,7 +58,7 @@ export async function apiDelete(endpoint) {
 
 // Tratamento centralizado de erros
 function handleApiError(error) {
-  if (error.response?.status === 401) {
+  if (error.response?.status === 401|| error.response?.status === 403) {
     localStorage.removeItem("token");
     localStorage.removeItem("tokenExp");
     window.location.href = "/loginPage"; // força logout

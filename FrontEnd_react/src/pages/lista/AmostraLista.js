@@ -261,12 +261,12 @@ const AmostraLista = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.nome}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
-                               <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
-    {getAnaliseNomeById(amostra.analise)}
-    <div style={{ fontSize: '10px', color: 'gray' }}>
-        Debug: Loading={loading.toString()}, AnaliseId={amostra.analise || 'null'}, Analises Length={analises.length}
-    </div>
-</TableCell>
+                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
+                                            {getAnaliseNomeById(amostra.analise)}
+                                            <div style={{ fontSize: '10px', color: 'gray' }}>
+                                                Debug: Loading={loading.toString()}, AnaliseId={amostra.analise || 'null'}, Analises Length={analises.length}
+                                            </div>
+                                        </TableCell>
 
                                         <TableCell>
                                             <Box

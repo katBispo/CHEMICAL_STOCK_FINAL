@@ -7,6 +7,7 @@ import AnaliseDetailOverlay from '../components/analiseListaIcons/AnaliseDetailO
 import AnaliseEditOverlay from '../components/analiseListaIcons/AnaliseEditOverlay';
 import AnaliseExcluirOverlay from '../components/analiseListaIcons/AnaliseExcluirOverlay';
 
+import { apiGet } from "../../services/api"; 
 
 
 
@@ -82,14 +83,10 @@ const AnaliseLista = () => {
 
     const fetchAnalises = async () => {
         try {
-            const response = await fetch('http://localhost:8080/analise');
-            if (!response.ok) {
-                throw new Error(`Erro ao buscar análises: ${response.status} ${response.statusText}`);
-            }
-            const data = await response.json();
+            const data = await apiGet("/analise"); // usa o interceptor com token
             setAnalise(data);
         } catch (error) {
-            console.error('Erro ao conectar ao backend:', error.message);
+            console.error("Erro ao carregar análises:", error);
         }
     };
 
@@ -228,7 +225,7 @@ const AnaliseLista = () => {
                                     <AnaliseDetailOverlay
                                         open={open}
                                         onClose={handleClose}
-                                        analise={selectedAnalise} 
+                                        analise={selectedAnalise}
                                     />
 
                                 )}

@@ -90,13 +90,12 @@ public class UsuarioController {
     }
 
     // Busca usuário pendente pelo ID
-   @GetMapping("/pendentes/{id}")
-public ResponseEntity<UsuarioDTO> buscarUsuarioPendente(@PathVariable Long id) {
-    return usuarioRepository.findById(id)
-        .filter(u -> u.getStatus() == StatusUsuario.PENDENTE)
-        .map(u -> ResponseEntity.ok(usuarioService.converterParaDTO(u)))
-        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-}
-
+    @GetMapping("/pendentes/{id}")
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPendente(@PathVariable Long id) {
+        return usuarioRepository.findById(id)
+                .filter(u -> u.getStatus() == StatusUsuario.PENDENTE)
+                .map(u -> ResponseEntity.ok(usuarioService.converterParaDTO(u)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
 
 }

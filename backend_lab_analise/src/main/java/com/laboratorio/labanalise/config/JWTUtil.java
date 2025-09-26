@@ -9,7 +9,8 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 public class JWTUtil {
     private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 120_000; // 2 minutos
+    //private static final long EXPIRATION_TIME = 120_000; // 2 minutos
+private static final long EXPIRATION_TIME = 2_400_000; // 40 minutos
 
     // gerar token e também retornar a data de expiração
     public static TokenInfo gerarToken(Usuario user) {
