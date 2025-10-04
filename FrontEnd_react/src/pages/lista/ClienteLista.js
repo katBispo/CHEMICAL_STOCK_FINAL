@@ -1,132 +1,147 @@
-import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
 import React, { useEffect, useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
-import SideBar from '../components/SideBar'; 
-
+import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
-    Box,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Typography,
-    Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Button, Box, AppBar, Toolbar, IconButton, Typography, Paper, CircularProgress
 } from '@mui/material';
+import SideBar from '../components/SideBar';
+import { getClientes, deleteCliente } from '../../services/ClienteService.js';
 
-const ClienteTable = () => {
-    const [clientes, setClientes] = useState([]);
+const ClienteLista = () => {
+  const [clientes, setClientes] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        // Função para buscar os clientes do backend
-        const fetchClientes = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/cliente'); // Certifique-se de que a URL está correta
-                const data = await response.json();
-                setClientes(data);
-            } catch (error) {
-                console.error('Erro ao buscar clientes:', error);
-            }
-        };
+  const toggleDrawer = () => setDrawerOpen(prev => !prev);
 
-        fetchClientes();
-    }, []);
+  // 🔹 Função para carregar clientes do backend
+  const fetchClientes = async () => {
+    try {
+      setLoading(true);
+      const data = await getClientes();
+      setClientes(data);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+      alert('❌ Erro ao carregar a lista de clientes.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const [drawerOpen, setDrawerOpen] = useState(false); 
-    const navigate = useNavigate();
+  useEffect(() => {
+    fetchClientes();
+  }, []);
 
-    const toggleDrawer = () => {
-        setDrawerOpen((prev) => !prev); 
-    };
+  // 🔹 Deletar cliente
+  const handleDelete = async (id) => {
+    if (window.confirm('Deseja realmente excluir este cliente?')) {
+      try {
+        await deleteCliente(id);
+        alert('✅ Cliente excluído com sucesso!');
+        fetchClientes(); // Atualiza a lista
+      } catch (error) {
+        console.error('Erro ao deletar cliente:', error);
+        alert('❌ Erro ao excluir o cliente.');
+      }
+    }
+  };
 
-    return (
-        <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'left' }}>
-                        Lista de Clientes
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+  return (
+    <Box sx={{ display: 'flex' }}>
+      {/* 🔹 AppBar Superior */}
+      <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: theme => theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
+            Lista de Clientes
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
-            <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
+      {/* 🔹 Sidebar */}
+      <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
-                <Toolbar />
-
-                <Box textAlign="center" mt={2} mb={2}>
-                    <Typography variant="h4" component="h1" fontWeight="bold">
-                        Lista de Clientes
-                    </Typography>
-                </Box>
-                
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
-                        startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={() => navigate('/clienteCadastro')}
-                    >
-                        Cadastrar Cliente
-                    </Button>
-                </Box>
-
-                <Box display="flex" justifyContent="space-around" mt={2}>
-                    <TableContainer component={Paper} style={{ marginTop: '20px', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow style={{ backgroundColor: '#4CAF50' }}>
-                                    {/* Cabeçalhos da tabela */}
-                                    {['ID', 'Nome', 'Email', 'CNPJ', 'Telefone', 'Ações'].map((header) => (
-                                        <TableCell key={header} style={{ color: '#fff', fontWeight: 'bold', fontSize: '16px', textAlign: 'center' }}>
-                                            {header}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {clientes.map((cliente) => (
-                                    <TableRow
-                                        key={cliente.id}
-                                        style={{ backgroundColor: '#fff', transition: 'background-color 0.3s' }}
-                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
-                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
-                                    >
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.id}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.nome}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.email}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.cnpj}</TableCell>
-                                        <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{cliente.telefone}</TableCell>
-                                        <TableCell style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                                            <IconButton>
-                                                <FaEye style={{ color: '#666', fontSize: '18px' }} />
-                                            </IconButton>
-                                            <IconButton>
-                                                <FaEdit style={{ color: '#4CAF50', fontSize: '18px' }} />
-                                            </IconButton>
-                                            <IconButton>
-                                                <FaTrashAlt style={{ color: '#e74c3c', fontSize: '18px' }} />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
-            </Box>
+      {/* 🔹 Conteúdo Principal */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
+        <Toolbar />
+        <Box textAlign="center" mt={2} mb={2}>
+          <Typography variant="h4" fontWeight="bold">Lista de Clientes</Typography>
         </Box>
-    );
+
+        {/* 🔹 Botão para cadastrar */}
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ backgroundColor: '#4CAF50', textTransform: 'none', fontWeight: 'bold' }}
+            onClick={() => navigate('/clienteCadastro')}
+          >
+            + Cadastrar Cliente
+          </Button>
+        </Box>
+
+        {/* 🔹 Loader enquanto busca dados */}
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
+            <CircularProgress color="success" />
+          </Box>
+        ) : (
+          <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0px 4px 20px rgba(0,0,0,0.1)' }}>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#4CAF50' }}>
+                  {['ID', 'Nome', 'Email', 'CNPJ', 'Telefone', 'Ações'].map(header => (
+                    <TableCell
+                      key={header}
+                      sx={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {clientes.length > 0 ? (
+                  clientes.map(cliente => (
+                    <TableRow key={cliente.id} sx={{ '&:hover': { backgroundColor: '#f1f1f1' } }}>
+                      <TableCell align="center">{cliente.id}</TableCell>
+                      <TableCell align="center">{cliente.nome}</TableCell>
+                      <TableCell align="center">{cliente.email}</TableCell>
+                      <TableCell align="center">{cliente.cnpj}</TableCell>
+                      <TableCell align="center">{cliente.telefone}</TableCell>
+                      <TableCell align="center" sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                        <IconButton onClick={() => navigate(`/cliente/${cliente.id}`)}>
+                          <FaEye style={{ color: '#666' }} />
+                        </IconButton>
+                        <IconButton onClick={() => navigate(`/clienteEditar/${cliente.id}`)}>
+                          <FaEdit style={{ color: '#4CAF50' }} />
+                        </IconButton>
+                        <IconButton onClick={() => handleDelete(cliente.id)}>
+                          <FaTrashAlt style={{ color: '#e74c3c' }} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      Nenhum cliente cadastrado.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Box>
+    </Box>
+  );
 };
 
-export default ClienteTable;
+export default ClienteLista;

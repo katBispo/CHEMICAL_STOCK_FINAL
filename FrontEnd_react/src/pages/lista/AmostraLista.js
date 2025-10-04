@@ -8,9 +8,9 @@ import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailO
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
 import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExcluirOverlay';
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
+import { getAmostras,deleteAmostra } from '../../services/amostraService';
 
-
-
+import { getAnalises } from "../../services/analiseService";
 
 import {
     Table,
@@ -86,19 +86,20 @@ const AmostraLista = () => {
     };
 
     const handleDeleteAmostra = async (id) => {
-        const response = await fetch(`http://localhost:8080/amostra/${id}`, {
-            method: 'DELETE',
-        });
+  try {
+    await deleteAmostra(`/amostra/${id}`); // usa interceptor com token
+    console.log("Amostra excluída com sucesso");
 
-        if (response.ok) {
-            console.log('Amostra excluída com sucesso');
-            setAmostras((prevAmostras) => prevAmostras.filter((amostra) => amostra.id !== id));
-        } else {
-            console.error('Erro ao excluir a amostra');
-        }
-
-        handleCloseDeleteOverlay();
-    };
+    // Atualiza a lista local
+    setAmostras((prevAmostras) =>
+      prevAmostras.filter((amostra) => amostra.id !== id)
+    );
+  } catch (error) {
+    console.error("Erro ao excluir a amostra:", error);
+  } finally {
+    handleCloseDeleteOverlay();
+  }
+};
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -128,13 +129,11 @@ const AmostraLista = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [amostrasResponse, analisesResponse] = await Promise.all([
-                    fetch('http://localhost:8080/amostra'),
-                    fetch('http://localhost:8080/analise')
+                // Buscar amostras e análises em paralelo
+                const [amostrasData, analisesData] = await Promise.all([
+                    getAmostras(),
+                    getAnalises()
                 ]);
-
-                const amostrasData = await amostrasResponse.json();
-                const analisesData = await analisesResponse.json();
 
                 console.log("Amostras carregadas:", amostrasData);
                 console.log("Análises carregadas:", analisesData);
@@ -142,21 +141,22 @@ const AmostraLista = () => {
                 setAmostras(amostrasData);
                 setAnalises(analisesData);
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
+                console.error("Erro ao buscar dados:", error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, []); // Removido 'amostra' da dependência, pois não é necessário aqui
+    }, []);
 
+    // Função para buscar o nome da análise associada a cada amostra
     const getAnaliseNomeById = (id) => {
-        console.log('Buscando análise para id:', id, 'Loading:', loading, 'Analises:', analises);
-        if (loading) return 'Carregando...';
-        if (!id) return 'ID não fornecido';
+        if (loading) return "Carregando...";
+        if (!id) return "ID não fornecido";
+
         const analise = analises.find((a) => a.id === id);
-        return analise ? analise.nome : 'Não associada';
+        return analise ? analise.nome : "Não associada";
     };
 
     return (
