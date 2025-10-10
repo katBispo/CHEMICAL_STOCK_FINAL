@@ -8,6 +8,7 @@ import SideBar from '../components/SideBar';
 import ContratoDetailOverlay from '../components/contratoListaIcons/ContratoDetailOverlay';
 import ContratoEditOverlay from '../components/contratoListaIcons/ContratoEditOverlay';
 import ContratoExcluirOverlay from '../components/contratoListaIcons/ContratoExcluirOverlay';
+import { getContratos, deleteContrato } from '../../services/contratoService.js';
 
 
 
@@ -30,35 +31,21 @@ import {
 } from '@mui/material';
 
 
-
-
-
-
 const AnalysisTable = () => {
 
-    const [contratos, setContratos] = useState([]); // Array vazio
-    const [contratoToEdit, setContratoToEdit] = useState(null); // Mesmo aqui
-
-
+    const [contratos, setContratos] = useState([]);
+    const [contratoToEdit, setContratoToEdit] = useState(null);
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
-
-
-    const [drawerOpen, setDrawerOpen] = useState(false); // Alterado para false, para que comece fechado
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [showFilter, setShowFilter] = useState(false);
     const navigate = useNavigate();
     const [selectedContratos, setSelectedContratos] = useState(null);
-
-
     const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
-
     const [selectedContrato, setSelectedContrato] = useState(null);
     const [open, setOpen] = useState(false);
-
-    // Função para abrir o modal
     const handleOpen = () => setOpen(true);
-
-    // Função para fechar o modal
     const handleClose = () => setOpen(false);
+
 
     const handleOpenDeleteOverlay = (contratos) => {
         setSelectedContrato(contratos);
@@ -70,51 +57,12 @@ const AnalysisTable = () => {
         setSelectedContrato(null);
     };
 
-    const handleDeleteContrato = async (id) => {
-        // Faz a requisição para deletar a análise
-        const response = await fetch(`http://localhost:8080/contrato/${id}`, {
-            method: 'DELETE',
-        });
-
-        if (response.ok) {
-            console.log('Contrato excluído com sucesso');
-
-        } else {
-            console.error('Erro ao excluir a contrato');
-        }
-
-        // Fecha o overlay após a exclusão ou erro
-        handleCloseDeleteOverlay();
-    };
-
-
-
-    // Função para abrir o overlay de edição com a análise selecionada
-    const handleEditClick = (contrato) => {
-        setContratoToEdit(contrato); // Passe apenas o contrato selecionado
-        setEditOverlayOpen(true);
-    };
-
-    const handleSave = (updatedContratos) => {
-        console.log("contrato salvo:", updatedContratos);
-        setEditOverlayOpen(false);
-        // Aqui você pode atualizar a lista de análises com os novos dados
-    };
-
-
-
-    // Função para buscar os contratos
     const fetchContratos = async () => {
         try {
-            const response = await fetch('http://localhost:8080/contrato');
-            if (response.ok) {
-                const data = await response.json();
-                setContratos(data);
-            } else {
-                console.error('Erro ao buscar contratos');
-            }
+            const data = await getContratos();
+            setContratos(data);
         } catch (error) {
-            console.error('Erro ao conectar ao backend:', error);
+            console.error('Erro ao buscar contratos:', error);
         }
     };
 
@@ -122,9 +70,35 @@ const AnalysisTable = () => {
         fetchContratos();
     }, []);
 
+    const handleDeleteContrato = async (id) => {
+        try {
+            await deleteContrato(id);
+            console.log('Contrato excluído com sucesso!');
+            fetchContratos();
+        } catch (error) {
+            console.error('Erro ao excluir contrato:', error);
+        } finally {
+            handleCloseDeleteOverlay();
+        }
+    };
+
+
+    const handleEditClick = (contrato) => {
+        setContratoToEdit(contrato);
+        setEditOverlayOpen(true);
+    };
+
+    const handleSave = (updatedContratos) => {
+        console.log("contrato salvo:", updatedContratos);
+        setEditOverlayOpen(false);
+    };
+
+
+
+
 
     const toggleDrawer = () => {
-        setDrawerOpen((prev) => !prev); // Alterna o estado da sidebar
+        setDrawerOpen((prev) => !prev);
     };
 
 
@@ -162,7 +136,6 @@ const AnalysisTable = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* Sidebar que agora usa o estado drawerOpen para controlar a visibilidade */}
             <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
 
             <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
@@ -181,7 +154,7 @@ const AnalysisTable = () => {
                         color="success"
                         style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
-                        onClick={() => navigate('/contratoCadastro')} // Adicione esta linha para redirecionar
+                        onClick={() => navigate('/contratoCadastro')}
                     >
                         Cadastrar Contrato
                     </Button>
@@ -197,20 +170,16 @@ const AnalysisTable = () => {
                             variant="contained"
                             color="success"
                             style={{ backgroundColor: '#4CAF50', color: '#fff', textTransform: 'none', fontWeight: 'bold' }}
-                            onClick={toggleDrawer} // Chama a função para alternar a sidebar
+                            onClick={toggleDrawer}
                         >
                             Filtro
                         </Button>
                     </Box>
                 </Box>
 
-                {/* Drawer para o filtro */}
 
 
                 <Box display="flex" justifyContent="space-around" mt={2}>
-
-                    {/* Tabela de contratos */}
-
 
                     {/* Tabela de Contratos */}
                     <TableContainer component={Paper} style={{ marginTop: '20px', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
@@ -247,8 +216,8 @@ const AnalysisTable = () => {
                                                     textAlign: 'center',
                                                     fontSize: '14px',
                                                     width: '100px',
-                                                    margin: '0 auto', // Centraliza o box de status
-                                                    color: '#fff', // Texto branco no status
+                                                    margin: '0 auto',
+                                                    color: '#fff',
                                                     fontWeight: 'bold',
                                                 }}
                                             >
@@ -276,12 +245,11 @@ const AnalysisTable = () => {
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {/* Verifique se `selectedAnalise` está definido antes de renderizar o modal */}
                                 {selectedContrato && (
                                     <ContratoDetailOverlay
                                         open={open}
                                         onClose={handleClose}
-                                        contratos={selectedContrato} // Passa o contrato selecionado
+                                        contratos={selectedContrato}
                                     />
                                 )}
 
@@ -289,7 +257,7 @@ const AnalysisTable = () => {
                                     <ContratoEditOverlay
                                         open={editOverlayOpen}
                                         onClose={() => setEditOverlayOpen(false)}
-                                        contratos={contratoToEdit} // Certifique-se de que isso não seja nulo
+                                        contratos={contratoToEdit}
                                         onSave={handleSave}
                                     />
                                 )}

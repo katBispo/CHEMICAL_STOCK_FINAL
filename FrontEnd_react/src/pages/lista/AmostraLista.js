@@ -10,7 +10,7 @@ import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExclui
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
 import { getAmostras,deleteAmostra } from '../../services/amostraService';
 
-import { getAnalises } from "../../services/analiseService";
+import { getAnalises } from "../../services/AnaliseService";
 
 import {
     Table,
