@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.controller;
 
+import com.laboratorio.labanalise.DTO.AmostraComAnaliseDTO;
 import com.laboratorio.labanalise.DTO.AmostraDTO;
 import com.laboratorio.labanalise.model.Amostra;
 import com.laboratorio.labanalise.model.AmostraAnalito;
@@ -98,6 +99,12 @@ public class AmostraController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro interno ao excluir a amostra: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/com-analises")
+    public ResponseEntity<List<AmostraComAnaliseDTO>> listarAmostrasComAnalises() {
+        List<AmostraComAnaliseDTO> dtos = service.buscarAmostrasComAnalise();
+        return ResponseEntity.ok(dtos);
     }
 
 }

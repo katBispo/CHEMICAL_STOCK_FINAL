@@ -198,6 +198,24 @@ public class AmostraService {
         return amostras.stream().map(this::converterParaDTO).collect(Collectors.toList());
     }
 
+    public List<AmostraComAnaliseDTO> buscarAmostrasComAnalise() {
+        List<Amostra> amostras = buscarEntidades(); // busca todas as amostras
+
+        return amostras.stream().map(a -> {
+            Long analiseId = a.getAnalise() != null ? a.getAnalise().getId() : null;
+            String nomeAnalise = a.getAnalise() != null ? a.getAnalise().getNome() : "Não associada";
+
+            return new AmostraComAnaliseDTO(
+                    a.getId(),
+                    a.getNome(),
+                    a.getPrazoFinalizacao(),
+                    a.getEnderecoColeta(),
+                    a.getStatus().toString(),
+                    analiseId,
+                    nomeAnalise);
+        }).collect(Collectors.toList());
+    }
+
     /*
      * public List<Amostra> buscarTodos() {
      * return amostraRepository.findAll();

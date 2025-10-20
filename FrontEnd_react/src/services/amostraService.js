@@ -20,3 +20,7 @@ export async function atualizarAmostra(id, amostra) {
 export async function deleteAmostra(id) {
   return apiDelete(`/amostra/${id}`);
 }
+
+export async function getAmostrasComAnalises() {
+  return apiGet("/amostra/com-analises");
+}

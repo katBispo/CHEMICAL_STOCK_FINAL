@@ -15,7 +15,7 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
     const [reagenteToEdit, setReagenteToEdit] = useState(null);
     const [showFullTable, setShowFullTable] = useState(false);
-    const [showOverlay, setShowOverlay] = useState(true); 
+    const [showOverlay, setShowOverlay] = useState(true);
 
     const handleOpenDeleteOverlay = (reagente) => {
         setSelectedReagente(reagente);
@@ -117,6 +117,8 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
                             <th style={thStyle}>Nome</th>
                             <th style={thStyle}>Tipo</th>
                             <th style={thStyle}>Quantidade Frascos</th>
+                            <th style={thStyle}>Validade</th>
+
                             <th style={thStyle}>Lote</th>
                             <th style={thStyle}>Ações</th>
                         </tr>
@@ -132,6 +134,7 @@ const TabelaListaReagentes = ({ reagentes, onSave }) => {
                                 <td style={tdStyle}>{r.nome}</td>
                                 <td style={tdStyle}>{r.tipo}</td>
                                 <td style={tdStyle}>{r.quantidadeDeFrascos}</td>
+                                <td style={tdStyle}>{r.dataValidade || '—'}</td>
                                 <td style={tdStyle}>{r.lote}</td>
                                 <td style={tdStyle}>
                                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
