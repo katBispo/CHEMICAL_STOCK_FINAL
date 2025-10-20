@@ -10,12 +10,14 @@ import FeedbackDialog from "../components/FeedbackDialog.js";
 import { useNavigate } from "react-router-dom";
 import "./css/baseCadastro.css";
 import Analise from "../../models/AnaliseModel.js";
-import { salvarAnalise } from "../../services/AnaliseService.js"; // ✅ ajuste de import --- IGNORE ---
+
+import { getContratos } from "../../services/contratoService.js";
+import { getMatrizes } from "../../services/MatrizService.js";
+import { salvarAnalise } from "../../services/AnaliseService.js"; 
 
 function AnaliseCadastro() {
   const [clientes, setClientes] = useState([]);
   const [matrizes, setMatrizes] = useState([]);
-  const [procedures, setProcedures] = useState([]);
   const [contracts, setContracts] = useState([]);
 
   const [selectedMatriz, setSelectedMatriz] = useState(null);
@@ -35,25 +37,23 @@ function AnaliseCadastro() {
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
   const navigate = useNavigate();
 
-  // ✅ Busca dos dados auxiliares
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [contratosRes, matrizesRes] = await Promise.all([
-          fetch("http://localhost:8080/contrato"),
-          fetch("http://localhost:8080/matriz"),
+          getContratos(),
+          getMatrizes(),
         ]);
 
-        if (contratosRes.ok) setContracts(await contratosRes.json());
-        if (matrizesRes.ok) setMatrizes(await matrizesRes.json());
+        setContracts(contratosRes || []);
+        setMatrizes(matrizesRes || []);
       } catch (error) {
-        console.error("Erro ao buscar dados:", error);
+        console.error("Erro ao buscar dados via services:", error);
       }
     };
     fetchData();
   }, []);
 
-  // ✅ Submissão do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
 

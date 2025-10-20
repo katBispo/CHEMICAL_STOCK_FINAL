@@ -22,7 +22,14 @@ import {
 } from '@mui/material'; import { useNavigate } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from '../components/SideBar.js';
-import { listarReagentes, cadastrarReagente, obterTiposReagente, listarUnidadesReagente, atualizarReagente } from '../../services/reagenteService.js';
+import {
+    getReagentes,
+    salvarReagente,
+    getTiposReagentes,
+    getUnidadesReagentes
+} from '../../services/reagenteService.js';
+import Reagente from "../../models/ReagenteModel.js";
+
 
 const ReposicaoReagentOverlay = ({ onClose }) => {
     const [reagentes, setReagentes] = useState([]);
@@ -45,15 +52,9 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log('Iniciando requisição para reagentes...');
-
-                const reagentesData = await listarReagentes();
-                const tiposData = await obterTiposReagente();
-                const unidadesData = await listarUnidadesReagente();
-
-                console.log('Reagentes recebidos:', reagentesData); // Verifica se os reagentes foram recebidos
-
-
+                const reagentesData = await getReagentes();
+                const tiposData = await getTiposReagentes();
+                const unidadesData = await getUnidadesReagentes();
 
                 setReagentes(reagentesData);
                 setTiposReagentes(tiposData);
@@ -66,29 +67,24 @@ const ReposicaoReagentOverlay = ({ onClose }) => {
     }, []);
 
     const handleSubmit = async () => {
+        const reagente = {
+            nome,
+            marca,
+            lote,
+            dataValidade,
+            controlado: controlado === 'sim',
+            numeroControlado: controlado === 'sim' ? numeroControlado : null,
+            tipo: selectedTipoReagente,
+            unidadeReagente: selectedUnidade,
+            quantidadeDeFrascos: Number(quantidadeDeFrascos),
+            quantidadePorFrasco: Number(quantidadePorFrasco),
+        };
+
         try {
-            // Criando o objeto reagente com os dados preenchidos no formulário
-            const reagente = {
-                nome,
-                marca,
-                lote,
-                dataValidade,
-                controlado: controlado === 'sim',
-                numeroControlado: controlado === 'sim' ? numeroControlado : null,
-                tipo: selectedTipoReagente,  // Certifique-se de que `selectedTipoReagente` é apenas a string do enum
-                unidadeReagente: selectedUnidade, // Certifique-se de que `selectedUnidade` é apenas a string do enum
-                quantidadeDeFrascos: Number(quantidadeDeFrascos),
-                quantidadePorFrasco: Number(quantidadePorFrasco),
-            };
-
-            console.log('Enviando reagente para cadastro:', reagente);
-
-            // Chamando a API para cadastrar o reagente
-            await cadastrarReagente(reagente);
-
+            await salvarReagente(reagente);
             alert('Reagente cadastrado com sucesso!');
 
-            // Opcional: Resetar os campos após o cadastro
+            // Limpar campos após salvar
             setNome('');
             setMarca('');
             setLote('');

@@ -32,13 +32,13 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
             doc.setFontSize(16);
             doc.text('ChemLab', x + labelWidth / 2, y + 10, { align: 'center' });
 
-        
+
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             const fields = [
                 { label: 'Nº Amostra', value: amostra.id?.toString() || 'N/A' },
                 { label: 'Nome', value: amostra.nome?.toString() || 'N/A' },
-                { label: 'Prazo Final', value: amostra.prazoFinalizacao|| 'N/A' },
+                { label: 'Prazo Final', value: amostra.prazoFinalizacao || 'N/A' },
                 { label: 'Endereço Coleta', value: amostra.enderecoColeta?.toString() || 'N/A' },
                 { label: 'Data Coleta', value: amostra.dataColeta?.toString() || 'N/A' }
             ];
@@ -125,14 +125,20 @@ const AmostraDetailOverlay = ({ open, onClose, amostra }) => {
                     <strong>Analitos:</strong>{' '}
                     {amostra.analitosSelecionados && amostra.analitosSelecionados.length > 0 ? (
                         amostra.analitosSelecionados.map((analito, index) => (
-                            <span key={index}>
-                                {analito.classificacao} ({analito.subtipo})
-                                {index < amostra.analitosSelecionados.length - 1 && ', '}
-                            </span>
+                            <div key={index}>
+                                <strong>{analito.classificacao}:</strong>{' '}
+                                {analito.tipos.map((tipoObj, tIdx) => (
+                                    <span key={tIdx}>
+                                        {tipoObj.tipo} ({tipoObj.subtipos.join(', ')})
+                                        {tIdx < analito.tipos.length - 1 && '; '}
+                                    </span>
+                                ))}
+                            </div>
                         ))
                     ) : (
                         'Nenhum analito selecionado'
                     )}
+
                 </Typography>
 
                 <Box mt={3} display="flex" alignItems="center">

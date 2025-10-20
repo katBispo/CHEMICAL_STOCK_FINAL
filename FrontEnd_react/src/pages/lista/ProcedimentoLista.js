@@ -6,6 +6,7 @@ import SideBar from '../components/SideBar';
 import ProcedimentoDetailOverlay from '../components/procedimentosListaIcons/ProcedimentoDetailOverlay';
 import ProcedimentoEditOverlay from '../components/procedimentosListaIcons/ProcedimentoEditOverlay';
 import ProcedimentoExcluirOverlay from '../components/procedimentosListaIcons/ProcedimentoExcluirOverlay';
+import { getProcedimentos, deleteProcedimento } from '../../services/ProcedimentoService.js';
 
 import {
     Table,
@@ -24,7 +25,7 @@ import {
 } from '@mui/material';
 
 const ProcedimentoLista = () => {
-    const [procedimento, setProcedimento] = useState([]);
+    const [procedimentos, setProcedimentos] = useState([]);
     const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
     const [selectedProcedimento, setSelectedProcedimento] = useState(null);
     const [editOverlayOpen, setEditOverlayOpen] = useState(false);
@@ -49,15 +50,16 @@ const ProcedimentoLista = () => {
     };
 
     const handleDeleteProcedimento = async (id) => {
-        const response = await fetch(`http://localhost:8080/procedimento/${id}`, {
-            method: 'DELETE',
-        });
-
-        if (response.ok) {
-            console.log('Procedimento excluído com sucesso');
-            setProcedimento(prev => prev.filter(p => p.id !== id));
-        } else {
-            console.error('Erro ao excluir o Procedimento');
+        try {
+            const success = await deleteProcedimento(id);
+            if (success) {
+                console.log('Procedimento excluído com sucesso');
+                setProcedimentos(prev => prev.filter(p => p.id !== id));
+            } else {
+                console.error('Erro ao excluir o Procedimento');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir Procedimento:', error);
         }
 
         handleCloseDeleteOverlay();
@@ -71,7 +73,10 @@ const ProcedimentoLista = () => {
     const handleSave = (updatedProcedimento) => {
         console.log("Procedimento salvo:", updatedProcedimento);
         setEditOverlayOpen(false);
-        // Aqui você pode atualizar a lista de procedimentos com os novos dados
+        // Atualiza lista local
+        setProcedimentos(prev =>
+            prev.map(p => p.id === updatedProcedimento.id ? updatedProcedimento : p)
+        );
     };
 
     const handleOpen = () => setOpen(true);
@@ -80,9 +85,8 @@ const ProcedimentoLista = () => {
     useEffect(() => {
         const fetchProcedimentos = async () => {
             try {
-                const response = await fetch('http://localhost:8080/procedimento');
-                const data = await response.json();
-                setProcedimento(data);
+                const data = await getProcedimentos();
+                setProcedimentos(data || []);
             } catch (error) {
                 console.error('Erro ao buscar procedimentos:', error);
             }
@@ -140,7 +144,7 @@ const ProcedimentoLista = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {procedimento.map((procedimento) => (
+                                {procedimentos.map((procedimento) => (
                                     <TableRow
                                         key={procedimento.id}
                                         style={{ backgroundColor: '#fff', transition: 'background-color 0.3s' }}
@@ -186,7 +190,6 @@ const ProcedimentoLista = () => {
                                         procedimento={selectedProcedimento}
                                     />
                                 )}
-                                
                             </TableBody>
                         </Table>
                     </TableContainer>

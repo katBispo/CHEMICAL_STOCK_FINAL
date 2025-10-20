@@ -16,7 +16,6 @@ function ContratoCadastro({ onSuccess }) {
   const toggleDrawer = () => setDrawerOpen(prev => !prev);
   const navigate = useNavigate();
 
-  // 🔹 Campos do formulário
   const [numeroContrato, setNumeroContrato] = useState('');
   const [nomeContrato, setNomeContrato] = useState('');
   const [dataContrato, setDataContrato] = useState('');
@@ -26,11 +25,9 @@ function ContratoCadastro({ onSuccess }) {
   const [clientes, setClientes] = useState([]);
   const [selectedCliente, setSelectedCliente] = useState(null);
 
-  // 🔹 Estados de feedback
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
 
-  // 🔹 Buscar lista de clientes
   useEffect(() => {
     async function carregarClientes() {
       try {
@@ -43,7 +40,6 @@ function ContratoCadastro({ onSuccess }) {
     carregarClientes();
   }, []);
 
-  // 🔹 Submissão do formulário
   const handleSubmit = async (event) => {
     event.preventDefault();
 

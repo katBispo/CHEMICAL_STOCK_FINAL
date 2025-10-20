@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Paper, Typography } from '@mui/material';
+import { getQuantidadePorTipo } from '../../../services/reagenteService';
 
 const GraficoTiposReagente = () => {
     const [dados, setDados] = useState([]);
 
     const fetchReagentesPorTipo = async () => {
         try {
-            const response = await fetch('http://localhost:8080/reagente/quantidade-por-tipo');
-            const data = await response.json();
-            //objeto em array para o gráfico
+            const data = await getQuantidadePorTipo();
+
             const dadosFormatados = Object.entries(data).map(([tipo, quantidade]) => ({
                 tipo,
                 quantidade
             }));
+
             setDados(dadosFormatados);
         } catch (error) {
             console.error('Erro ao buscar quantidade por tipo:', error);

@@ -112,7 +112,7 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
           ✕
         </button>
 
-        {/* Campo de busca e botões */}
+        {/* Campo de busca e botões + tabela no mesmo container */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
           <input
             type="text"
@@ -153,51 +153,51 @@ const ListaReagentesCompleta = ({ reagentes, onClose, onSave }) => {
             Filtrar
           </button>
         </div>
-      </div>
 
-      {/* Tabela */}
-      <Paper elevation={4} sx={{ overflowX: 'auto', borderRadius: '12px', width: '100%' }}>
-        <table style={{ width: '100%' }}>
-          <thead style={{ backgroundColor: '#4CAF50' }}>
-            <tr>
-              <th style={thStyle}>Nome</th>
-              <th style={thStyle}>Tipo</th>
-              <th style={thStyle}>Validade</th>
-              <th style={thStyle}>Quantidade Frascos</th>
-              <th style={thStyle}>Lote</th>
-              <th style={thStyle}>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReagentes.map((r) => (
-              <tr
-                key={r.id}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
-              >
-                <td style={tdStyle}>{r.nome}</td>
-                <td style={tdStyle}>{r.tipo}</td>
-                <td style={tdStyle}>{r.dataValidade}</td>
-                <td style={tdStyle}>{r.quantidadeDeFrascos}</td>
-                <td style={tdStyle}>{r.lote}</td>
-                <td style={tdStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-                    <IconButton onClick={() => handleView(r)}>
-                      <FaEye style={{ color: '#666' }} />
-                    </IconButton>
-                    <IconButton onClick={() => handleEdit(r)}>
-                      <FaEdit style={{ color: '#4CAF50' }} />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(r)}>
-                      <FaTrashAlt style={{ color: '#e74c3c' }} />
-                    </IconButton>
-                  </div>
-                </td>
+        {/* Tabela dentro do mesmo modal */}
+        <Paper elevation={4} sx={{ overflowX: 'auto', borderRadius: '12px', width: '100%' }}>
+          <table style={{ width: '100%' }}>
+            <thead style={{ backgroundColor: '#4CAF50' }}>
+              <tr>
+                <th style={thStyle}>Nome</th>
+                <th style={thStyle}>Tipo</th>
+                <th style={thStyle}>Validade</th>
+                <th style={thStyle}>Quantidade Frascos</th>
+                <th style={thStyle}>Lote</th>
+                <th style={thStyle}>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </Paper>
+            </thead>
+            <tbody>
+              {filteredReagentes.map((r) => (
+                <tr
+                  key={r.id}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
+                >
+                  <td style={tdStyle}>{r.nome}</td>
+                  <td style={tdStyle}>{r.tipo}</td>
+                  <td style={tdStyle}>{r.dataValidade}</td>
+                  <td style={tdStyle}>{r.quantidadeDeFrascos}</td>
+                  <td style={tdStyle}>{r.lote}</td>
+                  <td style={tdStyle}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                      <IconButton onClick={() => handleView(r)}>
+                        <FaEye style={{ color: '#666' }} />
+                      </IconButton>
+                      <IconButton onClick={() => handleEdit(r)}>
+                        <FaEdit style={{ color: '#4CAF50' }} />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(r)}>
+                        <FaTrashAlt style={{ color: '#e74c3c' }} />
+                      </IconButton>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Paper>
+      </div>
 
       {/* Overlays */}
       {selectedReagente && detailOpen && (
