@@ -4,7 +4,12 @@ import { Button, Box, Typography, List, ListItem, TextField, AppBar, Toolbar, Ic
 import MenuIcon from '@mui/icons-material/Menu';
 import AnalitoSelector from '../components/AnalitoSelector';
 import ProcedimentoSelector from '../components/ProcedimentoSelector';
-import SideBar from '../components/SideBar'; 
+import SideBar from '../components/SideBar';
+import { salvarAmostra } from "../../services/amostraService.js";
+import Amostra from "../../models/AmostraModel.js";
+
+import { getAnalises } from "../../services/AnaliseService.js";
+import { getProcedimentos } from "../../services/ProcedimentoService.js";
 
 function AmostraCadastro() {
     const [showAnalitoSelector, setShowAnalitoSelector] = useState(false);
@@ -31,34 +36,20 @@ function AmostraCadastro() {
         console.log("🔍 Procedimentos selecionados:", selectedProcedures);
         console.log("🔍 Analitos selecionados:", selectedAnalitos);
 
-        const fetchProcedures = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8080/procedimento');
-                if (response.ok) {
-                    const data = await response.json();
-                    setProcedimentos(data);
-                } else {
-                    console.error('Erro ao buscar procedimentos');
-                }
+                const analisesData = await getAnalises();
+                setAnalise(analisesData);
+
+                const procedimentosData = await getProcedimentos();
+                setProcedimentos(procedimentosData);
+
             } catch (error) {
-                console.error('Erro ao conectar ao backend:', error);
+                console.error("Erro ao buscar dados do backend:", error);
             }
         };
 
-        const fetchAnalises = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/analise');
-                if (response.ok) {
-                    const data = await response.json();
-                    setAnalise(data);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar análises:', error);
-            }
-        };
-
-        fetchAnalises();
-        fetchProcedures();
+        fetchData();
     }, [showAnalitoSelector, showProcedureSelector, selectedAnalise, selectedProcedures, selectedAnalitos]);
 
     const handleCloseOverlay = () => {
@@ -103,10 +94,11 @@ function AmostraCadastro() {
 
     const analitosSelecionados = montarAnalitosSelecionados(selectedAnalitos);
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedProcedures || selectedProcedures.length === 0) {
+        if (!selectedProcedures?.length) {
             alert("Por favor, selecione pelo menos um procedimento.");
             return;
         }
@@ -116,45 +108,31 @@ function AmostraCadastro() {
             return;
         }
 
-        if (!selectedAnalitos || selectedAnalitos.length === 0 || analitosSelecionados.length === 0) {
+        if (!selectedAnalitos?.length || !analitosSelecionados?.length) {
             alert("Por favor, selecione pelo menos um analito com subtipo.");
             return;
         }
 
         const currentDate = new Date().toISOString().split("T")[0];
 
-        const payload = {
+        const novaAmostra = new Amostra(
             nome,
             dataColeta,
             prazoFinalizacao,
             enderecoColeta,
             descricao,
-            dataCadastro: currentDate,
+            currentDate,
             coordenadaColeta,
-            analiseId: selectedAnalise.id,
-            proceduresIds: selectedProcedures.map((p) => p.id),
-            status: "EM_ANDAMENTO",
+            selectedAnalise.id,
+            selectedProcedures.map((p) => p.id),
+            "EM_ANDAMENTO",
             analitosSelecionados
-        };
-
-        console.log("🔍 Payload enviado:", JSON.stringify(payload, null, 2));
+        );
 
         try {
-            const response = await fetch("http://localhost:8080/amostra", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            await salvarAmostra(novaAmostra);
+            console.log("✅ Amostra salva com sucesso!");
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Erro ao salvar a amostra:", errorText);
-                throw new Error("Erro ao salvar a amostra");
-            }
-
-            console.log("Amostra salva com sucesso!");
             setNome("");
             setDescricao("");
             setCoordenadaColeta("");
@@ -162,12 +140,14 @@ function AmostraCadastro() {
             setSelectedAnalitos([]);
             setShowAnalitoSelector(false);
             setShowProcedureSelector(false);
-            navigate('/'); 
+
+            navigate("/");
         } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
+            console.error("❌ Erro ao salvar a amostra:", error);
             alert("Erro ao salvar a amostra. Verifique o console para detalhes.");
         }
     };
+
 
     const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
@@ -288,11 +268,11 @@ function AmostraCadastro() {
                                                     {procedure.classificacao || "Classificação não disponível"} -{" "}
                                                     {procedure.tipos?.length > 0
                                                         ? procedure.tipos
-                                                              .map(
-                                                                  (tipo) =>
-                                                                      `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
-                                                              )
-                                                              .join("; ")
+                                                            .map(
+                                                                (tipo) =>
+                                                                    `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                                                            )
+                                                            .join("; ")
                                                         : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>
@@ -335,9 +315,9 @@ function AmostraCadastro() {
                                                     {analito.classificacao || "Classificação não disponível"} -{" "}
                                                     {analito.tipos?.length > 0
                                                         ? analito.tipos.map(
-                                                              (tipo) =>
-                                                                  `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
-                                                          ).join("; ")
+                                                            (tipo) =>
+                                                                `${tipo.tipo || "Tipo não especificado"} (${tipo.subtipos?.join(", ") || "Nenhum subtipo"})`
+                                                        ).join("; ")
                                                         : "Nenhum tipo disponível"}
                                                 </Typography>
                                             </ListItem>

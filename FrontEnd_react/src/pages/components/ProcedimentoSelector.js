@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react"; 
+import { Autocomplete, TextField, Button } from "@mui/material"; 
+import { getProcedimentos } from "../../services/ProcedimentoService.js"; // service correto
 
 function ProcedimentoSelector({ onSave, onClose }) {
   const [procedures, setProcedures] = useState([]); // Lista de procedimentos carregados
   const [selectedProcedures, setSelectedProcedures] = useState([]); // Lista de procedimentos selecionados
 
-  // Busca os procedimentos do backend
+  // Busca os procedimentos do backend usando o service
   useEffect(() => {
     const fetchProcedures = async () => {
       try {
-        const response = await fetch("http://localhost:8080/procedimento");
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Procedimentos carregados:", data); // Debug
-          setProcedures(data);
-        } else {
-          console.error("Erro ao buscar procedimentos");
-        }
+        const data = await getProcedimentos(); // service retorna os dados já processados
+        console.log("Procedimentos carregados:", data);
+        setProcedures(data);
       } catch (error) {
-        console.error("Erro ao conectar ao backend:", error);
+        console.error("Erro ao buscar procedimentos:", error);
       }
     };
 
@@ -27,8 +23,8 @@ function ProcedimentoSelector({ onSave, onClose }) {
 
   // Atualiza a lista de procedimentos selecionados
   const handleSelect = (event, value) => {
-    console.log("Selecionado:", value); // Debug
-    setSelectedProcedures(value); // Como é `multiple`, o value já será um array
+    console.log("Selecionado:", value);
+    setSelectedProcedures(value);
   };
 
   // Remove um procedimento da lista de selecionados
@@ -38,7 +34,7 @@ function ProcedimentoSelector({ onSave, onClose }) {
 
   // Salva os procedimentos e fecha o modal
   const handleSave = () => {
-    console.log("Procedimentos salvos:", selectedProcedures); // Debug
+    console.log("Procedimentos salvos:", selectedProcedures);
     onSave(selectedProcedures);
     onClose();
   };
@@ -54,7 +50,7 @@ function ProcedimentoSelector({ onSave, onClose }) {
           options={procedures}
           getOptionLabel={(option) => option.nomeProcedimento || "Sem nome"}
           onChange={handleSelect}
-          value={selectedProcedures} // Mantém o estado atualizado
+          value={selectedProcedures} 
           renderInput={(params) => (
             <TextField
               {...params}
@@ -83,12 +79,12 @@ function ProcedimentoSelector({ onSave, onClose }) {
         </ul>
 
         {/* Botões de ação */}
-        <button onClick={handleSave} style={styles.button}>
+        <Button variant="contained" onClick={handleSave} sx={{ margin: 1 }}>
           Salvar
-        </button>
-        <button onClick={onClose} style={styles.button}>
+        </Button>
+        <Button variant="outlined" onClick={onClose} sx={{ margin: 1 }}>
           Fechar
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -129,11 +125,6 @@ const styles = {
     color: "white",
     border: "none",
     padding: "5px 10px",
-    cursor: "pointer",
-  },
-  button: {
-    margin: "10px",
-    padding: "10px 15px",
     cursor: "pointer",
   },
 };

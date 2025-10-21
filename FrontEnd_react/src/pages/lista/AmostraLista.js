@@ -8,9 +8,9 @@ import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailO
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
 import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExcluirOverlay';
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
-import { getAmostras,deleteAmostra } from '../../services/amostraService';
+import { getAmostrasComAnalises, deleteAmostra } from '../../services/amostraService';
 
-import { getAnalises } from "../../services/analiseService";
+import { getAnalises } from "../../services/AnaliseService";
 
 import {
     Table,
@@ -85,21 +85,23 @@ const AmostraLista = () => {
         }
     };
 
-    const handleDeleteAmostra = async (id) => {
-  try {
-    await deleteAmostra(`/amostra/${id}`); // usa interceptor com token
-    console.log("Amostra excluída com sucesso");
 
-    // Atualiza a lista local
-    setAmostras((prevAmostras) =>
-      prevAmostras.filter((amostra) => amostra.id !== id)
-    );
-  } catch (error) {
-    console.error("Erro ao excluir a amostra:", error);
-  } finally {
-    handleCloseDeleteOverlay();
-  }
-};
+
+    const handleDeleteAmostra = async (id) => {
+        try {
+            await deleteAmostra(`/amostra/${id}`); // usa interceptor com token
+            console.log("Amostra excluída com sucesso");
+
+            // Atualiza a lista local
+            setAmostras((prevAmostras) =>
+                prevAmostras.filter((amostra) => amostra.id !== id)
+            );
+        } catch (error) {
+            console.error("Erro ao excluir a amostra:", error);
+        } finally {
+            handleCloseDeleteOverlay();
+        }
+    };
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -129,19 +131,11 @@ const AmostraLista = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Buscar amostras e análises em paralelo
-                const [amostrasData, analisesData] = await Promise.all([
-                    getAmostras(),
-                    getAnalises()
-                ]);
-
-                console.log("Amostras carregadas:", amostrasData);
-                console.log("Análises carregadas:", analisesData);
-
+                const amostrasData = await getAmostrasComAnalises();
+                console.log("Amostras com análises:", amostrasData);
                 setAmostras(amostrasData);
-                setAnalises(analisesData);
             } catch (error) {
-                console.error("Erro ao buscar dados:", error);
+                console.error("Erro ao buscar amostras com análises:", error);
             } finally {
                 setLoading(false);
             }
@@ -149,15 +143,6 @@ const AmostraLista = () => {
 
         fetchData();
     }, []);
-
-    // Função para buscar o nome da análise associada a cada amostra
-    const getAnaliseNomeById = (id) => {
-        if (loading) return "Carregando...";
-        if (!id) return "ID não fornecido";
-
-        const analise = analises.find((a) => a.id === id);
-        return analise ? analise.nome : "Não associada";
-    };
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -262,11 +247,9 @@ const AmostraLista = () => {
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.prazoFinalizacao}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>{amostra.enderecoColeta}</TableCell>
                                         <TableCell style={{ fontSize: '14px', textAlign: 'center' }}>
-                                            {getAnaliseNomeById(amostra.analise)}
-                                            <div style={{ fontSize: '10px', color: 'gray' }}>
-                                                Debug: Loading={loading.toString()}, AnaliseId={amostra.analise || 'null'}, Analises Length={analises.length}
-                                            </div>
+                                            {amostra.nomeAnalise || "Não associada"}
                                         </TableCell>
+
 
                                         <TableCell>
                                             <Box

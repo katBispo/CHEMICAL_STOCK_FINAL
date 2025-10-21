@@ -8,6 +8,7 @@ import AnaliseEditOverlay from '../components/analiseListaIcons/AnaliseEditOverl
 import AnaliseExcluirOverlay from '../components/analiseListaIcons/AnaliseExcluirOverlay';
 
 import { apiGet } from "../../services/api"; 
+import * as AnaliseService from '../../services/AnaliseService.js';
 
 
 

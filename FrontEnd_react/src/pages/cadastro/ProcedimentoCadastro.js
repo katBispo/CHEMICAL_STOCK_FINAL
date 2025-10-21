@@ -16,6 +16,9 @@ import SideBar from '../components/SideBar.js';
 import SelectReagente from '../components/SelectReagente';
 import { useNavigate } from 'react-router-dom';
 
+import Procedimento from "../../models/ProcedimentoModel.js";
+import { salvarProcedimento } from "../../services/ProcedimentoService.js";
+
 function ProcedimentoCadastro() {
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [nomeProcedimento, setNomeProcedimento] = useState('');
@@ -39,53 +42,49 @@ function ProcedimentoCadastro() {
         setReagentesSelecionados(reagentes);
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
 
-        if (reagentesSelecionados.length === 0) {
-            setDialogMessage('Selecione pelo menos um reagente.');
-            setDialogOpen(true);
-            return;
-        }
+  if (reagentesSelecionados.length === 0) {
+    setDialogMessage("Selecione pelo menos um reagente.");
+    setDialogOpen(true);
+    return;
+  }
 
-        const requestBody = {
-            procedimento: {
-                nomeProcedimento: nomeProcedimento,
-                descricaoProcedimento: descricaoProcedimento
-            },
-            reagentesQuantidades: reagentesSelecionados.map(r => ({
-                idReagente: r.reagente.id,
-                quantidade: r.quantidade
-            }))
+  const reagentesQuantidades = reagentesSelecionados.map((r) => ({
+    idReagente: r.reagente.id,
+    quantidade: r.quantidade,
+  }));
 
-        };
+  const novoProcedimento = new Procedimento(
+    nomeProcedimento,
+    descricaoProcedimento,
+    dataCadastro,
+    reagentesQuantidades
+  );
 
-        // 🔍 Aqui você vê exatamente o que está sendo enviado
-        console.log('Corpo da requisição que será enviado:', JSON.stringify(requestBody, null, 2));
+  // 🔍 Corpo da requisição padronizado
+  const requestBody = {
+    procedimento: {
+      nomeProcedimento: novoProcedimento.nomeProcedimento,
+      descricaoProcedimento: novoProcedimento.descricaoProcedimento,
+      dataCadastro: novoProcedimento.dataCadastro,
+    },
+    reagentesQuantidades: novoProcedimento.reagentesQuantidades,
+  };
 
-        try {
-            const response = await fetch(`http://localhost:8080/procedimento`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
+  console.log("Corpo da requisição que será enviado:", JSON.stringify(requestBody, null, 2));
 
-            if (response.ok) {
-                setDialogMessage('Procedimento cadastrado com sucesso!');
-            } else {
-                setDialogMessage('Erro ao cadastrar procedimento.');
-                const errorData = await response.json();
-                console.error('Detalhes do erro:', errorData);
-            }
-        } catch (error) {
-            setDialogMessage('Erro ao salvar o procedimento no banco de dados.');
-            console.error('Erro:', error);
-        }
+  try {
+    await salvarProcedimento(requestBody);
+    setDialogMessage("Procedimento cadastrado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao salvar o procedimento:", error);
+    setDialogMessage("Erro ao salvar o procedimento no banco de dados.");
+  }
 
-        setDialogOpen(true);
-    };
+  setDialogOpen(true);
+};
 
     const handleDialogClose = () => {
         setDialogOpen(false);

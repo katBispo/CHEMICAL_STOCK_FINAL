@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Autocomplete, TextField, Button, Box, IconButton, } from '@mui/material';
+import { Modal, Autocomplete, TextField, Button, Box, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
-
+import { getAnalises } from "../../services/AnaliseService.js";
 
 const SelectAnaliseDaAmostra = ({ open, handleClose }) => {
-    const [selectedAnalise, setSelectedAnalise] = useState(null);
-    const [analise, setAnalise] = useState([]);
+    const [selectedAnalise, setSelectedAnalise] = useState(null); // análise escolhida pelo usuário
+    const [analises, setAnalises] = useState([]); // lista de análises disponíveis
     const navigate = useNavigate();
 
     const fetchAnalises = async () => {
         try {
-            const response = await fetch('http://localhost:8080/analise');
-            if (response.ok) {
-                const data = await response.json();
-                setAnalise(data);
-            }
+            const data = await getAnalises(); 
+            setAnalises(data); // <-- CORREÇÃO: popular o array de análises, não o selected
         } catch (error) {
-            console.error('Erro ao buscar análises:', error);
+            console.error("Erro ao buscar análises:", error);
         }
     };
 
@@ -31,9 +28,8 @@ const SelectAnaliseDaAmostra = ({ open, handleClose }) => {
             return;
         }
 
-        // Passa a análise selecionada para a página de cadastro de amostras usando o navigate
-        navigate('/amostraCadastro', { state: { selectedAnalise } }); // Passa a análise via 'state'
-        handleClose(); // Fecha o modal
+        navigate('/amostraCadastro', { state: { selectedAnalise } });
+        handleClose();
     };
 
     return (
@@ -53,29 +49,27 @@ const SelectAnaliseDaAmostra = ({ open, handleClose }) => {
                 }}
             >
                 <IconButton
-                    onClick={handleClose} // Chama a função para fechar
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                    }}
+                    onClick={handleClose} 
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
                 >
                     <CloseIcon />
                 </IconButton>
 
                 <h2>PARA CADASTRAR UMA AMOSTRA VOCÊ PRECISA ASSOCIAR ELA A UMA ANÁLISE:</h2>
+
                 <Autocomplete
-                    options={analise}
-                    getOptionLabel={(option) => option.nome}
-                    onChange={(event, value) => setSelectedAnalise(value)} // Salva a análise selecionada localmente
+                    options={analises} // <-- usar array correto
+                    getOptionLabel={(option) => option.nome || ""}
+                    onChange={(event, value) => setSelectedAnalise(value)} 
                     renderInput={(params) => (
                         <TextField {...params} label="Análise Associada" required margin="normal" fullWidth />
                     )}
                 />
+
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleConfirm} // Chama a função handleConfirm ao clicar no botão
+                    onClick={handleConfirm} 
                     sx={{ marginTop: 2 }}
                 >
                     Confirmar

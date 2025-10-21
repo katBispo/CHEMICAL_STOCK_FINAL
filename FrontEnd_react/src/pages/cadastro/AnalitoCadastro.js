@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Modal, IconButton } from '@mui/material';
 import { FaPlus } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; 
-import AnalitoExistenteCadastro from './AnalitoExistenteCadastro'; 
+import { useNavigate } from 'react-router-dom';
+import AnalitoExistenteCadastro from './AnalitoExistenteCadastro';
+import { salvarAnalito } from "../../services/AnalitoService.js";
+import Analito from "../../models/AnalitoModel.js";
+
+
+
 const AnalitoCadastro = ({ open, handleClose }) => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [showInitialScreen, setShowInitialScreen] = useState(true);
     const [classificacao, setClassificacao] = useState('');
     const [tipoAnalito, setTipoAnalito] = useState('');
@@ -16,7 +21,7 @@ const AnalitoCadastro = ({ open, handleClose }) => {
 
 
 
-    
+
     const openAnalitoExistente = () => {
         setIsAnalitoExistenteOpen(true);
     };
@@ -29,51 +34,36 @@ const AnalitoCadastro = ({ open, handleClose }) => {
         if (option === 'classificacaoAnalito') {
             openAnalitoExistente();
         } else if (option === 'novoAnalito') {
-            setShowInitialScreen(false); // Atualiza para exibir o formulário de cadastro
+            setShowInitialScreen(false);
         }
     };
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        console.log('Tentando enviar:', {
-            classificacao,
-            tipoAnalito,
-            subtipoAnalito,
-        });
-    
+
+        const analito = new Analito(classificacao, tipoAnalito, subtipoAnalito);
+
         try {
-            const response = await fetch('http://localhost:8080/analito', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    classificacao, // O campo 'nome' foi removido
-                    tipoAnalito,
-                    subtipoAnalito,
-                }),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Erro ao cadastrar analito');
-            }
-    
-            const data = await response.json();
-            console.log('Analito cadastrado:', data);
-            setMessageBoxMessage('Analito cadastrado com sucesso!');
+            await salvarAnalito(analito);
+
+            setClassificacao('');
+            setTipoAnalito('');
+            setSubtipoAnalito(['']); 
+
+            setMessageBoxMessage('✅ Analito cadastrado com sucesso!');
             setMessageBoxSeverity('success');
             setMessageBoxOpen(true);
+
             handleClose();
         } catch (error) {
-            console.error('Erro:', error);
-            setMessageBoxMessage('Erro ao salvar analito no banco de dados.');
+            console.error('Erro ao salvar analito:', error);
+
+            setMessageBoxMessage('❌ Erro ao salvar analito no banco de dados.');
             setMessageBoxSeverity('error');
             setMessageBoxOpen(true);
         }
     };
-    
 
     const handleAddSubtipo = () => {
         setSubtipoAnalito([...subtipoAnalito, '']);
