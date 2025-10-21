@@ -8,7 +8,7 @@ import SideBar from '../components/SideBar.js';
 import FeedbackDialog from '../components/FeedbackDialog.js';
 import { useNavigate } from 'react-router-dom';
 import Cliente from '../../models/ClienteModel.js';
-import { salvarCliente } from '../../services/ClienteService.js'; // ✅ ajuste de import
+import { salvarCliente } from '../../services/ClienteService.js'; 
 
 function ClienteCadastro({ onSuccess }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -32,13 +32,12 @@ function ClienteCadastro({ onSuccess }) {
     const cliente = new Cliente(nome, email, cnpj, telefone);
 
     try {
-      await salvarCliente(cliente); // ✅ chamada direta ao service
+      await salvarCliente(cliente); 
       setDialogMessage('✅ Cliente cadastrado com sucesso!');
       setDialogOpen(true);
 
-      // 🔹 Se o cadastro faz parte de um fluxo (Stepper), avança automaticamente
       if (onSuccess) onSuccess();
-      else setTimeout(() => navigate('/clienteLista'), 1500); // volta pra lista
+      else setTimeout(() => navigate('/clienteLista'), 1500); 
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);
       setDialogMessage('❌ Erro ao salvar o cliente no banco de dados.');
