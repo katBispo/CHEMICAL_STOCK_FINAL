@@ -33,7 +33,8 @@ import SelectAnaliseDaAmostra from "./pages/components/SelectAnaliseDaAmostra";
 import ReposicaoReagentOverlay from "./pages/components/ReposicaoReagentOverlay";
 import ListaReagenteCompleta from "./pages/estoque/tabelas/overlayTabelas/ListaReagentesCompleta";
 
-import Perfil from "./pages/Perfil";
+
+import Perfil from "./pages/perfil/Perfil";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
+        <Route path="/perfil" element={<Perfil />} />
 
         {/* Rotas protegidas */}
         <Route
