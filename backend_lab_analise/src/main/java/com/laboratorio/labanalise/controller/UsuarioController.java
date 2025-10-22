@@ -7,6 +7,7 @@ import com.laboratorio.labanalise.repositories.UsuarioRepository;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.laboratorio.labanalise.DTO.*;
@@ -96,6 +97,29 @@ public class UsuarioController {
                 .filter(u -> u.getStatus() == StatusUsuario.PENDENTE)
                 .map(u -> ResponseEntity.ok(usuarioService.converterParaDTO(u)))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/me")
+    public UsuarioDTO getUsuarioLogado() {
+        // Pega o e-mail do usuário autenticado diretamente do SecurityContext
+        String email = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        // Busca o usuário pelo e-mail
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Retorna o DTO
+        return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getCpf(),
+                usuario.getEmail(),
+                usuario.getCrq(),
+                usuario.getDataAdmissao(),
+                usuario.getCargo(),
+                usuario.getStatus());
     }
 
 }
