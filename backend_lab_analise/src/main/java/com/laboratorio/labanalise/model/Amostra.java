@@ -33,6 +33,9 @@ public class Amostra implements Serializable {
     @Column(nullable = false, updatable = false)
     private LocalDate dataCadastro;
 
+    @Column(name = "data_finalizacao_real")
+    private LocalDate dataFinalizacaoReal;
+
     @Transient
     private List<Analito> analitosAuxiliares;
 
@@ -48,6 +51,9 @@ public class Amostra implements Serializable {
     @JsonBackReference
     private Analise analise;
 
+    @Column(name = "data_encerramento")
+    private LocalDate dataEncerramento;
+
     public Amostra(String nome, String enderecoColeta, LocalDate dataColeta, String coordenadaColeta,
             LocalDate prazoFinalizacao, StatusAmostra status, String descricao) {
         this.nome = nome;
@@ -59,7 +65,8 @@ public class Amostra implements Serializable {
         this.descricao = descricao;
         this.dataCadastro = LocalDate.now();
     }
-///testetstetst
+
+    /// testetstetst
     public Amostra() {
         this.dataCadastro = LocalDate.now();
         this.status = StatusAmostra.EM_ANDAMENTO;
@@ -152,6 +159,14 @@ public class Amostra implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public LocalDate getDataEncerramento() {
+        return dataEncerramento;
+    }
+
+    public void setDataEncerramento(LocalDate dataEncerramento) {
+        this.dataEncerramento = dataEncerramento;
+    }
+
     public Set<AmostraAnalito> getAmostraAnalitos() {
         return amostraAnalitos;
     }
@@ -161,7 +176,7 @@ public class Amostra implements Serializable {
     }
 
     public void setAnalitos(List<Analito> analitos) {
-        this.amostraAnalitos.clear(); // limpa os anteriores
+        this.amostraAnalitos.clear(); // limpa os anteriores?????
 
         for (Analito analito : analitos) {
             AmostraAnalito aa = new AmostraAnalito();
@@ -231,6 +246,14 @@ public class Amostra implements Serializable {
         return amostraProcedimentos.stream()
                 .map(AmostraProcedimento::getProcedimento)
                 .collect(Collectors.toList());
+    }
+
+    public LocalDate getDataFinalizacaoReal() {
+        return dataFinalizacaoReal;
+    }
+
+    public void setDataFinalizacaoReal(LocalDate dataFinalizacaoReal) {
+        this.dataFinalizacaoReal = dataFinalizacaoReal;
     }
 
 }

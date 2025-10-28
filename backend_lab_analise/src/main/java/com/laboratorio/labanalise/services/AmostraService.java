@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -199,7 +200,7 @@ public class AmostraService {
     }
 
     public List<AmostraComAnaliseDTO> buscarAmostrasComAnalise() {
-        List<Amostra> amostras = buscarEntidades(); // busca todas as amostras
+        List<Amostra> amostras = buscarEntidades(); 
 
         return amostras.stream().map(a -> {
             Long analiseId = a.getAnalise() != null ? a.getAnalise().getId() : null;
@@ -214,6 +215,22 @@ public class AmostraService {
                     analiseId,
                     nomeAnalise);
         }).collect(Collectors.toList());
+    }
+
+     public Amostra encerrarAmostra(Long id) {
+        Amostra amostra = amostraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Amostra não encontrada"));
+
+        LocalDate hoje = LocalDate.now();
+        amostra.setDataFinalizacaoReal(hoje);
+
+        if (!hoje.isAfter(amostra.getPrazoFinalizacao())) {
+            amostra.setStatus(StatusAmostra.CONCLUIDA);
+        } else {
+            amostra.setStatus(StatusAmostra.ENCERRADA);
+        }
+
+        return amostraRepository.save(amostra);
     }
 
     /*
