@@ -107,4 +107,9 @@ public class AmostraController {
         return ResponseEntity.ok(dtos);
     }
 
+    @PutMapping("/{id}/encerrar")
+    public ResponseEntity<AmostraDTO> encerrarAmostra(@PathVariable Long id) {
+        Amostra amostraEncerrada = service.encerrarAmostra(id);
+        return ResponseEntity.ok(new AmostraDTO(amostraEncerrada));
+    }
 }

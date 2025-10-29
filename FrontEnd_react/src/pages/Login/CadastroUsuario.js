@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../css/login.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { cadastrarUsuario } from "../../services/usuarioService";
+import { criarUsuario } from "../../services/usuarioService";
 
 export default function CadastroUsuario({ onCadastroSucesso }) {
   const [nome, setNome] = useState("");
@@ -21,7 +21,7 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
     setLoading(true);
 
     try {
-      await cadastrarUsuario({ nome, cpf, email, crq, dataAdmissao, cargo, senha });
+      await criarUsuario({ nome, cpf, email, crq, dataAdmissao, cargo, senha });
       alert("Cadastro realizado! Aguarde aprovação do administrador.");
       onCadastroSucesso();
     } catch (err) {

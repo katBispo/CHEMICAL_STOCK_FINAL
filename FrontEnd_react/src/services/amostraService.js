@@ -24,3 +24,6 @@ export async function deleteAmostra(id) {
 export async function getAmostrasComAnalises() {
   return apiGet("/amostra/com-analises");
 }
+export async function encerrarAmostra(id) {
+  return apiPut(`/amostra/${id}/encerrar`);
+}

@@ -20,6 +20,10 @@ public class AmostraDTO {
     private Long analiseId;
     private List<Long> analitos;
     private List<Long> procedimentos;
+    private LocalDate dataEncerramento;
+
+
+    private LocalDate dataFinalizacaoReal;
 
     private List<Long> procedimentosIds;
     private List<AnalitoSubtipoDTO> analitosSelecionados = new ArrayList<>();
@@ -141,6 +145,14 @@ public class AmostraDTO {
         this.procedimentosNomes = procedimentosNomes;
     }
 
+    public LocalDate getDataEncerramento() {
+        return dataEncerramento;
+    }
+
+    public void setDataEncerramento(LocalDate dataEncerramento) {
+        this.dataEncerramento = dataEncerramento;
+    }
+
     public AmostraDTO() {
     }
 
@@ -153,6 +165,8 @@ public class AmostraDTO {
         this.prazoFinalizacao = amostra.getPrazoFinalizacao();
         this.status = amostra.getStatus().name();
         this.descricao = amostra.getDescricao();
+        this.dataEncerramento = amostra.getDataEncerramento();
+        
 
         if (amostra.getAnalise() != null) {
             this.analiseId = amostra.getAnalise().getId();
@@ -191,5 +205,8 @@ public class AmostraDTO {
     public void setAnalitosSelecionados(List<AnalitoSubtipoDTO> analitosSelecionados) {
         this.analitosSelecionados = analitosSelecionados;
     }
+
+    public LocalDate getDataFinalizacaoReal() { return dataFinalizacaoReal; }
+public void setDataFinalizacaoReal(LocalDate dataFinalizacaoReal) { this.dataFinalizacaoReal = dataFinalizacaoReal; }
 
 }

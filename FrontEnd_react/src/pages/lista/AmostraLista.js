@@ -1,5 +1,5 @@
-import { FaEye, FaEdit, FaTrashAlt } from 'react-icons/fa';
-import React, { useEffect, useState } from 'react';
+import { FaEye, FaEdit, FaTrashAlt, FaCheckCircle } from 'react-icons/fa';
+import React, { useEffect, useState, toast } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import Checkbox from '@mui/material/Checkbox';
@@ -8,8 +8,8 @@ import AmostraDetailOverlay from '../components/amostraListaIcons/AmostraDetailO
 import AmostraEditOverlay from '../components/amostraListaIcons/AmostraEditOverlay';
 import AmostraExcluirOverlay from '../components/amostraListaIcons/AmostraExcluirOverlay';
 import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
-import { getAmostrasComAnalises, deleteAmostra } from '../../services/amostraService';
-
+import { getAmostrasComAnalises, deleteAmostra, encerrarAmostra } from '../../services/amostraService';
+import EncerrarAmostraModal from '../components/EncerrarAmostraModal';
 import { getAnalises } from "../../services/AnaliseService";
 
 import {
@@ -42,6 +42,10 @@ const AmostraLista = () => {
     const [selectedRows, setSelectedRows] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
+    const [openConfirmEncerrar, setOpenConfirmEncerrar] = useState(false);
+    const [amostraParaEncerrar, setAmostraParaEncerrar] = useState(null);
+
+
 
     const handleOpenDeleteOverlay = (amostra) => {
         setSelectedAmostra(amostra);
@@ -66,7 +70,21 @@ const AmostraLista = () => {
             }
         });
     };
+    const handleEncerrarAmostra = async (id) => {
+        try {
+            await encerrarAmostra(id);
+            toast.success("Amostra encerrada com sucesso!");
 
+            setAmostras((prev) =>
+                prev.map((a) =>
+                    a.id === id ? { ...a, status: "ENCERRADA" } : a
+                )
+            );
+        } catch (error) {
+            console.error("Erro ao encerrar a amostra:", error);
+            toast.error("Erro ao encerrar a amostra!");
+        }
+    };
     const handleSelectRow = (id) => {
         setSelectedAmostras((prevSelected) => {
             if (prevSelected.includes(id)) {
@@ -89,7 +107,7 @@ const AmostraLista = () => {
 
     const handleDeleteAmostra = async (id) => {
         try {
-            await deleteAmostra(`/amostra/${id}`); // usa interceptor com token
+            await deleteAmostra(`/amostra/${id}`);
             console.log("Amostra excluída com sucesso");
 
             // Atualiza a lista local
@@ -279,6 +297,32 @@ const AmostraLista = () => {
                                             <IconButton onClick={() => handleOpenDeleteOverlay(amostra)}>
                                                 <FaTrashAlt style={{ color: '#e74c3c', fontSize: '18px' }} />
                                             </IconButton>
+                                            <Button
+                                                variant="contained"
+                                                onClick={() => {
+                                                    setAmostraParaEncerrar(amostra);
+                                                    setOpenConfirmEncerrar(true);
+                                                }}
+                                                disabled={amostra.status === "ENCERRADA" || amostra.status === "CONCLUIDA"}
+                                                sx={{
+                                                    backgroundColor: "#B0BEC5",
+                                                    color: "#000",
+                                                    textTransform: "none",
+                                                    fontWeight: "bold",
+                                                    borderRadius: "20px",
+                                                    "&:hover": {
+                                                        backgroundColor: "#90A4AE",
+                                                    },
+                                                    "&:disabled": {
+                                                        backgroundColor: "#E0E0E0",
+                                                        color: "#9E9E9E",
+                                                    },
+                                                }}
+                                            >
+                                                Encerrar
+                                            </Button>
+
+
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -305,6 +349,11 @@ const AmostraLista = () => {
                                         amostra={selectedAmostra}
                                     />
                                 )}
+                                <EncerrarAmostraModal
+                                    open={openConfirmEncerrar}
+                                    onClose={() => setOpenConfirmEncerrar(false)}
+                                    amostraSelecionada={amostraParaEncerrar}
+                                />
 
                             </TableBody>
                         </Table>
