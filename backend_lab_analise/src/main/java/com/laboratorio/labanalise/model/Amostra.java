@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laboratorio.labanalise.model.enums.StatusAmostra;
 import jakarta.persistence.*;
-
+import com.laboratorio.labanalise.model.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
@@ -42,6 +42,11 @@ public class Amostra implements Serializable {
     @OneToMany(mappedBy = "amostra", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AmostraAnalito> amostraAnalitos = new HashSet<>();
 
+    @OneToMany(mappedBy = "amostra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AmostraEquipamento> amostraEquipamentos = new HashSet<>();
+
+
+
     @ManyToOne
     @JoinColumn(name = "ID_ANALISE", nullable = false// setar como false dps
     )
@@ -59,7 +64,8 @@ public class Amostra implements Serializable {
         this.descricao = descricao;
         this.dataCadastro = LocalDate.now();
     }
-///testetstetst
+
+    /// testetstetst
     public Amostra() {
         this.dataCadastro = LocalDate.now();
         this.status = StatusAmostra.EM_ANDAMENTO;
