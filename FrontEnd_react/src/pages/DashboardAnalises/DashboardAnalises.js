@@ -4,7 +4,7 @@ import GraficoStatusAmostras from './components/GraficoStatusAmostras';
 import GraficoProcedimentos from './components/GraficoProcedimentos';
 import GraficoEquipamentos from './components/GraficoEquipamentos';
 import TabelaAnalises from './components/TabelaAnalises';
-import AlertasPanel from './components/AlertasPanel';
+//import AlertasPanel from './components/AlertasPanel';
 
 const DashboardAnalises = () => {
   return (
@@ -12,7 +12,7 @@ const DashboardAnalises = () => {
       <h1>Painel de Monitoramento de Análises</h1>
       
       {/* Seção de Indicadores */}
-      <IndicadoresCards />
+{/* <IndicadoresCards /> */}
       
       {/* Seção de Gráficos */}
       <div className="row mt-4">
@@ -31,7 +31,7 @@ const DashboardAnalises = () => {
       <TabelaAnalises />
       
       {/* Seção de Alertas (lateral ou topo) */}
-      <AlertasPanel />
+     {/* <AlertasPanel />*/}
     </div>
   );
 };
