@@ -20,3 +20,11 @@ export async function atualizarProcedimento(id, procedimentoPayload) {
 export async function deleteProcedimento(id) {
   return apiDelete(`/procedimento/${id}`);
 }
+
+export async function getProcedimentosMaisUsados() {
+  return apiGet("/procedimento/mais-usados");
+}
+
+export async function getProcedimentosUsoTotal() {
+  return apiGet("/procedimento/uso-total");
+}

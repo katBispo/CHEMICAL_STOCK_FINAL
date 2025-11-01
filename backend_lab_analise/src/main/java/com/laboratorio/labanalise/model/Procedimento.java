@@ -1,13 +1,14 @@
 package com.laboratorio.labanalise.model;
 
-
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serializable;
@@ -17,39 +18,30 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(
-        name = "PROCEDIMENTO"
-)
+@Table(name = "PROCEDIMENTO")
 public class Procedimento implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private String nomeProcedimento;
     private String descricaoProcedimento;
     @Lob
     private byte[] pdfData;
 
-    @OneToMany(
-            mappedBy = "id.procedimento"
-    )
+    @OneToMany(mappedBy = "id.procedimento")
     private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
-    
-    @Column(
-            name = "data_cadastro",
-            nullable = false
-    )
+
+    @Column(name = "data_cadastro", nullable = false)
     private LocalDate dataCadastro;
 
+    @ManyToMany
+    @JoinTable(name = "procedimento_equipamento", joinColumns = @JoinColumn(name = "procedimento_id"), inverseJoinColumns = @JoinColumn(name = "equipamento_id"))
+    private Set<Equipamento> equipamentos = new HashSet<>();
 
     @OneToMany(mappedBy = "procedimento")
     private Set<ReagenteUsadoProcedimento> reagentesUsados = new HashSet<>();
-
 
     public Procedimento() {
         this.dataCadastro = LocalDate.now();
@@ -105,7 +97,7 @@ public class Procedimento implements Serializable {
         if (this == o) {
             return true;
         } else if (o != null && this.getClass() == o.getClass()) {
-            Procedimento that = (Procedimento)o;
+            Procedimento that = (Procedimento) o;
             return Objects.equals(this.id, that.id);
         } else {
             return false;
@@ -113,6 +105,6 @@ public class Procedimento implements Serializable {
     }
 
     public int hashCode() {
-        return Objects.hash(new Object[]{this.id});
+        return Objects.hash(new Object[] { this.id });
     }
 }

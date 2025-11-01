@@ -22,7 +22,6 @@ public class AmostraDTO {
     private List<Long> procedimentos;
     private LocalDate dataEncerramento;
 
-
     private LocalDate dataFinalizacaoReal;
 
     private List<Long> procedimentosIds;
@@ -166,7 +165,6 @@ public class AmostraDTO {
         this.status = amostra.getStatus().name();
         this.descricao = amostra.getDescricao();
         this.dataEncerramento = amostra.getDataEncerramento();
-        
 
         if (amostra.getAnalise() != null) {
             this.analiseId = amostra.getAnalise().getId();
@@ -206,7 +204,12 @@ public class AmostraDTO {
         this.analitosSelecionados = analitosSelecionados;
     }
 
-    public LocalDate getDataFinalizacaoReal() { return dataFinalizacaoReal; }
-public void setDataFinalizacaoReal(LocalDate dataFinalizacaoReal) { this.dataFinalizacaoReal = dataFinalizacaoReal; }
+    public LocalDate getDataFinalizacaoReal() {
+        return dataFinalizacaoReal;
+    }
+
+    public void setDataFinalizacaoReal(LocalDate dataFinalizacaoReal) {
+        this.dataFinalizacaoReal = dataFinalizacaoReal;
+    }
 
 }

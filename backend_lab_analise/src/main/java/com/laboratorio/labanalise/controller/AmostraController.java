@@ -13,6 +13,7 @@ import com.laboratorio.labanalise.repositories.*;
 import com.laboratorio.labanalise.services.AmostraService;
 import com.laboratorio.labanalise.services.AnaliseService;
 import com.laboratorio.labanalise.services.ProcedimentoService;
+import com.laboratorio.labanalise.DTO.projection.*;
 
 import com.laboratorio.labanalise.services.AnalitoService; // Serviço para manipular Analitos
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,4 +113,11 @@ public class AmostraController {
         Amostra amostraEncerrada = service.encerrarAmostra(id);
         return ResponseEntity.ok(new AmostraDTO(amostraEncerrada));
     }
+
+    @GetMapping("/status/contagem")
+    public ResponseEntity<List<StatusAmostraCountProjection>> getContagemPorStatus() {
+        List<StatusAmostraCountProjection> resultado = service.obterContagemPorStatus();
+        return ResponseEntity.ok(resultado);
+    }
+
 }

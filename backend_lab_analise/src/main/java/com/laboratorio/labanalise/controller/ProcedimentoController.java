@@ -1,6 +1,6 @@
 package com.laboratorio.labanalise.controller;
 
-
+import com.laboratorio.labanalise.DTO.projection.ProcedimentoMaisUsadoDTO;
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(path = "/procedimento")
 public class ProcedimentoController {
@@ -36,7 +36,7 @@ public class ProcedimentoController {
         reagenteQuantidadeRequests.stream()
                 .forEach(r -> {
                     Reagente reagente = reagenteService.buscarPorId(r.getIdReagente());
-                    service.salvar(procedimento,reagente,r.getQuantidade());
+                    service.salvar(procedimento, reagente, r.getQuantidade());
                 });
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -46,7 +46,6 @@ public class ProcedimentoController {
         return ResponseEntity.created(uri).body(procedimento);
     }
 
-  
     // Endpoint para listar todos os procedimentos
     @GetMapping
     public ResponseEntity<List<Procedimento>> listarProcedimentos() {
@@ -79,4 +78,17 @@ public class ProcedimentoController {
         service.remover(id); // Chama o serviço para remover o procedimento
         return ResponseEntity.noContent().build(); // Retorna 204 sem conteúdo
     }
+
+    @GetMapping("/mais-usados")
+    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> buscarProcedimentosMaisUsados() {
+        List<ProcedimentoMaisUsadoDTO> lista = service.buscarProcedimentosMaisUsados();
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/uso-total")
+    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> listarUsoTotalProcedimentos() {
+        List<ProcedimentoMaisUsadoDTO> procedimentos = service.buscarUsoTotalProcedimentos();
+        return ResponseEntity.ok(procedimentos);
+    }
+
 }

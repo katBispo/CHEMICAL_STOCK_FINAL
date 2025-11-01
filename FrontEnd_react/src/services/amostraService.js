@@ -27,3 +27,6 @@ export async function getAmostrasComAnalises() {
 export async function encerrarAmostra(id) {
   return apiPut(`/amostra/${id}/encerrar`);
 }
+export async function getStatusAmostras() {
+  return apiGet('/amostras/status/contagem'); 
+}

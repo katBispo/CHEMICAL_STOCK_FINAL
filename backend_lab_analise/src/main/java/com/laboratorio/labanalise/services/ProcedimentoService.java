@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.services;
 
+import com.laboratorio.labanalise.DTO.projection.ProcedimentoMaisUsadoDTO;
 import com.laboratorio.labanalise.model.MovimentacaoReagente;
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
@@ -65,5 +66,13 @@ public class ProcedimentoService {
 
     public List<Procedimento> buscarTodos() {
         return repository.findAll();
+    }
+
+   public List<ProcedimentoMaisUsadoDTO> buscarProcedimentosMaisUsados() { //apenas os 5 mais usados
+        return repository.findTop5ProcedimentosMaisUsados();
+    }
+
+    public List<ProcedimentoMaisUsadoDTO> buscarUsoTotalProcedimentos() {
+        return repository.buscarUsoTotalProcedimentos();
     }
 }

@@ -9,6 +9,8 @@ import com.laboratorio.labanalise.DTO.*;
 import com.laboratorio.labanalise.model.enums.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.laboratorio.labanalise.model.AmostraAnalito;
+import com.laboratorio.labanalise.DTO.projection.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -200,7 +202,7 @@ public class AmostraService {
     }
 
     public List<AmostraComAnaliseDTO> buscarAmostrasComAnalise() {
-        List<Amostra> amostras = buscarEntidades(); 
+        List<Amostra> amostras = buscarEntidades();
 
         return amostras.stream().map(a -> {
             Long analiseId = a.getAnalise() != null ? a.getAnalise().getId() : null;
@@ -217,7 +219,7 @@ public class AmostraService {
         }).collect(Collectors.toList());
     }
 
-     public Amostra encerrarAmostra(Long id) {
+    public Amostra encerrarAmostra(Long id) {
         Amostra amostra = amostraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Amostra não encontrada"));
 
@@ -233,6 +235,9 @@ public class AmostraService {
         return amostraRepository.save(amostra);
     }
 
+    public List<StatusAmostraCountProjection> obterContagemPorStatus() {
+        return amostraRepository.countAmostrasByStatus();
+    }
     /*
      * public List<Amostra> buscarTodos() {
      * return amostraRepository.findAll();
