@@ -27,7 +27,6 @@ import ReagenteCadastro from "./pages/cadastro/ReagenteCadastro";
 import AnalitoExistenteCadastro from "./pages/cadastro/AnalitoExistenteCadastro";
 import CadastrarProcesso from "./pages/cadastro/CadastrarProcesso";
 
-
 import Estoque from "./pages/estoque/Estoque";
 
 import SelectAnaliseDaAmostra from "./pages/components/SelectAnaliseDaAmostra";
@@ -42,7 +41,6 @@ import GraficoProcedimentos from "./pages/DashboardAnalises/components/GraficoPr
 import GraficoStatusAmostras from "./pages/DashboardAnalises/components/GraficoStatusAmostras";
 import TabelaAnalises from "./pages/DashboardAnalises/components/TabelaAnalises";
 
-
 import Perfil from "./pages/perfil/Perfil";
 
 function App() {
@@ -55,14 +53,23 @@ function App() {
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
         <Route path="/perfil" element={<Perfil />} />
 
+                <Route path="/estoque" element={<Estoque />} />
 
-        <Route path="/alertasPanel" element={< AlertasPanel/>} />
-        <Route path="/dashboardAnalises" element={< DashboardAnalises/>} />
-        <Route path="/graficoEquipamentos" element={< GraficoEquipamentos/>} />
-        <Route path="/indicadoresCards" element={< IndicadoresCards/>} />
-        <Route path="/graficoProcedimentos" element={< GraficoProcedimentos/>} />
-        <Route path="/graficoStatusAmostras" element={< GraficoStatusAmostras/>} />
-        <Route path="/tabelaAnalises" element={< TabelaAnalises/>} /> 
+                <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
+
+        <Route path="/alertasPanel" element={<AlertasPanel />} />
+        <Route path="/dashboardAnalises" element={<DashboardAnalises />} />
+        <Route path="/graficoEquipamentos" element={<GraficoEquipamentos />} />
+        <Route path="/indicadoresCards" element={<IndicadoresCards />} />
+        <Route
+          path="/graficoProcedimentos"
+          element={<GraficoProcedimentos />}
+        />
+        <Route
+          path="/graficoStatusAmostras"
+          element={<GraficoStatusAmostras />}
+        />
+        <Route path="/tabelaAnalises" element={<TabelaAnalises />} />
 
         {/* Rotas protegidas */}
         <Route
@@ -209,14 +216,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/ReagenteCadastro"
-          element={
-            <PrivateRoute>
-              <ReagenteCadastro />
-            </PrivateRoute>
-          }
-        />
+       
 
         <Route
           path="/analitoExistenteCadastro"
@@ -259,15 +259,6 @@ function App() {
           element={
             <PrivateRoute>
               <ListaReagenteCompleta />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/estoque"
-          element={
-            <PrivateRoute>
-              <Estoque />
             </PrivateRoute>
           }
         />

@@ -11,6 +11,7 @@ import SelectAnaliseDaAmostra from '../components/SelectAnaliseDaAmostra';
 import { getAmostrasComAnalises, deleteAmostra, encerrarAmostra } from '../../services/amostraService';
 import EncerrarAmostraModal from '../components/EncerrarAmostraModal';
 import { getAnalises } from "../../services/AnaliseService";
+import { tabelaEstilo } from '../../styles/tabelaEstilo';
 
 import {
     Table,

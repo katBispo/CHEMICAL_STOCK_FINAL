@@ -1,74 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
-import { 
-  getTop5MaisUsados, 
-  getStatusEquipamentos, 
-  getDistribuicaoPorProcedimento, 
-  getContagemDeUso 
-} from '../../../services/EquipamentoService'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 const GraficoEquipamentos = () => {
-  const [top5Data, setTop5Data] = useState({ labels: [], datasets: [] });
-  const [statusData, setStatusData] = useState({ labels: [], datasets: [] });
-  const [procedimentoData, setProcedimentoData] = useState({ labels: [], datasets: [] });
-  const [usoData, setUsoData] = useState({ labels: [], datasets: [] });
+  const top5Data = {
+    labels: ['Centrífuga', 'Microscópio', 'Balança', 'Estufa', 'Phmetro'],
+    datasets: [{
+      label: 'Usos',
+      data: [30, 25, 22, 18, 10],
+      backgroundColor: 'rgba(153,102,255,0.6)',
+    }],
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // ===== Top 5 mais usados =====
-        const top5 = await getTop5MaisUsados();
-        setTop5Data({
-          labels: top5.data.map(item => item.nome),
-          datasets: [{
-            label: 'Usos',
-            data: top5.data.map(item => item.quantidade),
-            backgroundColor: 'rgba(153,102,255,0.6)',
-          }],
-        });
+  const statusData = {
+    labels: ['Ativo', 'Manutenção', 'Inativo'],
+    datasets: [{
+      data: [10, 2, 3],
+      backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
+    }],
+  };
 
-        // ===== Distribuição por status =====
-        const status = await getStatusEquipamentos();
-        setStatusData({
-          labels: status.data.map(item => item.nome),
-          datasets: [{
-            data: status.data.map(item => item.quantidade),
-            backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384'],
-          }],
-        });
+  const procedimentoData = {
+    labels: ['Análise 1', 'Análise 2', 'Análise 3'],
+    datasets: [{
+      label: 'Equipamentos por Procedimento',
+      data: [5, 8, 6],
+      backgroundColor: 'rgba(75,192,192,0.6)',
+    }],
+  };
 
-        // ===== Distribuição por procedimento =====
-        const procedimento = await getDistribuicaoPorProcedimento();
-        setProcedimentoData({
-          labels: procedimento.data.map(item => item.nome),
-          datasets: [{
-            label: 'Quantidade de Equipamentos',
-            data: procedimento.data.map(item => item.quantidade),
-            backgroundColor: 'rgba(75,192,192,0.6)',
-          }],
-        });
-
-        // ===== Contagem de uso total =====
-        const uso = await getContagemDeUso();
-        setUsoData({
-          labels: uso.data.map(item => item.nome),
-          datasets: [{
-            label: 'Quantidade de usos',
-            data: uso.data.map(item => item.quantidade),
-            backgroundColor: 'rgba(255,159,64,0.6)',
-          }],
-        });
-
-      } catch (error) {
-        console.error('Erro ao carregar dados dos equipamentos:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const usoData = {
+    labels: ['Equipamento 1', 'Equipamento 2', 'Equipamento 3'],
+    datasets: [{
+      label: 'Quantidade de Usos',
+      data: [20, 15, 9],
+      backgroundColor: 'rgba(255,159,64,0.6)',
+    }],
+  };
 
   return (
     <div className="container">
@@ -89,14 +59,14 @@ const GraficoEquipamentos = () => {
       </div>
 
       <div className="card mb-4">
-        <div className="card-header">Distribuição de Equipamentos por Procedimento</div>
+        <div className="card-header">Distribuição por Procedimento</div>
         <div className="card-body">
           <Bar data={procedimentoData} options={{ scales: { y: { beginAtZero: true } } }} />
         </div>
       </div>
 
       <div className="card mb-4">
-        <div className="card-header">Contagem de Uso de Cada Equipamento</div>
+        <div className="card-header">Contagem de Uso</div>
         <div className="card-body">
           <Bar data={usoData} options={{ scales: { y: { beginAtZero: true } } }} />
         </div>
