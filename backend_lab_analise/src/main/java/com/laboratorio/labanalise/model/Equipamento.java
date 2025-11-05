@@ -14,20 +14,18 @@ public class Equipamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;                 // Nome do equipamento
-    private String fabricante;           // Fabricante
-    private String modelo;               // Modelo
-    private String numeroSerie;          // Número de série
-    private String descricao;            // Descrição adicional
+    private String nome;                 
+    private String fabricante;           
+    private String modelo;            
+    private String numeroSerie;         
+    private String descricao;            
 
     @Enumerated(EnumType.STRING)
-    private StatusEquipamento status;    // Status: ATIVO, INATIVO, MANUTENCAO
+    private StatusEquipamento status;    
 
-    // Relacionamento muitos-para-muitos com Procedimento
     @ManyToMany(mappedBy = "equipamentos")
     private Set<Procedimento> procedimentos = new HashSet<>();
 
-    // Construtor padrão
     public Equipamento() {}
 
     // Getters e Setters
