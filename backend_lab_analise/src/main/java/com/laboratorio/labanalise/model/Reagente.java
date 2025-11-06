@@ -135,8 +135,10 @@ public class Reagente implements Serializable {
     }
 
     public Double getQuantidadeAtual() {
-        Double quantidade = this.quantidadeDeFrascos * this.quantidadePorFrasco;
-        return quantidade;
+        if (this.quantidadeDeFrascos == null || this.quantidadePorFrasco == null) {
+            return 0.0;
+        }
+        return this.quantidadeDeFrascos * this.quantidadePorFrasco;
     }
 
     public void setQuantidadeAtual(Double quantidadeAtual) {

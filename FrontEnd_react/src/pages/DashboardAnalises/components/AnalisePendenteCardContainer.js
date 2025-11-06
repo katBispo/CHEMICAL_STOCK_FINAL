@@ -11,8 +11,8 @@ function AnalisePendenteCardContainer({ analisesPendentes = [] }) {
         borderRadius: 3,
         boxShadow: 2,
         width: '100%',
-        maxWidth: '350px',
-        maxHeight: '400px',
+        maxWidth: '450px',
+        maxHeight: '300px',
         textAlign: 'center',
         transition: 'box-shadow 0.3s ease, transform 0.2s ease',
         '&:hover': { boxShadow: 4, transform: 'scale(1.02)' },
@@ -89,7 +89,7 @@ function AnalisePendenteCardContainer({ analisesPendentes = [] }) {
           component={Link}
           to="/analises"
         >
-          Ver Todas as Análises
+          Ver Todas as Análises pendentes de vinculação de amostras
         </Button>
       </Box>
     </Box>

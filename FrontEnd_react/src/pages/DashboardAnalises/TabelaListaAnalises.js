@@ -52,10 +52,11 @@ const TabelaListaAnalises = ({ analises, onSave }) => {
           position: "relative",
           overflowX: "auto",
           borderRadius: "10px",
-          width: "600px",
+          height: "270px",   
           margin: "0 auto",
         }}
       >
+
         {/* Overlay de destaque inicial */}
         {showOverlay && (
           <div

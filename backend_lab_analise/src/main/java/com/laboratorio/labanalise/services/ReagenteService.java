@@ -18,15 +18,13 @@ import java.util.List;
 @Service
 public class ReagenteService {
 
-    @Autowired
-    public ReagenteRepository repository;
-
-    @Autowired
-    private MovimentacaoReagenteService movimentacaoReagenteService;
+    private final ReagenteRepository repository;
+    private final MovimentacaoReagenteService movimentacaoReagenteService;
     private final ReagenteMapper reagenteMapper;
 
-    public ReagenteService(ReagenteRepository reagenteRepository, ReagenteMapper reagenteMapper) {
-        this.repository = reagenteRepository;
+    public ReagenteService(ReagenteRepository repository, MovimentacaoReagenteService movimentacaoReagenteService, ReagenteMapper reagenteMapper) {
+        this.repository = repository;
+        this.movimentacaoReagenteService = movimentacaoReagenteService;
         this.reagenteMapper = reagenteMapper;
     }
 
