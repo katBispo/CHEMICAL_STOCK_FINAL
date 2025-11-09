@@ -51,8 +51,8 @@ public class MovimentacaoReagenteService {
         movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
         movimentacao.setReagente(reagente);
         movimentacao.setDataMovimentacao(LocalDate.now());
-        movimentacao.setQuantidadeAlterada(reagente.getQuantidadeAtual());
-        movimentacao.setQuantidadeFinal(reagente.getQuantidadeAtual() + (novo.getQuantidadeAtual() - reagente.getQuantidadeAtual()));
+        movimentacao.setQuantidadeAlterada(novo.getQuantidadeTotal());
+        movimentacao.setQuantidadeFinal(novo.getQuantidadeTotal());
     }
 
     public void registrarMovimentacaoDeSaida(Reagente reagente, Double quantidadeRemovida) {

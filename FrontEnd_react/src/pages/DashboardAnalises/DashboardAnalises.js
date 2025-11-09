@@ -24,63 +24,9 @@ import SideBar from "../components/SideBar";
 import TabelaListaAnalises from "./TabelaListaAnalises";
 import AnalisePendenteCardContainer from "./components/AnalisePendenteCardContainer";
 import { getAnalises } from "../../services/AnaliseService";
+import GraficoStatusAnalises from "./GraficoStatusAnalises";
 
-// --- Componente de cards de indicadores ---
-const IndicadoresCards = ({ indicadores }) => (
-  <Grid container spacing={3} mb={5}>
-    {indicadores.map((ind, index) => (
-      <Grid item xs={12} sm={6} md={3} key={index}>
-        <Fade in timeout={300 + index * 150}>
-          <Paper
-            elevation={4}
-            sx={{
-              p: 3,
-              height: "100%",
-              borderRadius: 3,
-              borderLeft: `6px solid ${ind.cor}`,
-              bgcolor: "background.paper",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                transform: "translateY(-4px)",
-                boxShadow: 8,
-              },
-            }}
-          >
-            <Box display="flex" alignItems="center" gap={1.5} mb={1}>
-              <Box
-                sx={{
-                  bgcolor: ind.cor + "22",
-                  p: 1,
-                  borderRadius: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {ind.icon}
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                fontWeight={500}
-              >
-                {ind.titulo}
-              </Typography>
-            </Box>
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              color={ind.cor}
-              sx={{ fontSize: { xs: "2rem", md: "2.5rem" } }}
-            >
-              {ind.valor}
-            </Typography>
-          </Paper>
-        </Fade>
-      </Grid>
-    ))}
-  </Grid>
-);
+import IndicadoresCards from "./components/IndicadoresCards";
 
 // --- Cabeçalho com botão de nova análise ---
 const AnalisesHeader = () => (
@@ -119,7 +65,6 @@ const DashboardAnalises = () => {
 
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
 
-  // 🔹 Busca as análises do backend
   useEffect(() => {
     const carregarAnalises = async () => {
       try {
@@ -133,7 +78,6 @@ const DashboardAnalises = () => {
     carregarAnalises();
   }, []);
 
-  // 🔹 Mock para card lateral
   const analisesPendentesMock = [
     { id: 1, nome: "Análise de Água", qtdPendentes: 3 },
     { id: 2, nome: "Análise de Solo", qtdPendentes: 1 },
@@ -141,7 +85,6 @@ const DashboardAnalises = () => {
     { id: 4, nome: "Análise de Resíduos", qtdPendentes: 5 },
   ];
 
-  // 🔹 Indicadores
   const indicadores = [
     {
       titulo: "Análises em andamento",
@@ -171,7 +114,6 @@ const DashboardAnalises = () => {
 
   return (
     <>
-      {/* APPBAR */}
       <AppBar
         position="fixed"
         elevation={4}
@@ -200,23 +142,22 @@ const DashboardAnalises = () => {
 
       {/* CONTEÚDO PRINCIPAL */}
       <Fade in timeout={600}>
-        <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", pt: 12 }}>
+        <Box sx={{ bgcolor: "#f5f5f5", minWidth: "170vh", pt: 12, px: 6 }}>
           <AnalisesHeader />
 
           {/* Cards de indicadores */}
           <Box mt={2} sx={{ ml: "120px", mr: "40px" }}>
             <IndicadoresCards indicadores={indicadores} />
-          </Box>
+          </Box>  
 
           {/* GRID PRINCIPAL */}
           <Grid container spacing={3} sx={{ mt: 4, px: 10 }}>
             <Grid item xs={12} lg={8}>
-              {/* 🔹 Tabela no mesmo design do original */}
               <Box
                 flex={1}
                 minWidth={300}
                 mt={6}
-                height="900px"
+                height="500px"
                 sx={{
                   overflowY: "auto",
                   bgcolor: "#fff",
@@ -229,11 +170,25 @@ const DashboardAnalises = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} lg={4}>
+            <Grid item xs={12} lg={4} sx={{ mt: 6 }}>
               {/* 🔹 Card lateral */}
               <AnalisePendenteCardContainer analisesPendentes={analisesPendentesMock} />
             </Grid>
+
           </Grid>
+
+          <Grid
+            item
+            xs={12}
+            lg={4}
+            sx={{
+              mt: -22,
+              ml: 125, // 🔹 adiciona margem à esquerda
+            }}
+          >
+            <GraficoStatusAnalises />
+          </Grid>
+
 
           {/* OVERLAY "VER MAIS" */}
           {showOverlay && (

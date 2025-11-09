@@ -1,0 +1,136 @@
+*   [33mdec8401[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m erge remote-tracking branch 'origin/master' aborts  the commit.
+[31m|[m[32m\[m  
+[31m|[m * [33m1294dfe[m fix bug endpoint botao de encerrar amostra em lista amostra
+[31m|[m * [33meaad421[m feature:sessao de usuario com tokeJWT tela deperfil
+[31m|[m * [33mead5cec[m fix:bug servic usuario
+[31m|[m * [33m0aab736[m style: tela de perfil
+* [32m|[m [33mc87bfcb[m feature: estruturacao processo de associacao amostra com equipamento
+* [32m|[m [33mceb4ff5[m Merge branch 'master' of https://github.com/katBispo/CHEMICAL_STOCK_FINAL
+[33m|[m[32m\[m[32m|[m 
+[33m|[m * [33m5de1b5c[m fix:bug tela de listar amostras com analises(adc dto amostras e analises pra conseguir pegar dados relaciondos
+[33m|[m * [33m6b994ac[m refactor: service e endpoints tela estoque && fix: barra de filtro overlay tabela de reagentes
+[33m|[m * [33ma7e529d[m refactor:telas de cadastro elista de clientes e contratos
+* [34m|[m [33m75e5cea[m teste mudanças locais
+[34m|[m[34m/[m  
+* [33m658ff6a[m refactor:rota api cliente no front && adc services e model front
+* [33m068de1f[m refactor:ejdpoints, criacao service
+* [33mc93a60a[m fix:sessao auth tela estoque & back configurado pra retornar gatilho token expirado
+* [33m879b701[m feat: adc autenticacao por token jwt em rotas da tela de estoque e reagentes
+* [33m134b758[m fix: bug redirecionamento botoes de aprovar ou recusar usuario
+* [33mdac030e[m feat:adc rota de aprovacoes pendentes e tela com as rotas de negar e aprovar cadastro
+* [33m2e828ec[m feat: adc aprovação de usuario por email
+* [33m6a90ae9[m autenticacao baseada em token concluida
+* [33m85854ac[m feat:adc de jwt auth
+* [33m93843b3[m style: adc tela login
+* [33ma693eb3[m feat: adc de model usuario e security config para autenticacao criptografada
+* [33mf5ddced[m style: versao 2 etiqueta ok
+* [33m0728dd4[m style: versao 1  etiqueta
+* [33m9b64a7f[m fix:serialização analise looping listagem
+*   [33m2ceb6e6[m fix:serialização analise looping listagem
+[35m|[m[36m\[m  
+[35m|[m * [33m7de13a4[m style: menu e todos os componentes
+* [36m|[m [33me0b349f[m fix:problema de serialização analise(listagem)
+[36m|[m[36m/[m  
+* [33m1b9ae86[m fix:bug associacao analito e  amostra
+* [33m03e7f02[m fix: chamada de procedimentos associados a uma amostra no front amostraDetailOverlay
+* [33m64ab579[m fix:correção relacionamento amostra_procedimento/ refactor duplicacao de id amostra_procedimento/ refactor payload: envio agora por id e nao objeto/ refactor metodo save e dto de amostra: espera receber id e nao objeto
+* [33m0304206[m fix: cadastro procedimento reagente ok//excluido mapeamento jpa analito->amostra, inserido classe pk
+* [33mda6bee6[m fix: port properties
+* [33mfd61adc[m update: build dockerfilev22
+* [33m25b64eb[m update: build dockerfile
+* [33mca7a23d[m feature: adc dockerfile
+* [33me68c96a[m fix: checkbox em lista amostra
+* [33m610c0d8[m fix: consertei o dto para o puxar analise pelo nome
+* [33m05d1f17[m adc query autocomplete na tela de estoque reagentes
+* [33m09b5fbc[m adc:tabela completa no overlay de lista reagentes em tela de estoque
+* [33m798fe07[m alterações graficos no menu e alteração tabela de reagentes em estoque
+* [33m1a6d3dd[m readequação menu
+*   [33m4d08055[m AAAAABBBBBA
+[1;31m|[m[1;32m\[m  
+[1;31m|[m * [33md162d58[m add: nova logo
+* [1;32m|[m [33m70728aa[m alteracao grafico de amostras home
+[1;32m|[m[1;32m/[m  
+* [33m8b014d6[m feature: adc contagem de amostras associadas a cada analise
+* [33mea2e881[m feature: adc atualiazação automatica de status amostra
+* [33m8da9ba6[m feat: adc automatizacao acoes tabelas reagents em estoque
+* [33m5d43ad7[m feature:adc grafico pizza reagentes vencidos, query reagentes vencidos
+* [33ma392565[m fix: variaveis da tela de estoque para contabilizar o total de frascos e nao o volume
+* [33md1065fa[m feature: adc tela d estoque reagentes com contagem d vencidos, totais e lista de reagentes
+*   [33md7fcca4[m Resolvendo conflito de merge com origin/master
+[1;33m|[m[1;34m\[m  
+[1;33m|[m * [33m70a13e5[m sla
+[1;33m|[m * [33m1659877[m fix: tela home
+* [1;34m|[m [33m9966775[m alteração menu
+[1;34m|[m[1;34m/[m  
+* [33m17c6931[m Revert "feat: adicao de tokens para seguranca e login"
+* [33m7f02701[m feat: adicao de tokens para seguranca e login
+* [33m9f9ea25[m feat: adicionado listar reagentes vencidos
+*   [33m37d7797[m :feat: adc novos componentes menu & resolvendo conflito em home.js
+[1;35m|[m[1;36m\[m  
+[1;35m|[m * [33m197aa82[m Modificando perfil e adicionando tela de Cadastrar processo
+* [1;36m|[m [33m79eb03c[m feat: adc de componentes do menu
+[1;36m|[m[1;36m/[m  
+* [33m70c9b8f[m feat:...
+* [33m18d4fd6[m editando modelo etiqueta da análise
+* [33m104484c[m Editando etiqueta
+*   [33m675ede1[m Merge branch 'master' of github.com:katBispo/CHEMICAL_STOCK_FINAL
+[31m|[m[32m\[m  
+[31m|[m * [33m26787d0[m fix: logica tela de reposicao de put p/ POST
+[31m|[m * [33mf033793[m refactor: substituição de POST para PUT em reposicaoReagente
+* [32m|[m [33m6a2253e[m refactor: cadastro de procedimento ajustado na camada controller
+[32m|[m[32m/[m  
+*   [33m21036ad[m Merge branch 'master' of github.com:katBispo/CHEMICAL_STOCK_FINAL
+[33m|[m[34m\[m  
+[33m|[m *   [33m484ffd8[m BBBBBBAAB
+[33m|[m [35m|[m[36m\[m  
+[33m|[m * [36m|[m [33m73e7c8b[m refactor: analise cadastro-separando css
+* [36m|[m [36m|[m [33m56c0482[m fix: bug ao atualizar o valor total de regente corrigido no backend
+* [36m|[m [36m|[m [33m8f5b4f2[m nd
+[36m|[m [36m|[m[36m/[m  
+[36m|[m[36m/[m[36m|[m   
+* [36m|[m [33m1b02ecb[m fix: correcao bug ao remover qtd de reagente no procedimento
+* [36m|[m [33m765df60[m refactor: ajustando salvar procedimento na camada controller
+* [36m|[m [33me0a4da9[m feat: add saida de reagente ao cadastrar procedimento
+* [36m|[m [33m7884061[m feat: registrar saida de reagente ok
+* [36m|[m [33m4c526c4[m feat: add logica de registrar saida de reagente
+* [36m|[m [33m66e7d98[m fix: correcao bug ao repor reagente
+[1;31m|[m[36m\[m[36m|[m 
+[1;31m|[m *   [33md85203f[m refactor: add service p/ tratamento de requisicoes-reposicaoReagente
+[1;31m|[m [1;33m|[m[1;34m\[m  
+[1;31m|[m * [1;34m|[m [33mf6f5f0f[m refactor: add service p/ tratamento de requisicoes-reposicaoReagente
+[1;31m|[m * [1;34m|[m [33m734afa6[m refactor: isolamento de requisicoes em reposicaoReagente
+* [1;34m|[m [1;34m|[m [33md076c41[m feat: criando classe de servico para reagente usado
+* [1;34m|[m [1;34m|[m [33mc5bbdbd[m feat: add metodos get e set na classe procedimento
+[1;34m|[m [1;34m|[m[1;34m/[m  
+[1;34m|[m[1;34m/[m[1;34m|[m   
+* [1;34m|[m [33m8e00cb2[m chore: removendo o .properties
+* [1;34m|[m [33me676ac5[m chore: add o .gitignore
+[1;34m|[m[1;34m/[m  
+*   [33m5457dd8[m refactor: logica de amostra e analise
+[1;35m|[m[1;36m\[m  
+[1;35m|[m * [33m1c9d901[m refactor: refatorando a classe de movimentacaoReagente
+* [1;36m|[m [33mebbde1b[m refatoraçaão logica de amostra e analise
+[1;36m|[m[1;36m/[m  
+* [33m3e130fd[m alterações pra kauan
+* [33m688d973[m fix lista amostras --lazy
+* [33m7c959d0[m fix tela de repor reagente, mas ainda falta back
+* [33m480e97a[m feature tela reagente--novos parametros, feature entidade movimentacao reagente apenas p/ cadastro
+* [33m89c021e[m finalmente foi o cadastro de amostra, mas falta arrumar a relacao amostra_Analito
+* [33ma831241[m alterações na tel de cadastro amostra
+* [33m51f5a40[m alteracao analise e amostra
+* [33mdb21302[m cadastro de amostra finalmente ok
+* [33me9c9aa4[m algumas alteraçoes
+* [33m880f3a5[m arrumei o cadastro de mais subtipos de analito
+* [33mf406c6f[m fix tela de cadastro contrato e lista contrato
+* [33mff15e12[m arrumei a lista de analises
+* [33m4c42542[m lodiang etapas analise
+* [33m9a6d5bb[m nao sei mais
+* [33ma10a586[m lesgo
+* [33m4e4d69f[m quase la
+* [33mf7695a4[m arrumei botao analito
+* [33m07b949d[m finalizeei merda cadastro analise
+* [33mc7fd7a9[m sss
+* [33mfb50527[m barra progresso qtd analise  em contAnalise
+* [33m01653f9[m Adicionando FrontEnd_react como pasta regular
+* [33m30f9893[m front e back conectados
+* [33m9cd685d[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Initial commit
