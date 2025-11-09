@@ -1,22 +1,25 @@
 package com.laboratorio.labanalise;
 
-import com.laboratorio.labanalise.model.Usuario;
-import com.laboratorio.labanalise.model.enums.Cargo;
-import com.laboratorio.labanalise.model.enums.StatusUsuario;
-import com.laboratorio.labanalise.repositories.UsuarioRepository;
-import com.laboratorio.labanalise.services.UsuarioService;
+import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
-import java.util.Optional;
+import com.laboratorio.labanalise.model.Usuario;
+import com.laboratorio.labanalise.model.enums.Cargo;
+import com.laboratorio.labanalise.model.enums.StatusUsuario;
+import com.laboratorio.labanalise.repositories.UsuarioRepository;
+import com.laboratorio.labanalise.services.UsuarioService;
 
 @SpringBootApplication
+@EnableAspectJAutoProxy
+
 public class LabanaliseApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(LabanaliseApplication.class, args);
@@ -39,14 +42,9 @@ public class LabanaliseApplication {
         }
     }
 
-
-      /**
-     * Cria um usuário automaticamente ao iniciar o sistema.
-     */
     @Bean
     public CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Verifica se já existe um usuário com esse email
             if (usuarioRepository.findByEmail("admin@lab.com").isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setNome("Administrador do Sistema");
@@ -54,10 +52,9 @@ public class LabanaliseApplication {
                 admin.setEmail("admin@lab.com");
                 admin.setCrq("CRQ123");
                 admin.setDataAdmissao(LocalDate.now());
-                admin.setCargo(Cargo.PESQUISADOR); // ajuste conforme seu enum Cargo
-                admin.setSenha(passwordEncoder.encode("123456")); // senha criptografada
-                admin.setStatus(StatusUsuario.ATIVO); // já aprovado
-
+                admin.setCargo(Cargo.PESQUISADOR);
+                admin.setSenha(passwordEncoder.encode("123456"));
+                admin.setStatus(StatusUsuario.ATIVO);
                 usuarioRepository.save(admin);
                 System.out.println("✅ Usuário administrador criado com sucesso!");
             } else {

@@ -1,7 +1,7 @@
 package com.laboratorio.labanalise.config;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.crypto.SecretKey;
@@ -47,19 +47,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     .getBody();
 
             String email = claims.getSubject();
-            String role = claims.get("role", String.class);
-            String cargo = claims.get("cargo", String.class);
+            String role = claims.get("role", String.class); // 👈 Recupera a role do token
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-                if (role != null) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-                }
-
-                if (cargo != null) {
-                    authorities.add(new SimpleGrantedAuthority("CARGO_" + cargo));
-                }
+                List<SimpleGrantedAuthority> authorities =
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(email, null, authorities);
@@ -69,7 +61,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

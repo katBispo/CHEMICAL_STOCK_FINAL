@@ -7,7 +7,6 @@ import AnaliseDetailOverlay from "../components/analiseListaIcons/AnaliseDetailO
 import AnaliseEditOverlay from "../components/analiseListaIcons/AnaliseEditOverlay";
 import AnaliseExcluirOverlay from "../components/analiseListaIcons/AnaliseExcluirOverlay";
 import { tabelaEstilo } from "../../styles/tabelaEstilo.js";
-
 import { getAnalises, deleteAnalise } from "../../services/AnaliseService.js";
 
 import {
@@ -37,6 +36,9 @@ const AnaliseLista = () => {
 
   const navigate = useNavigate();
   const toggleDrawer = () => setDrawerOpen((prev) => !prev);
+
+  // Recupera o papel (role) do usuário logado
+  const role = localStorage.getItem("role");
 
   const fetchAnalises = async () => {
     try {
@@ -136,22 +138,26 @@ const AnaliseLista = () => {
           alignItems="center"
           mb={2}
         >
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#4CAF50",
-              color: "#fff",
-              textTransform: "none",
-              fontWeight: "bold",
-            }}
-            startIcon={
-              <span style={{ fontSize: "20px", fontWeight: "bold" }}>+</span>
-            }
-            onClick={() => navigate("/analiseCadastro")}
-          >
-            Cadastrar Análise
-          </Button>
+          {/* Botão de Cadastrar Análise - apenas ADMIN */}
+          {role === "ADMIN" && (
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#4CAF50",
+                color: "#fff",
+                textTransform: "none",
+                fontWeight: "bold",
+              }}
+              startIcon={
+                <span style={{ fontSize: "20px", fontWeight: "bold" }}>+</span>
+              }
+              onClick={() => navigate("/analiseCadastro")}
+            >
+              Cadastrar Análise
+            </Button>
+          )}
 
+          {/* Botão Gerar - visível para todos */}
           <Button
             variant="contained"
             sx={{
@@ -213,7 +219,6 @@ const AnaliseLista = () => {
                     <TableCell sx={tabelaEstilo.celula}>
                       {analise.nomeMatriz || ""}
                     </TableCell>
-
                     <TableCell sx={tabelaEstilo.celula}>
                       {analise.quantidadeAmostras}
                     </TableCell>
@@ -230,7 +235,10 @@ const AnaliseLista = () => {
                         {analise.statusAnalise}
                       </Box>
                     </TableCell>
+
+                    {/* Ações: mostrar editar/excluir só para ADMIN */}
                     <TableCell sx={tabelaEstilo.botoesAcoes}>
+                      {/* Visualizar - todos */}
                       <IconButton
                         onClick={() => {
                           handleOpen();
@@ -239,18 +247,26 @@ const AnaliseLista = () => {
                       >
                         <FaEye style={{ color: "#666", fontSize: "18px" }} />
                       </IconButton>
-                      <IconButton onClick={() => handleEditClick(analise)}>
-                        <FaEdit
-                          style={{ color: "#4CAF50", fontSize: "18px" }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleOpenDeleteOverlay(analise)}
-                      >
-                        <FaTrashAlt
-                          style={{ color: "#e74c3c", fontSize: "18px" }}
-                        />
-                      </IconButton>
+
+                      {/* Editar - apenas ADMIN */}
+                      {role === "ADMIN" && (
+                        <IconButton onClick={() => handleEditClick(analise)}>
+                          <FaEdit
+                            style={{ color: "#4CAF50", fontSize: "18px" }}
+                          />
+                        </IconButton>
+                      )}
+
+                      {/* Excluir - apenas ADMIN */}
+                      {role === "ADMIN" && (
+                        <IconButton
+                          onClick={() => handleOpenDeleteOverlay(analise)}
+                        >
+                          <FaTrashAlt
+                            style={{ color: "#e74c3c", fontSize: "18px" }}
+                          />
+                        </IconButton>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

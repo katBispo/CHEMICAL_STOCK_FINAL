@@ -30,13 +30,17 @@ export default function LoginRegister() {
       }
 
       const data = await res.json();
+      console.log("Resposta do backend:", data);
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("nome", data.nome);
       // se o backend retornar o exp (timestamp ou segundos UNIX)
       if (data.exp) {
         localStorage.setItem("tokenExp", data.exp);
       }
-
+      if (data.role) {
+        localStorage.setItem("role", data.role);
+      }
 
       navigate("/home");
     } catch (err) {

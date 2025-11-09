@@ -26,7 +26,7 @@ import com.laboratorio.labanalise.services.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "http://localhost:3000") // se usa React, mantenha isso
+@CrossOrigin(origins = "http://localhost:3000") 
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
