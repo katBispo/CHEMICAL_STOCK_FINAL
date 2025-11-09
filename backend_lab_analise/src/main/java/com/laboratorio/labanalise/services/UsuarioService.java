@@ -1,18 +1,17 @@
 package com.laboratorio.labanalise.services;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import com.laboratorio.labanalise.repositories.UsuarioRepository;
-import com.laboratorio.labanalise.model.Usuario;
-import com.laboratorio.labanalise.model.enums.StatusUsuario;
-import com.laboratorio.labanalise.DTO.UsuarioDTO;
-import com.laboratorio.labanalise.DTO.UsuarioCreateDTO;
-import com.laboratorio.labanalise.services.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.laboratorio.labanalise.DTO.UsuarioCreateDTO;
+import com.laboratorio.labanalise.DTO.UsuarioDTO;
+import com.laboratorio.labanalise.model.Usuario;
+import com.laboratorio.labanalise.model.enums.StatusUsuario;
+import com.laboratorio.labanalise.repositories.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -115,17 +114,22 @@ public class UsuarioService {
     }
 
     // Adicione no UsuarioService
-public UsuarioDTO converterParaDTO(Usuario usuario) {
-    return new UsuarioDTO(
-        usuario.getId(),
-        usuario.getNome(),
-        usuario.getCpf(),
-        usuario.getEmail(),
-        usuario.getCrq(),
-        usuario.getDataAdmissao(),
-        usuario.getCargo(),
-        usuario.getStatus()
-    );
-}
+    public UsuarioDTO converterParaDTO(Usuario usuario) {
+        return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getCpf(),
+                usuario.getEmail(),
+                usuario.getCrq(),
+                usuario.getDataAdmissao(),
+                usuario.getCargo(),
+                usuario.getStatus()
+        );
+    }
 
+   
+
+    public Usuario salvar(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
 }

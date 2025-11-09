@@ -9,9 +9,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 
 import java.util.List;
 
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 

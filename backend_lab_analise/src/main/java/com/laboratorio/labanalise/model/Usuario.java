@@ -1,10 +1,19 @@
 package com.laboratorio.labanalise.model;
 
+import java.time.LocalDate;
+
 import com.laboratorio.labanalise.model.enums.Cargo;
+import com.laboratorio.labanalise.model.enums.Role;
 import com.laboratorio.labanalise.model.enums.StatusUsuario;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
@@ -37,6 +46,11 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private StatusUsuario status = StatusUsuario.PENDENTE; // default pendente
+
+
+     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     // Getters e Setters
     public Long getId() {
@@ -111,6 +125,15 @@ public class Usuario {
         this.status = status;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    
 
 
 }

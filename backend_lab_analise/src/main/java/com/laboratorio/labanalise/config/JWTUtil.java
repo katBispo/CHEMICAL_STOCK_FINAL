@@ -1,26 +1,35 @@
 package com.laboratorio.labanalise.config;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
 import com.laboratorio.labanalise.model.Usuario;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-import javax.crypto.SecretKey;
-import java.util.Date;
 public class JWTUtil {
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    //private static final long EXPIRATION_TIME = 120_000; // 2 minutos
-private static final long EXPIRATION_TIME = 2_400_000; // 40 minutos
 
-    // gerar token e também retornar a data de expiração
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final long EXPIRATION_TIME = 2_400_000; // 40 minutos
+
     public static TokenInfo gerarToken(Usuario user) {
         long expMillis = System.currentTimeMillis() + EXPIRATION_TIME;
         Date expDate = new Date(expMillis);
 
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name());
+        claims.put("cargo", user.getCargo().name());
+        claims.put("nome", user.getNome());
+        claims.put("id", user.getId());
+
         String token = Jwts.builder()
+                .setClaims(claims)
                 .setSubject(user.getEmail())
-                .claim("nome", user.getNome())
-                .claim("id", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(expDate)
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -33,7 +42,7 @@ private static final long EXPIRATION_TIME = 2_400_000; // 40 minutos
         return SECRET_KEY;
     }
 
-    // classe auxiliar para carregar token + expiração
+    // Classe auxiliar para carregar token + expiração
     public static class TokenInfo {
         private final String token;
         private final long exp;
