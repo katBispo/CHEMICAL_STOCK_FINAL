@@ -97,7 +97,7 @@ function ContratoCadastro({ onSuccess }) {
           }}
         >
           <Typography variant="h4" gutterBottom>
-            Cadastrar Contrato
+            Cadastrar Ordem de Serviço
           </Typography>
 
           {/* Formulário */}

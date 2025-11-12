@@ -43,6 +43,8 @@ import TabelaAnalises from "./pages/DashboardAnalises/components/TabelaAnalises"
 
 import Perfil from "./pages/perfil/Perfil";
 
+import ReservaPublicPage from "./pages/Login/ReservaPublicPage";
+
 function App() {
   return (
     <Router>
@@ -52,10 +54,11 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 
-                <Route path="/estoque" element={<Estoque />} />
+        <Route path="/estoque" element={<Estoque />} />
 
-                <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
+        <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
 
         <Route path="/alertasPanel" element={<AlertasPanel />} />
         <Route path="/dashboardAnalises" element={<DashboardAnalises />} />
@@ -215,8 +218,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
-       
 
         <Route
           path="/analitoExistenteCadastro"

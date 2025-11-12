@@ -127,11 +127,11 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                     <ListItem
                         button
                         component={Link}
-                        to="/" // Define a rota
-                        onClick={() => setSelectedItem('/')} // Atualiza o item selecionado
-                        selected={selectedItem === '/'} // Condição para o estilo selecionado
+                        to="/home" // Define a rota
+                        onClick={() => setSelectedItem('/home')} // Atualiza o item selecionado
+                        selected={selectedItem === '/home'} // Condição para o estilo selecionado
                         sx={{
-                            bgcolor: selectedItem === '/' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
+                            bgcolor: selectedItem === '/home' ? '#8BC34A' : 'transparent', // Muda a cor se selecionado
                             textDecoration: 'none',
                             color: 'white',
                         }}
@@ -223,7 +223,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                                     color: 'white',
                                 }}
                             >
-                                <ListItemText primary="Contratos" />
+                                <ListItemText primary="Ordem de Serviço" />
                             </ListItem>
 
 

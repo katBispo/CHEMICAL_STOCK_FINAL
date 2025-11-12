@@ -223,7 +223,7 @@ const AnaliseLista = () => {
                       {analise.quantidadeAmostras}
                     </TableCell>
                     <TableCell sx={tabelaEstilo.celula}>
-                      {analise.prazoFinalizacao}
+                      {new Date(analise.prazoFinalizacao).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
                       <Box

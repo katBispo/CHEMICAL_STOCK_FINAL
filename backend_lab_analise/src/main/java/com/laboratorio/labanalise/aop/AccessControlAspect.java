@@ -18,7 +18,7 @@ public class AccessControlAspect {
 
         if (auth == null || auth.getAuthorities().stream()
                 .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new SecurityException("❌ Acesso negado: apenas administradores podem realizar esta ação.");
+            throw new SecurityException(" Acesso negado: apenas administradores podem realizar esta ação.");
         }
 
         System.out.println("✅ Acesso autorizado: " + auth.getName() + " executando " + joinPoint.getSignature().getName());

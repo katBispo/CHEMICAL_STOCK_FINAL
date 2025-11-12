@@ -131,7 +131,7 @@ const AnalysisTable = () => {
                         component="div"
                         sx={{ flexGrow: 1, textAlign: 'left' }}
                     >
-                        Lista de Contratos
+                        Lista de Ordens de Serviço
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -144,7 +144,7 @@ const AnalysisTable = () => {
                 {/* Título da Página */}
                 <Box textAlign="center" mt={2} mb={2}>
                     <Typography variant="h4" component="h1" fontWeight="bold">
-                        Lista de Contratos
+                        Lista de Ordens de Serviço
                     </Typography>
                 </Box>
                 {/* Botões de Ação */}
@@ -156,7 +156,7 @@ const AnalysisTable = () => {
                         startIcon={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>+</span>}
                         onClick={() => navigate('/contratoCadastro')}
                     >
-                        Cadastrar Contrato
+                        Cadastrar Ordem de Serviço
                     </Button>
 
                     <Box display="flex" gap={2}>
