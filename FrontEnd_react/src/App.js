@@ -41,6 +41,8 @@ import GraficoProcedimentos from "./pages/DashboardAnalises/components/GraficoPr
 import GraficoStatusAmostras from "./pages/DashboardAnalises/components/GraficoStatusAmostras";
 import TabelaAnalises from "./pages/DashboardAnalises/components/TabelaAnalises";
 
+import EquipamentoCadastro from "./pages/cadastro/EquipamentoCadastro";
+
 import Perfil from "./pages/perfil/Perfil";
 
 import ReservaPublicPage from "./pages/Login/ReservaPublicPage";
@@ -53,10 +55,8 @@ function App() {
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
-        <Route path="/perfil" element={<Perfil />} />
         <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 
-        <Route path="/estoque" element={<Estoque />} />
 
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
 
@@ -80,6 +80,42 @@ function App() {
           element={
             <PrivateRoute>
               <Home />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <Perfil />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/equipamentoCadastro"
+          element={
+            <PrivateRoute>
+              <EquipamentoCadastro />
+            </PrivateRoute>
+          }
+        />
+
+
+           <Route
+          path="/estoque"
+          element={
+            <PrivateRoute>
+              <Estoque />
+            </PrivateRoute>
+          }
+        />
+
+           <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <Perfil />
             </PrivateRoute>
           }
         />

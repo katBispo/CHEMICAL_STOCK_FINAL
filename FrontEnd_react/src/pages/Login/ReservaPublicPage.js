@@ -16,7 +16,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { salvarReserva, getNaturezasProjeto } from "../../services/ReservaService";
 import { getEquipamentos } from "../../services/EquipamentoService";
 
-import axios from "axios";
 
 export default function ReservaPublicPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);

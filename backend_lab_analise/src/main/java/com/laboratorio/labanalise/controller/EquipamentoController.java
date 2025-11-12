@@ -1,5 +1,6 @@
 package com.laboratorio.labanalise.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.laboratorio.labanalise.DTO.EquipamentoDTO;
+import com.laboratorio.labanalise.model.enums.StatusEquipamento;
 import com.laboratorio.labanalise.services.EquipamentoService;
 
 @RestController
@@ -54,5 +56,12 @@ public class EquipamentoController {
     public ResponseEntity<Void> deletarEquipamento(@PathVariable Long id) {
         equipamentoService.deletarEquipamento(id);
         return ResponseEntity.noContent().build();
+    }
+      @GetMapping("/status")
+    public ResponseEntity<List<String>> listarStatusEquipamento() {
+        List<String> status = Arrays.stream(StatusEquipamento.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(status);
     }
 }
