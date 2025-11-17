@@ -14,6 +14,7 @@ import ClienteLista from "./pages/lista/ClienteLista";
 import MatrizLista from "./pages/lista/MatrizLista";
 import AnalitoLista from "./pages/lista/AnalitoLista";
 import AmostraLista from "./pages/lista/AmostraLista";
+import EquipamentoLista from "./pages/lista/EquipamentoLista";
 
 import AnaliseCadastro from "./pages/cadastro/AnaliseCadastro";
 import ContratoCadastro from "./pages/cadastro/ContratoCadastro";
@@ -57,7 +58,6 @@ function App() {
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
         <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 
-
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
 
         <Route path="/alertasPanel" element={<AlertasPanel />} />
@@ -92,6 +92,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/equipamentoCadastro"
           element={
@@ -101,8 +102,17 @@ function App() {
           }
         />
 
+        
+        <Route
+          path="/equipamentoLista"
+          element={
+            <PrivateRoute>
+              <EquipamentoLista />
+            </PrivateRoute>
+          }
+        />
 
-           <Route
+        <Route
           path="/estoque"
           element={
             <PrivateRoute>
@@ -111,7 +121,7 @@ function App() {
           }
         />
 
-           <Route
+        <Route
           path="/perfil"
           element={
             <PrivateRoute>

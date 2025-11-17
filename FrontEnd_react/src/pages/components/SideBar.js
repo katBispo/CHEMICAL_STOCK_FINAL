@@ -154,131 +154,136 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
             <ListItemText primary="Ordem de Serviço" />
           </ListItem>
 
-          {/* LISTAS */}
-          <ListItem button onClick={handleListasClick}>
-            <ListItemIcon>
-              <ListAltIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Listas" />
-            {openListas ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
+{/* LISTAS */}
+<ListItem button onClick={handleListasClick}>
+  <ListItemIcon>
+    <ListAltIcon sx={{ color: "white" }} />
+  </ListItemIcon>
+  <ListItemText primary="Listas" />
+  {openListas ? <ExpandLess /> : <ExpandMore />}
+</ListItem>
 
-          <Collapse in={openListas} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={Link}
-                to="/analiseLista"
-                onClick={() => setSelectedItem("/analiseLista")}
-                selected={selectedItem === "/analiseLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/analiseLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Análises" />
-              </ListItem>
+<Collapse in={openListas} timeout="auto" unmountOnExit>
+  <List component="div" disablePadding>
 
-              <ListItem
-                button
-                component={Link}
-                to="/procedimentoLista"
-                onClick={() => setSelectedItem("/procedimentoLista")}
-                selected={selectedItem === "/procedimentoLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/procedimentoLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AssignmentIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Procedimentos" />
-              </ListItem>
+    <ListItem
+      button
+      component={Link}
+      to="/analiseLista"
+      onClick={() => setSelectedItem("/analiseLista")}
+      selected={selectedItem === "/analiseLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/analiseLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <AnalyticsIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Análises" />
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/contratoLista"
-                onClick={() => setSelectedItem("/contratoLista")}
-                selected={selectedItem === "/contratoLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/contratoLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              ></ListItem>
+    <ListItem
+      button
+      component={Link}
+      to="/procedimentoLista"
+      onClick={() => setSelectedItem("/procedimentoLista")}
+      selected={selectedItem === "/procedimentoLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/procedimentoLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <AssignmentIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Procedimentos" />
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/matrizLista"
-                onClick={() => setSelectedItem("/matrizLista")}
-                selected={selectedItem === "/matrizLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/matrizLista" ? "#8BC34A" : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <CategoryIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Matrizes" />
-              </ListItem>
+    {/* ITEM QUE ESTAVA VAZIO — AGORA ARRUMADO */}
+    <ListItem
+      button
+      component={Link}
+      to="/contratoLista"
+      onClick={() => setSelectedItem("/contratoLista")}
+      selected={selectedItem === "/contratoLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/contratoLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <FolderCopyIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Contratos" />
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/clientesLista"
-                onClick={() => setSelectedItem("/clientesLista")}
-                selected={selectedItem === "/clientesLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/clientesLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <PeopleIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Clientes" />
-              </ListItem>
+    <ListItem
+      button
+      component={Link}
+      to="/matrizLista"
+      onClick={() => setSelectedItem("/matrizLista")}
+      selected={selectedItem === "/matrizLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/matrizLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <CategoryIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Matrizes" />
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/amostraLista"
-                onClick={() => setSelectedItem("/amostraLista")}
-                selected={selectedItem === "/amostraLista"}
-                sx={{
-                  bgcolor:
-                    selectedItem === "/amostraLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <BiotechIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Amostras" />
-              </ListItem>
-            </List>
-          </Collapse>
+    <ListItem
+      button
+      component={Link}
+      to="/clientesLista"
+      onClick={() => setSelectedItem("/clientesLista")}
+      selected={selectedItem === "/clientesLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/clientesLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <PeopleIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Clientes" />
+    </ListItem>
+
+    <ListItem
+      button
+      component={Link}
+      to="/amostraLista"
+      onClick={() => setSelectedItem("/amostraLista")}
+      selected={selectedItem === "/amostraLista"}
+      sx={{
+        pl: 4,
+        bgcolor:
+          selectedItem === "/amostraLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <BiotechIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Amostras" />
+    </ListItem>
+
+  </List>
+</Collapse>
+
 
           {/* CADASTRO DE ITENS */}
           <ListItem button onClick={handleCadastroItensClick}>

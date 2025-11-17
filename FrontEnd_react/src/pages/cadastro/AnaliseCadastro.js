@@ -128,14 +128,16 @@ function AnaliseCadastro() {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
               />
-              <Autocomplete
-                options={contracts}
-                getOptionLabel={(option) => option.nomeContrato || ""}
-                onChange={(event, value) => setSelectedContract(value)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Contrato" required margin="normal" className="input-field" />
-                )}
-              />
+           <Autocomplete
+  options={contracts}
+  sx={{ width: "350px" }}   // <-- AQUI!
+  getOptionLabel={(option) => option.nomeContrato || ""}
+  onChange={(event, value) => setSelectedContract(value)}
+  renderInput={(params) => (
+    <TextField {...params} label="Contrato" required margin="normal" />
+  )}
+/>
+
             </div>
 
             <div className="input-group">
@@ -171,14 +173,16 @@ function AnaliseCadastro() {
                 value={quantidadeAmostras}
                 onChange={(e) => setQuantidadeAmostras(e.target.value)}
               />
-              <Autocomplete
-                options={matrizes}
-                getOptionLabel={(option) => option.nomeMatriz || ""}
-                onChange={(event, value) => setSelectedMatriz(value)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Matriz" required margin="normal" className="input-field" />
-                )}
-              />
+           <Autocomplete
+  options={matrizes}
+  sx={{ width: "350px" }}   // <-- AQUI!
+  getOptionLabel={(option) => option.nomeMatriz || ""}
+  onChange={(event, value) => setSelectedMatriz(value)}
+  renderInput={(params) => (
+    <TextField {...params} label="Matriz" required margin="normal" />
+  )}
+/>
+
             </div>
 
             <TextField

@@ -69,6 +69,13 @@ export default function LoginRegister() {
             </button>
           </div>
           <div className="second-column">
+            <img
+              src="/images/lab_control_logo.jpeg"
+              alt="LabControl"
+              className="logo"
+              style={{ width: "120px", marginBottom: "15px" }}
+            />
+
             <h2 className="title title-second">Bem vindo de volta!</h2>
             <p className="description description-second">
               Entre com seu email cadastrado:
