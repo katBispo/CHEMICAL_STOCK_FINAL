@@ -16,6 +16,7 @@ import AnalitoLista from "./pages/lista/AnalitoLista";
 import AmostraLista from "./pages/lista/AmostraLista";
 import EquipamentoLista from "./pages/lista/EquipamentoLista";
 
+
 import AnaliseCadastro from "./pages/cadastro/AnaliseCadastro";
 import ContratoCadastro from "./pages/cadastro/ContratoCadastro";
 import ProcedimentoCadastro from "./pages/cadastro/ProcedimentoCadastro";
@@ -43,6 +44,7 @@ import GraficoStatusAmostras from "./pages/DashboardAnalises/components/GraficoS
 import TabelaAnalises from "./pages/DashboardAnalises/components/TabelaAnalises";
 
 import EquipamentoCadastro from "./pages/cadastro/EquipamentoCadastro";
+import ResiduoCadastro from "./pages/cadastro/ResiduoCadastro";
 
 import Perfil from "./pages/perfil/Perfil";
 
@@ -92,7 +94,14 @@ function App() {
             </PrivateRoute>
           }
         />
-
+       <Route
+          path="/residuoCadastro"
+          element={
+            <PrivateRoute>
+              <ResiduoCadastro />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/equipamentoCadastro"
           element={
