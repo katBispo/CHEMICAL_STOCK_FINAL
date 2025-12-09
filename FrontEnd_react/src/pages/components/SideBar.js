@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import AnalitoCadastro from "../cadastro/AnalitoCadastro";
 import MatrizCadastro from "../cadastro/MatrizCadastro";
 import SelectAnaliseDaAmostra from "./SelectAnaliseDaAmostra";
@@ -23,6 +23,7 @@ import {
   Category as CategoryIcon,
   FolderCopy as FolderCopyIcon,
 } from "@mui/icons-material";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import {
   Avatar,
@@ -52,6 +53,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
   const handleCloseAnalitoOverlay = () => setOpenAnalitoOverlay(false);
   const handleCloseReagenteOverlay = () => setOpenReagenteOverlay(false);
   const handleOpenReagenteOverlay = () => setOpenReagenteOverlay(true);
+const navigate = useNavigate();
 
   const [openListas, setOpenListas] = useState(false);
   const [openCadastroItens, setOpenCadastroItens] = useState(false);
@@ -64,463 +66,477 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
   return (
     <>
       <Drawer
-        sx={{
-          width: 300,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: 300,
-            boxSizing: "border-box",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            mt: 8,
-            height: "100vh",
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={drawerOpen}
-      >
-        <Box
+  sx={{
+    width: 300,
+    flexShrink: 0,
+    "& .MuiDrawer-paper": {
+      width: 300,
+      boxSizing: "border-box",
+      backgroundColor: "#4CAF50",
+      color: "white",
+      mt: 8,
+      height: "100vh",
+    },
+  }}
+  variant="persistent"
+  anchor="left"
+  open={drawerOpen}
+>
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      mt: 2,
+    }}
+  >
+    <Avatar sx={{ width: 56, height: 56, bgcolor: "#FFD700" }}>U</Avatar>
+    <Typography variant="h6" sx={{ mt: 1 }}>
+      Usuário
+    </Typography>
+    <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
+      usuario@exemplo.com
+    </Typography>
+  </Box>
+
+  {/* AQUI ESTÁ O AJUSTE PRINCIPAL */}
+  <List sx={{ position: "relative", height: "100%" }}>
+    {/* HOME */}
+    <ListItem
+      button
+      component={Link}
+      to="/home"
+      onClick={() => setSelectedItem("/home")}
+      selected={selectedItem === "/home"}
+      sx={{
+        bgcolor: selectedItem === "/home" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <HomeIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Home" />
+    </ListItem>
+
+    {/* ESTOQUE */}
+    <ListItem
+      button
+      component={Link}
+      to="/estoque"
+      onClick={() => setSelectedItem("/estoque")}
+      selected={selectedItem === "/estoque"}
+      sx={{
+        bgcolor: selectedItem === "/estoque" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <StorageIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Estoque" />
+    </ListItem>
+
+    {/* Ordem de serviço */}
+    <ListItem
+      button
+      component={Link}
+      to="/contratoLista"
+      onClick={() => setSelectedItem("/contratoLista")}
+      selected={selectedItem === "/contratoLista"}
+      sx={{
+        bgcolor:
+          selectedItem === "/contratoLista" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <FolderCopyIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Ordem de Serviço" />
+    </ListItem>
+
+    {/* LISTAS */}
+    <ListItem button onClick={handleListasClick}>
+      <ListItemIcon>
+        <ListAltIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Listas" />
+      {openListas ? <ExpandLess /> : <ExpandMore />}
+    </ListItem>
+
+    <Collapse in={openListas} timeout="auto" unmountOnExit>
+      <List component="div" disablePadding>
+        {/* Análises */}
+        <ListItem
+          button
+          component={Link}
+          to="/analiseLista"
+          onClick={() => setSelectedItem("/analiseLista")}
+          selected={selectedItem === "/analiseLista"}
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            mt: 2,
+            pl: 4,
+            bgcolor:
+              selectedItem === "/analiseLista" ? "#8BC34A" : "transparent",
+            color: "white",
           }}
         >
-          <Avatar sx={{ width: 56, height: 56, bgcolor: "#FFD700" }}>U</Avatar>
-          <Typography variant="h6" sx={{ mt: 1 }}>
-            Usuário
-          </Typography>
-          <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
-            usuario@exemplo.com
-          </Typography>
-        </Box>
+          <ListItemIcon>
+            <AnalyticsIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Análises" />
+        </ListItem>
 
-        <List>
-          {/* HOME */}
-          <ListItem
-            button
-            component={Link}
-            to="/home"
-            onClick={() => setSelectedItem("/home")}
-            selected={selectedItem === "/home"}
-            sx={{
-              bgcolor: selectedItem === "/home" ? "#8BC34A" : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <HomeIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItem>
+        {/* Procedimentos */}
+        <ListItem
+          button
+          component={Link}
+          to="/procedimentoLista"
+          onClick={() => setSelectedItem("/procedimentoLista")}
+          selected={selectedItem === "/procedimentoLista"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/procedimentoLista" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <AssignmentIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Procedimentos" />
+        </ListItem>
 
-          {/* ESTOQUE */}
-          <ListItem
-            button
-            component={Link}
-            to="/estoque"
-            onClick={() => setSelectedItem("/estoque")}
-            selected={selectedItem === "/estoque"}
-            sx={{
-              bgcolor: selectedItem === "/estoque" ? "#8BC34A" : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <StorageIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Estoque" />
-          </ListItem>
+        {/* Contratos */}
+        <ListItem
+          button
+          component={Link}
+          to="/contratoLista"
+          onClick={() => setSelectedItem("/contratoLista")}
+          selected={selectedItem === "/contratoLista"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/contratoLista" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <FolderCopyIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Contratos" />
+        </ListItem>
 
-          {/* Ordem de serviço */}
+        {/* Matrizes */}
+        <ListItem
+          button
+          component={Link}
+          to="/matrizLista"
+          onClick={() => setSelectedItem("/matrizLista")}
+          selected={selectedItem === "/matrizLista"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/matrizLista" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <CategoryIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Matrizes" />
+        </ListItem>
 
-          <ListItem
-            button
-            component={Link}
-            to="/contratoLista"
-            onClick={() => setSelectedItem("/contratoLista")}
-            selected={selectedItem === "/contratoLista"}
-            sx={{
-              bgcolor:
-                selectedItem === "/contratoLista" ? "#8BC34A" : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <FolderCopyIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Ordem de Serviço" />
-          </ListItem>
+        {/* Clientes */}
+        <ListItem
+          button
+          component={Link}
+          to="/clientesLista"
+          onClick={() => setSelectedItem("/clientesLista")}
+          selected={selectedItem === "/clientesLista"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/clientesLista" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <PeopleIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Clientes" />
+        </ListItem>
 
-          {/* LISTAS */}
-          <ListItem button onClick={handleListasClick}>
-            <ListItemIcon>
-              <ListAltIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Listas" />
-            {openListas ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
+        {/* Amostras */}
+        <ListItem
+          button
+          component={Link}
+          to="/amostraLista"
+          onClick={() => setSelectedItem("/amostraLista")}
+          selected={selectedItem === "/amostraLista"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/amostraLista" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <BiotechIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Amostras" />
+        </ListItem>
+      </List>
+    </Collapse>
 
-          <Collapse in={openListas} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={Link}
-                to="/analiseLista"
-                onClick={() => setSelectedItem("/analiseLista")}
-                selected={selectedItem === "/analiseLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/analiseLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Análises" />
-              </ListItem>
+    {/* CADASTRO DE ITENS */}
+    <ListItem button onClick={handleCadastroItensClick}>
+      <ListItemIcon>
+        <InventoryIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Cadastro de Itens" />
+      {openCadastroItens ? <ExpandLess /> : <ExpandMore />}
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/procedimentoLista"
-                onClick={() => setSelectedItem("/procedimentoLista")}
-                selected={selectedItem === "/procedimentoLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/procedimentoLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AssignmentIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Procedimentos" />
-              </ListItem>
+    <Collapse in={openCadastroItens} timeout="auto" unmountOnExit>
+      <List component="div" disablePadding>
+        {/* Análises */}
+        <ListItem
+          button
+          component={Link}
+          to="/analiseCadastro"
+          onClick={() => setSelectedItem("/analiseCadastro")}
+          selected={selectedItem === "/analiseCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/analiseCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <AnalyticsIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Análises" />
+        </ListItem>
 
-              {/* ITEM QUE ESTAVA VAZIO — AGORA ARRUMADO */}
-              <ListItem
-                button
-                component={Link}
-                to="/contratoLista"
-                onClick={() => setSelectedItem("/contratoLista")}
-                selected={selectedItem === "/contratoLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/contratoLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <FolderCopyIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Contratos" />
-              </ListItem>
+        {/* Amostras */}
+        <ListItem
+          button
+          onClick={handleOpenAmostraOverlay}
+          selected={selectedItem === "/amostraCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/amostraCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <BiotechIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Amostras" />
+        </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/matrizLista"
-                onClick={() => setSelectedItem("/matrizLista")}
-                selected={selectedItem === "/matrizLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/matrizLista" ? "#8BC34A" : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <CategoryIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Matrizes" />
-              </ListItem>
+        <SelectAnaliseDaAmostra
+          open={openAmostraOverlay}
+          handleClose={handleCloseAmostraOverlay}
+        />
 
-              <ListItem
-                button
-                component={Link}
-                to="/clientesLista"
-                onClick={() => setSelectedItem("/clientesLista")}
-                selected={selectedItem === "/clientesLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/clientesLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <PeopleIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Clientes" />
-              </ListItem>
+        {/* Matriz */}
+        <ListItem
+          button
+          onClick={handleOpenMatrizOverlay}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/matrizCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <CategoryIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Matriz" />
+        </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/amostraLista"
-                onClick={() => setSelectedItem("/amostraLista")}
-                selected={selectedItem === "/amostraLista"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/amostraLista"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <BiotechIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Amostras" />
-              </ListItem>
-            </List>
-          </Collapse>
+        <MatrizCadastro
+          open={openMatrizOverlay}
+          handleClose={handleCloseMatrizOverlay}
+        />
 
-          {/* CADASTRO DE ITENS */}
-          <ListItem button onClick={handleCadastroItensClick}>
-            <ListItemIcon>
-              <InventoryIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Cadastro de Itens" />
-            {openCadastroItens ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
+        {/* Equipamentos */}
+        <ListItem
+          button
+          component={Link}
+          to="/equipamentoCadastro"
+          onClick={() => setSelectedItem("/equipamentoCadastro")}
+          selected={selectedItem === "/equipamentoCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/equipamentoCadastro"
+                ? "#8BC34A"
+                : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <AnalyticsIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Equipamentos" />
+        </ListItem>
 
-          <Collapse in={openCadastroItens} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                component={Link}
-                to="/analiseCadastro"
-                onClick={() => setSelectedItem("/analiseCadastro")}
-                selected={selectedItem === "/analiseCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/analiseCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Análises" />
-              </ListItem>
+        {/* Resíduos */}
+        <ListItem
+          button
+          component={Link}
+          to="/residuoCadastro"
+          onClick={() => setSelectedItem("/residuoCadastro")}
+          selected={selectedItem === "/residuoCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/residuoCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <AnalyticsIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Resíduos" />
+        </ListItem>
 
-              <ListItem
-                button
-                onClick={handleOpenAmostraOverlay}
-                selected={selectedItem === "/amostraCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/amostraCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <BiotechIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Amostras" />
-              </ListItem>
+        {/* Reagentes */}
+        <ListItem
+          button
+          component={Link}
+          to="/reagenteCadastro"
+          onClick={() => setSelectedItem("/reagenteCadastro")}
+          selected={selectedItem === "/reagenteCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/reagenteCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <ScienceIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Reagentes" />
+        </ListItem>
 
-              <SelectAnaliseDaAmostra
-                open={openAmostraOverlay}
-                handleClose={handleCloseAmostraOverlay}
-              />
+        {/* Analito */}
+        <ListItem
+          button
+          onClick={handleOpenAnalitoOverlay}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/analitoCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <ScienceIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Analito" />
+        </ListItem>
 
-              <ListItem
-                button
-                onClick={handleOpenMatrizOverlay}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/matrizCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <CategoryIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Matriz" />
-              </ListItem>
+        <AnalitoCadastro
+          open={openAnalitoOverlay}
+          handleClose={handleCloseAnalitoOverlay}
+        />
 
-              <MatrizCadastro
-                open={openMatrizOverlay}
-                handleClose={handleCloseMatrizOverlay}
-              />
+        {/* Clientes */}
+        <ListItem
+          button
+          component={Link}
+          to="/clienteCadastro"
+          onClick={() => setSelectedItem("/clienteCadastro")}
+          selected={selectedItem === "/clienteCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/clienteCadastro" ? "#8BC34A" : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <PeopleIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Clientes" />
+        </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/equipamentoCadastro"
-                onClick={() => setSelectedItem("/equipamentoCadastro")}
-                selected={selectedItem === "/equipamentoCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/equipamentoCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Equipamentos" />
-              </ListItem>
+        {/* Procedimentos */}
+        <ListItem
+          button
+          component={Link}
+          to="/procedimentoCadastro"
+          onClick={() => setSelectedItem("/procedimentoCadastro")}
+          selected={selectedItem === "/procedimentoCadastro"}
+          sx={{
+            pl: 4,
+            bgcolor:
+              selectedItem === "/procedimentoCadastro"
+                ? "#8BC34A"
+                : "transparent",
+            color: "white",
+          }}
+        >
+          <ListItemIcon>
+            <AssignmentIcon sx={{ color: "white" }} />
+          </ListItemIcon>
+          <ListItemText primary="Procedimentos" />
+        </ListItem>
+      </List>
+    </Collapse>
 
-              <ListItem
-                button
-                component={Link}
-                to="/residuoCadastro"
-                onClick={() => setSelectedItem("/residuoCadastro")}
-                selected={selectedItem === "/residuoCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/residuoCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AnalyticsIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Residuos" />
-              </ListItem>
+    {/* PERFIL */}
+    <ListItem
+      button
+      component={Link}
+      to="/perfil"
+      onClick={() => setSelectedItem("/perfil")}
+      selected={selectedItem === "/perfil"}
+      sx={{
+        bgcolor: selectedItem === "/perfil" ? "#8BC34A" : "transparent",
+        color: "white",
+      }}
+    >
+      <ListItemIcon>
+        <AccountCircleIcon sx={{ color: "white" }} />
+      </ListItemIcon>
+      <ListItemText primary="Perfil" />
+    </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/reagenteCadastro"
-                onClick={() => setSelectedItem("/reagenteCadastro")}
-                selected={selectedItem === "/reagenteCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/reagenteCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <ScienceIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Reagentes" />
-              </ListItem>
+    {/* LOGOUT — ÍCONE NO CANTO INFERIOR */}
+    <ListItem
+      button
+      onClick={() => {
+        localStorage.removeItem("token");
+        navigate("/loginPage");
+      }}
+      sx={{
+        position: "absolute",
+        bottom: 10,
+        left: 10,
+        width: "auto",
+        color: "white",
+        padding: 0,
+        minWidth: 0,
+      }}
+    >
+      <LogoutIcon sx={{ color: "white", fontSize: 28 }} />
+    </ListItem>
+  </List>
+</Drawer>
 
-              <ListItem
-                button
-                onClick={handleOpenAnalitoOverlay}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/analitoCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <ScienceIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Analito" />
-              </ListItem>
 
-              <AnalitoCadastro
-                open={openAnalitoOverlay}
-                handleClose={handleCloseAnalitoOverlay}
-              />
 
-              <ListItem
-                button
-                component={Link}
-                to="/clienteCadastro"
-                onClick={() => setSelectedItem("/clienteCadastro")}
-                selected={selectedItem === "/clienteCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/clienteCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <PeopleIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Clientes" />
-              </ListItem>
 
-              <ListItem
-                button
-                component={Link}
-                to="/procedimentoCadastro"
-                onClick={() => setSelectedItem("/procedimentoCadastro")}
-                selected={selectedItem === "/procedimentoCadastro"}
-                sx={{
-                  pl: 4,
-                  bgcolor:
-                    selectedItem === "/procedimentoCadastro"
-                      ? "#8BC34A"
-                      : "transparent",
-                  color: "white",
-                }}
-              >
-                <ListItemIcon>
-                  <AssignmentIcon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary="Procedimentos" />
-              </ListItem>
-            </List>
-          </Collapse>
-
-          {/* PERFIL */}
-          <ListItem
-            button
-            component={Link}
-            to="/perfil"
-            onClick={() => setSelectedItem("/perfil")}
-            selected={selectedItem === "/perfil"}
-            sx={{
-              bgcolor: selectedItem === "/perfil" ? "#8BC34A" : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <AccountCircleIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Perfil" />
-          </ListItem>
-        </List>
-      </Drawer>
-
+      
       {/* Ícones compactos (sidebar recolhida) */}
       {!drawerOpen && (
         <Box

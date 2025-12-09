@@ -20,9 +20,9 @@ public class LogAspect {
     @Autowired
     private LogAcaoRepository logAcaoRepository;
 
-@AfterReturning("execution(* com.laboratorio.labanalise.services.*.cadastrar*(..)) || " +
-                "execution(* com.laboratorio.labanalise.services.*.atualizar*(..)) || " +
-                "execution(* com.laboratorio.labanalise.services.*.deletar*(..))")
+
+    @AfterReturning("execution(* com.laboratorio.labanalise.services.*.salvar(..)) || " +
+                    "execution(* com.laboratorio.labanalise.services.*.remover(..))")
     public void logAction(JoinPoint joinPoint) {
         String metodo = joinPoint.getSignature().getName();
         String classe = joinPoint.getTarget().getClass().getSimpleName();
@@ -37,7 +37,6 @@ public class LogAspect {
         log.setDataHora(agora);
 
 
-         log= new LogAcao("TESTE", metodo, classe, LocalDateTime.now());
 
         logAcaoRepository.save(log);
     }

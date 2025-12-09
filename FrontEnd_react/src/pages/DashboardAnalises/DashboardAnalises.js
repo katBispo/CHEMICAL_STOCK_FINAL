@@ -30,7 +30,13 @@ import IndicadoresCards from "./components/IndicadoresCards";
 
 // --- Cabeçalho com botão de nova análise ---
 const AnalisesHeader = () => (
-  <Box display="flex" justifyContent="space-between" alignItems="center" mb={4} sx={{ ml: "120px" }}>
+  <Box
+    display="flex"
+    justifyContent="space-between"
+    alignItems="center"
+    mb={4}
+    sx={{ ml: "120px" }}
+  >
     <Typography
       variant="h4"
       component="h1"
@@ -118,7 +124,7 @@ const DashboardAnalises = () => {
         position="fixed"
         elevation={4}
         sx={{
-          bgcolor: "primary.main",
+          backgroundColor: "#4CAF50", // ✅ verde fixo
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
@@ -148,7 +154,7 @@ const DashboardAnalises = () => {
           {/* Cards de indicadores */}
           <Box mt={2} sx={{ ml: "120px", mr: "40px" }}>
             <IndicadoresCards indicadores={indicadores} />
-          </Box>  
+          </Box>
 
           {/* GRID PRINCIPAL */}
           <Grid container spacing={3} sx={{ mt: 4, px: 10 }}>
@@ -172,9 +178,10 @@ const DashboardAnalises = () => {
 
             <Grid item xs={12} lg={4} sx={{ mt: 6 }}>
               {/* 🔹 Card lateral */}
-              <AnalisePendenteCardContainer analisesPendentes={analisesPendentesMock} />
+              <AnalisePendenteCardContainer
+                analisesPendentes={analisesPendentesMock}
+              />
             </Grid>
-
           </Grid>
 
           <Grid
@@ -188,7 +195,6 @@ const DashboardAnalises = () => {
           >
             <GraficoStatusAnalises />
           </Grid>
-
 
           {/* OVERLAY "VER MAIS" */}
           {showOverlay && (

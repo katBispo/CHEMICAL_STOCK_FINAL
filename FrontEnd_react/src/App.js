@@ -30,6 +30,7 @@ import AnalitoExistenteCadastro from "./pages/cadastro/AnalitoExistenteCadastro"
 import CadastrarProcesso from "./pages/cadastro/CadastrarProcesso";
 
 import Estoque from "./pages/estoque/Estoque";
+import DashboardEquipamentos from "./pages/DashboardEquipamentos/DashboardEquipamentos";
 
 import SelectAnaliseDaAmostra from "./pages/components/SelectAnaliseDaAmostra";
 import ReposicaoReagentOverlay from "./pages/components/ReposicaoReagentOverlay";
@@ -85,7 +86,14 @@ function App() {
             </PrivateRoute>
           }
         />
-
+     <Route
+          path="/dashboardEquipamentos"
+          element={
+            <PrivateRoute>
+              <DashboardEquipamentos />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/perfil"
           element={

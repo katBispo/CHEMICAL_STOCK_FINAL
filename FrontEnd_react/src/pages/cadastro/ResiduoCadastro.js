@@ -165,8 +165,6 @@ const ResiduoCadastro = () => {
             />
 
             {/* Unidade */}
-
-            {/* Unidade */}
             <TextField
               label="Unidade de Medida"
               required

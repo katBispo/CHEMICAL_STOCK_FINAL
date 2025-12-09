@@ -1,4 +1,3 @@
-// src/services/equipamento.js
 import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 
 const BASE_ENDPOINT = "/equipamentos";
@@ -24,9 +23,6 @@ export async function atualizarEquipamento(id, equipamento) {
 
 export async function deletarEquipamento(id) {
   return apiDelete(`${BASE_ENDPOINT}/${id}`);
-}
-export async function getStatusEquipamento() {
-  return apiGet("/equipamentos/status");
 }
 
 // ================== ESTATÍSTICAS ==================
