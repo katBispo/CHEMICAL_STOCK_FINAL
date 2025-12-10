@@ -72,22 +72,32 @@ public class UsuarioService {
     }
 
     // ATUALIZAR USUARIO
-    public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
-        return usuarioRepository.findById(id).map(usuario -> {
-            usuario.setNome(dto.getNome());
-            usuario.setCpf(dto.getCpf());
-            usuario.setEmail(dto.getEmail());
-            usuario.setCrq(dto.getCrq());
-            usuario.setDataAdmissao(dto.getDataAdmissao());
-            usuario.setCargo(dto.getCargo());
+  public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
 
-            if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
-                usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
-            }
+    Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            return toDTO(usuarioRepository.save(usuario));
-        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    if (dto.getNome() != null && !dto.getNome().isBlank()) {
+        usuario.setNome(dto.getNome());
     }
+    if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+        usuario.setEmail(dto.getEmail());
+    }
+   if (dto.getCargo() != null) {
+    usuario.setCargo(dto.getCargo());
+}
+    if (dto.getCrq() != null && !dto.getCrq().isBlank()) {
+        usuario.setCrq(dto.getCrq());
+    }
+    if (dto.getDataAdmissao() != null) {
+        usuario.setDataAdmissao(dto.getDataAdmissao());
+    }
+
+    usuarioRepository.save(usuario);
+
+    return converterParaDTO(usuario);
+}
+
 
     // APROVAR USUÁRIO (método novo)
     public UsuarioDTO aprovarUsuario(Long id) {
