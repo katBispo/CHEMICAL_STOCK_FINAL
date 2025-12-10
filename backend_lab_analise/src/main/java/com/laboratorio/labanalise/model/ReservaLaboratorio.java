@@ -20,8 +20,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "reserva_equipamento")
-public class ReservaEquipamento {
+@Table(name = "reserva_laboratorio")
+public class ReservaLaboratorio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +44,7 @@ public class ReservaEquipamento {
     private String orientadores;
 
     @Column(length = 1000)
-    private String analise; // Campo de texto livre
+    private String analise; 
 
     @Column(length = 1000)
     private String amostra; // Campo de texto livre

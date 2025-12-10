@@ -4,7 +4,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.laboratorio.labanalise.model.ReservaEquipamento;
+import com.laboratorio.labanalise.model.ReservaLaboratorio;
 import com.laboratorio.labanalise.model.*;
 
 @Service
@@ -31,7 +31,7 @@ public class EmailService {
         mailSender.send(message);
     }
     // Envia e-mail para o administrador quando uma nova reserva é feita
-    public void enviarEmailNovaReserva(String emailAdmin, ReservaEquipamento reserva) {
+    public void enviarEmailNovaReserva(String emailAdmin, ReservaLaboratorio reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(emailAdmin);
         message.setSubject("Nova Solicitação de Reserva de Equipamento");
@@ -48,13 +48,13 @@ public class EmailService {
             "Analise: " + reserva.getAnalise() + "\n" +
             "Amostra: " + reserva.getAmostra() + "\n" +
             "Telefone de contato: " + reserva.getTelefoneContato() + "\n\n" +
-            "Para aprovar ou negar, acesse: http://localhost:3000/aprovar-reserva/" + reserva.getId()
+            "Para aprovar ou negar, acesse: http://localhost:3000/reserva-laboratorio/" + reserva.getId()
         );
 
         mailSender.send(message);
     }
 
-    public void enviarEmailReservaAprovada(ReservaEquipamento reserva) {
+    public void enviarEmailReservaAprovada(ReservaLaboratorio reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());
         message.setSubject("Reserva de Equipamento Aprovada");
@@ -69,7 +69,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void enviarEmailReservaNegada(ReservaEquipamento reserva) {
+    public void enviarEmailReservaNegada(ReservaLaboratorio reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());
         message.setSubject("Reserva de Equipamento Negada");

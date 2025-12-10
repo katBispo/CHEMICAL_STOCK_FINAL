@@ -19,7 +19,7 @@ import AvisoOverlay from "./AvisoOverlayReserva.js";
 import {
   salvarReserva,
   getNaturezasProjeto,
-} from "../../services/ReservaService";
+} from "../../services/ReservaLaboratorioService.js";
 import { getEquipamentos } from "../../services/EquipamentoService";
 
 export default function ReservaPublicPage() {

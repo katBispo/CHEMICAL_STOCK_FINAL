@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.laboratorio.labanalise.model.ReservaEquipamento;
+import com.laboratorio.labanalise.model.ReservaLaboratorio;
 import com.laboratorio.labanalise.model.enums.NaturezaProjeto;
 import com.laboratorio.labanalise.model.enums.StatusReserva;
 
@@ -29,7 +29,7 @@ public class ReservaEquipamentoDTO {
     private List<ReagenteUsadoReservaDTO> reagentesUsados;
 
     // Construtor a partir da entidade
-    public ReservaEquipamentoDTO(ReservaEquipamento reserva) {
+    public ReservaEquipamentoDTO(ReservaLaboratorio reserva) {
         this.id = reserva.getId();
         this.equipamentoId = reserva.getEquipamento().getId();
         this.equipamentoNome = reserva.getEquipamento().getNome();

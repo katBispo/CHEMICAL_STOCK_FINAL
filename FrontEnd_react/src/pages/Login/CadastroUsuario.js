@@ -33,7 +33,7 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
 
   return (
     <form className="form cadastro-form" onSubmit={handleCadastro}>
-      {/* Linha 1: Nome + CPF */}
+
       <div className="form-row">
         <label className="label-input">
           <i className="far fa-user icon-modify"></i>
@@ -46,7 +46,6 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
         </label>
       </div>
 
-      {/* Linha 2: Email + CRQ */}
       <div className="form-row">
         <label className="label-input">
           <i className="far fa-envelope icon-modify"></i>
@@ -59,7 +58,6 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
         </label>
       </div>
 
-      {/* Linha 3: Data Admissão + Cargo */}
       <div className="form-row">
         <label className="label-input">
           <i className="fas fa-calendar icon-modify"></i>
@@ -76,7 +74,6 @@ export default function CadastroUsuario({ onCadastroSucesso }) {
         </label>
       </div>
 
-      {/* Linha 4: Senha */}
       <label className="label-input">
         <i className="fas fa-lock icon-modify"></i>
         <input type="password" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} required />

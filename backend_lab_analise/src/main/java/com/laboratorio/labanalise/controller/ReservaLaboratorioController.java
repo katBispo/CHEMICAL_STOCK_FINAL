@@ -14,42 +14,42 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.laboratorio.labanalise.model.ReservaEquipamento;
+import com.laboratorio.labanalise.model.ReservaLaboratorio;
 import com.laboratorio.labanalise.model.enums.NaturezaProjeto;
 import com.laboratorio.labanalise.model.enums.StatusReserva;
 import com.laboratorio.labanalise.services.EmailService;
-import com.laboratorio.labanalise.services.ReservaEquipamentoService;
+import com.laboratorio.labanalise.services.ReservaLaboratorioService;
 
 @RestController
-@RequestMapping("/reserva-equipamento")
+@RequestMapping("/reserva-laboratorio")
 @CrossOrigin(origins = "http://localhost:3000")
-public class ReservaEquipamentoController {
+public class ReservaLaboratorioController {
 
     @Autowired
     private EmailService emailService;
 
     @Autowired
-    private ReservaEquipamentoService service;
+    private ReservaLaboratorioService service;
 
     // Email do administrador definido no application.properties
     @Value("${app.email.admin}")
     private String emailAdmin;
 
     @GetMapping
-    public List<ReservaEquipamento> getAll() {
+    public List<ReservaLaboratorio> getAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public ReservaEquipamento getById(@PathVariable Long id) {
+    public ReservaLaboratorio getById(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public ReservaEquipamento save(@RequestBody ReservaEquipamento reserva) {
+    public ReservaLaboratorio save(@RequestBody ReservaLaboratorio reserva) {
         reserva.setStatus(StatusReserva.ANALISE);
 
-        ReservaEquipamento salva = service.save(reserva);
+        ReservaLaboratorio salva = service.save(reserva);
 
         emailService.enviarEmailNovaReserva(emailAdmin, salva);
 
@@ -62,11 +62,11 @@ public class ReservaEquipamentoController {
     }
 
     @PutMapping("/{id}/aprovar")
-    public ReservaEquipamento aprovarReserva(@PathVariable Long id) {
-        ReservaEquipamento reserva = service.findById(id);
+    public ReservaLaboratorio aprovarReserva(@PathVariable Long id) {
+        ReservaLaboratorio reserva = service.findById(id);
         if (reserva != null) {
             reserva.setStatus(StatusReserva.APROVADA);
-            ReservaEquipamento salva = service.save(reserva);
+            ReservaLaboratorio salva = service.save(reserva);
 
             // envia e-mail ao solicitante
             emailService.enviarEmailReservaAprovada(salva);
@@ -77,11 +77,11 @@ public class ReservaEquipamentoController {
     }
 
     @PutMapping("/{id}/negar")
-    public ReservaEquipamento negarReserva(@PathVariable Long id) {
-        ReservaEquipamento reserva = service.findById(id);
+    public ReservaLaboratorio negarReserva(@PathVariable Long id) {
+        ReservaLaboratorio reserva = service.findById(id);
         if (reserva != null) {
             reserva.setStatus(StatusReserva.NEGADA);
-            ReservaEquipamento salva = service.save(reserva);
+            ReservaLaboratorio salva = service.save(reserva);
 
             // envia e-mail ao solicitante
             emailService.enviarEmailReservaNegada(salva);

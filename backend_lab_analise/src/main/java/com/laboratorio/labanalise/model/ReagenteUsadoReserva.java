@@ -25,7 +25,7 @@ public class ReagenteUsadoReserva {
 
     @ManyToOne
     @JoinColumn(name = "reserva_id", nullable = false)
-    private ReservaEquipamento reserva;
+    private ReservaLaboratorio reserva;
 
     @Column(nullable = false)
     private Double quantidade; // quantidade selecionada pelo usuário
@@ -48,11 +48,11 @@ public class ReagenteUsadoReserva {
         this.reagente = reagente;
     }
 
-    public ReservaEquipamento getReserva() {
+    public ReservaLaboratorio getReserva() {
         return reserva;
     }
 
-    public void setReserva(ReservaEquipamento reserva) {
+    public void setReserva(ReservaLaboratorio reserva) {
         this.reserva = reserva;
     }
 

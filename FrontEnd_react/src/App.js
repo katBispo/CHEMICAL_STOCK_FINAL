@@ -16,7 +16,6 @@ import AnalitoLista from "./pages/lista/AnalitoLista";
 import AmostraLista from "./pages/lista/AmostraLista";
 import EquipamentoLista from "./pages/lista/EquipamentoLista";
 
-
 import AnaliseCadastro from "./pages/cadastro/AnaliseCadastro";
 import ContratoCadastro from "./pages/cadastro/ContratoCadastro";
 import ProcedimentoCadastro from "./pages/cadastro/ProcedimentoCadastro";
@@ -50,6 +49,7 @@ import ResiduoCadastro from "./pages/cadastro/ResiduoCadastro";
 import Perfil from "./pages/perfil/Perfil";
 
 import ReservaPublicPage from "./pages/Login/ReservaPublicPage";
+import AprovacaoReservaPage from "./pages/Login/AprovarReservaLab";
 
 function App() {
   return (
@@ -59,6 +59,8 @@ function App() {
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
+        <Route path="/aprovar-reserva/:id" element={<AprovacaoReservaPage />} />
+
         <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 
         <Route path="/ReagenteCadastro" element={<ReagenteCadastro />} />
@@ -86,7 +88,7 @@ function App() {
             </PrivateRoute>
           }
         />
-     <Route
+        <Route
           path="/dashboardEquipamentos"
           element={
             <PrivateRoute>
@@ -102,7 +104,7 @@ function App() {
             </PrivateRoute>
           }
         />
-       <Route
+        <Route
           path="/residuoCadastro"
           element={
             <PrivateRoute>
@@ -119,7 +121,6 @@ function App() {
           }
         />
 
-        
         <Route
           path="/equipamentoLista"
           element={

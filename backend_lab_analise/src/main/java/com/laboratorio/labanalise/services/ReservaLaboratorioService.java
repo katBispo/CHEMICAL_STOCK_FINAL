@@ -6,25 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.laboratorio.labanalise.model.ReservaEquipamento;
-import com.laboratorio.labanalise.repositories.ReservaEquipamentoRepository;
+import com.laboratorio.labanalise.model.ReservaLaboratorio;
+import com.laboratorio.labanalise.repositories.ReservaLaboratorioRepository;
 
 @Service
-public class ReservaEquipamentoService {
+public class ReservaLaboratorioService {
 
     @Autowired
-    private ReservaEquipamentoRepository repository;
+    private ReservaLaboratorioRepository repository;
 
-    public List<ReservaEquipamento> findAll() {
+    public List<ReservaLaboratorio> findAll() {
         return repository.findAll();
     }
 
-    public ReservaEquipamento findById(Long id) {
+    public ReservaLaboratorio findById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
     @Transactional
-    public ReservaEquipamento save(ReservaEquipamento reserva) {
+    public ReservaLaboratorio save(ReservaLaboratorio reserva) {
         return repository.save(reserva);
     }
 

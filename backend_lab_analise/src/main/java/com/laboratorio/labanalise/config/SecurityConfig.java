@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/aprovar/**").permitAll()
                 .requestMatchers("/usuarios/negar/**").permitAll()
                 .requestMatchers("/usuarios/pendentes/**").permitAll()
-                .requestMatchers("/reserva-equipamento", "/reserva-equipamento/**").permitAll()
+.requestMatchers("/reserva-laboratorio", "/reserva-laboratorio/**").permitAll()
                 .requestMatchers("/equipamentos", "/equipamentos/**").permitAll()
                 //.requestMatchers("/reagente/**").authenticated() // precisa de login
                 .anyRequest().authenticated()
