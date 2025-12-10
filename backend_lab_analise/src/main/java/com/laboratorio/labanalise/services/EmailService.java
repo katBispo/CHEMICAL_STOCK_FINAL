@@ -54,7 +54,6 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    // Envia e-mail ao solicitante quando a reserva é aprovada
     public void enviarEmailReservaAprovada(ReservaEquipamento reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());
@@ -70,7 +69,6 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    // Envia e-mail ao solicitante quando a reserva é negada
     public void enviarEmailReservaNegada(ReservaEquipamento reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());

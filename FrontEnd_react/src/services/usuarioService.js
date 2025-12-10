@@ -37,3 +37,8 @@ export async function getUsuariosPendentes() {
 export async function getUsuarioLogado() {
   return apiGet(`${BASE_ENDPOINT}/me`);
 }
+
+export async function atualizarFoto(formData) {
+  return apiPut(`${BASE_ENDPOINT}/foto`, formData, true);
+}
+

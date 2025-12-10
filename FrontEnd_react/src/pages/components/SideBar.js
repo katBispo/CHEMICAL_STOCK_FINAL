@@ -104,8 +104,16 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
             mt: 2,
           }}
         >
-          <Avatar sx={{ width: 56, height: 56, bgcolor: "#FFD700" }}>
-            {usuario?.nome?.charAt(0).toUpperCase() || "U"}
+          <Avatar
+            src={
+              usuario?.fotoPerfil
+                ? `data:image/jpeg;base64,${usuario.fotoPerfil}`
+                : null
+            }
+            sx={{ width: 56, height: 56 }}
+          >
+            {!usuario?.fotoPerfil &&
+              (usuario?.nome?.charAt(0).toUpperCase() || "U")}
           </Avatar>
 
           <Typography variant="h6" sx={{ mt: 1 }}>
@@ -117,7 +125,6 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
           </Typography>
         </Box>
 
-        {/* AQUI ESTÁ O AJUSTE PRINCIPAL */}
         <List sx={{ position: "relative", height: "100%" }}>
           {/* HOME */}
           <ListItem

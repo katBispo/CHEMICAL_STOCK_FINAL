@@ -1,11 +1,14 @@
 package com.laboratorio.labanalise.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Base64;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.laboratorio.labanalise.DTO.UsuarioCreateDTO;
 import com.laboratorio.labanalise.DTO.UsuarioDTO;
@@ -100,36 +103,38 @@ public class UsuarioService {
     }
 
     // CONVERSÃO ENTITY -> DTO
-    private UsuarioDTO toDTO(Usuario usuario) {
-        return new UsuarioDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getCpf(),
-                usuario.getEmail(),
-                usuario.getCrq(),
-                usuario.getDataAdmissao(),
-                usuario.getCargo(),
-                usuario.getStatus() // Inclui status no DTO
-        );
-    }
+private UsuarioDTO toDTO(Usuario usuario) {
+    return new UsuarioDTO(
+            usuario.getId(),
+            usuario.getNome(),
+            usuario.getCpf(),
+            usuario.getEmail(),
+            usuario.getCrq(),
+            usuario.getDataAdmissao(),
+            usuario.getCargo(),
+            usuario.getStatus(),
+            usuario.getFotoPerfil() 
+    );
+}
 
-    // Adicione no UsuarioService
+
     public UsuarioDTO converterParaDTO(Usuario usuario) {
-        return new UsuarioDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getCpf(),
-                usuario.getEmail(),
-                usuario.getCrq(),
-                usuario.getDataAdmissao(),
-                usuario.getCargo(),
-                usuario.getStatus()
-        );
+        return toDTO(usuario);
     }
-
-   
 
     public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
+
+public void salvarFoto(Long id, MultipartFile foto) throws IOException {
+    Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+    String base64 = Base64.getEncoder().encodeToString(foto.getBytes());
+    usuario.setFotoPerfil(base64);
+
+    usuarioRepository.save(usuario);
+}
+
+
 }

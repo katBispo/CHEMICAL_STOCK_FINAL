@@ -38,10 +38,17 @@ export async function apiPost(endpoint, body) {
   }
 }
 
-export async function apiPut(endpoint, body) {
+export async function apiPut(endpoint, body, isFormData = false) {
   try {
-    const response = await api.put(endpoint, body);
+    const config = {};
+
+    if (isFormData) {
+      config.headers = { "Content-Type": "multipart/form-data" };
+    }
+
+    const response = await api.put(endpoint, body, config);
     return response.data;
+
   } catch (error) {
     handleApiError(error);
   }

@@ -13,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,6 +23,9 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String fotoPerfil;
 
     @Column(nullable = false)
     private String nome;
@@ -47,8 +51,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private StatusUsuario status = StatusUsuario.PENDENTE; // default pendente
 
-
-     @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
 
@@ -133,7 +136,14 @@ public class Usuario {
         this.role = role;
     }
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
+
     
-
-
 }
