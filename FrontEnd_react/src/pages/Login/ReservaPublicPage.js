@@ -13,11 +13,17 @@ import {
   Paper,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { salvarReserva, getNaturezasProjeto } from "../../services/ReservaService";
+
+import AvisoOverlay from "./AvisoOverlayReserva.js"; 
+
+import {
+  salvarReserva,
+  getNaturezasProjeto,
+} from "../../services/ReservaService";
 import { getEquipamentos } from "../../services/EquipamentoService";
 
-
 export default function ReservaPublicPage() {
+  const [mostrarAviso, setMostrarAviso] = useState(true); // <-- overlay ativado ao abrir
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [equipamentos, setEquipamentos] = useState([]);
   const [naturezas, setNaturezas] = useState([]);
@@ -40,7 +46,6 @@ export default function ReservaPublicPage() {
 
   const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
-  // ✅ FUNÇÃO handleChange adicionada
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -49,23 +54,21 @@ export default function ReservaPublicPage() {
     }));
   };
 
-  // ✅ Carregar equipamentos e enums do backend
- useEffect(() => {
-  async function fetchData() {
-    try {
-      const [equipResp, naturezasResp] = await Promise.all([
-        getEquipamentos(),
-        getNaturezasProjeto(),
-      ]);
-      setEquipamentos(equipResp);
-      setNaturezas(naturezasResp);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [equipResp, naturezasResp] = await Promise.all([
+          getEquipamentos(),
+          getNaturezasProjeto(),
+        ]);
+        setEquipamentos(equipResp);
+        setNaturezas(naturezasResp);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
     }
-  }
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,55 +103,70 @@ export default function ReservaPublicPage() {
     }
   };
 
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {/* Cabeçalho */}
-      <AppBar position="fixed" sx={{ bgcolor: "#4CAF50" }}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Solicitação de Reserva de Equipamento
-          </Typography>
-        </Toolbar>
-      </AppBar>
+return (
+  <>
+    {/* 🔥 Overlay aparece primeiro */}
+    {mostrarAviso && (
+      <AvisoOverlay onConfirm={() => setMostrarAviso(false)} />
+    )}
 
-      {/* Conteúdo */}
+    {/* 🔥 Só renderiza o resto da página DEPOIS que o usuário confirmou */}
+    {!mostrarAviso && (
       <Box
-        component="main"
         sx={{
-          flexGrow: 1,
-          p: 3,
-          mt: 8,
           display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          backgroundColor: "#f5f5f5",
+          flexDirection: "column",
+          minHeight: "100vh",
         }}
       >
-        <Paper
-          elevation={4}
+        {/* Cabeçalho */}
+        <AppBar position="fixed" sx={{ bgcolor: "#4CAF50" }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Solicitação de Reserva de Equipamento
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        {/* Conteúdo */}
+        <Box
+          component="main"
           sx={{
-            backgroundColor: "white",
-            padding: "30px",
-            borderRadius: "12px",
-            width: "850px",
+            flexGrow: 1,
+            p: 3,
+            mt: 8,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            backgroundColor: "#f5f5f5",
           }}
         >
-          <Typography
-            variant="h4"
-            gutterBottom
-            textAlign="center"
-            sx={{ color: "#4CAF50" }}
+          <Paper
+            elevation={4}
+            sx={{
+              backgroundColor: "white",
+              padding: "30px",
+              borderRadius: "12px",
+              width: "850px",
+            }}
           >
-            Formulário de Solicitação
-          </Typography>
-          <Typography variant="subtitle1" textAlign="center" sx={{ mb: 4 }}>
-            Preencha as informações abaixo para solicitar o uso do laboratório.
-          </Typography>
+            <Typography
+              variant="h4"
+              gutterBottom
+              textAlign="center"
+              sx={{ color: "#4CAF50" }}
+            >
+              Formulário de Solicitação
+            </Typography>
 
-          <form onSubmit={handleSubmit}>
+            <Typography variant="subtitle1" textAlign="center" sx={{ mb: 4 }}>
+              Preencha as informações abaixo para solicitar o uso do laboratório.
+            </Typography>
+
+            <form onSubmit={handleSubmit}>
             {/* DADOS PESSOAIS */}
             <Typography variant="h6" sx={{ mb: 2, mt: 1, color: "#333" }}>
               Dados do Solicitante
@@ -324,25 +342,27 @@ export default function ReservaPublicPage() {
               </Button>
             </Box>
           </form>
-        </Paper>
-      </Box>
+          </Paper>
+        </Box>
 
-      {/* Rodapé */}
-      <Box
-        component="footer"
-        sx={{
-          textAlign: "center",
-          py: 2,
-          backgroundColor: "#e3f2fd",
-          color: "#555",
-          mt: "auto",
-        }}
-      >
-        <Typography variant="body2">
-          © {new Date().getFullYear()} Laboratório de Análises Cromatográficas
-          (LAC) – Todos os direitos reservados.
-        </Typography>
+        {/* Rodapé */}
+        <Box
+          component="footer"
+          sx={{
+            textAlign: "center",
+            py: 2,
+            backgroundColor: "#e3f2fd",
+            color: "#555",
+            mt: "auto",
+          }}
+        >
+          <Typography variant="body2">
+            © {new Date().getFullYear()} Laboratório de Análises Cromatográficas
+            (LAC) – Todos os direitos reservados.
+          </Typography>
+        </Box>
       </Box>
-    </Box>
-  );
+    )}
+  </>
+);
 }
