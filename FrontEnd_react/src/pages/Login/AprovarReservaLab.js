@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getReservaById, aprovarReserva, negarReserva } from "../../services/ReservaLaboratorioService";
+import {
+  getReservaById,
+  aprovarReserva,
+  negarReserva,
+} from "../../services/ReservaLaboratorioService";
 
 export default function AprovacaoReservaPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [reserva, setReserva] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getReservaById(id)
-      .then(response => {
-        setReserva(response.data);
+      .then((data) => {
+        setReserva(data);
+
         setLoading(false);
       })
       .catch(() => {
@@ -25,7 +30,7 @@ export default function AprovacaoReservaPage() {
     aprovarReserva(id)
       .then(() => {
         alert("Reserva aprovada com sucesso!");
-        navigate("/reservas"); 
+        navigate("/reservas");
       })
       .catch(() => alert("Erro ao aprovar a reserva."));
   };
@@ -43,34 +48,58 @@ export default function AprovacaoReservaPage() {
     return <p style={{ textAlign: "center", marginTop: 50 }}>Carregando...</p>;
 
   if (!reserva)
-    return <p style={{ textAlign: "center", marginTop: 50 }}>Reserva não encontrada</p>;
+    return (
+      <p style={{ textAlign: "center", marginTop: 50 }}>
+        Reserva não encontrada
+      </p>
+    );
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      backgroundColor: "#f4f6f8"
-    }}>
-      <div style={{
-        backgroundColor: "white",
-        padding: 30,
-        borderRadius: 12,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-        minWidth: 380,
-        textAlign: "center"
-      }}>
-        
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#f4f6f8",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "white",
+          padding: 30,
+          borderRadius: 12,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          minWidth: 380,
+          textAlign: "center",
+        }}
+      >
         <h2>Aprovação de Reserva</h2>
 
-        <p><strong>Solicitante:</strong> {reserva.nomeSolicitante}</p>
-        <p><strong>Email:</strong> {reserva.emailSolicitante}</p>
-        <p><strong>Equipamento:</strong> {reserva.equipamento?.nome}</p>
-        <p><strong>Data Início:</strong> {reserva.dataInicio}</p>
-        <p><strong>Data Fim:</strong> {reserva.dataFim}</p>
+        <p>
+          <strong>Solicitante:</strong> {reserva.nomeSolicitante}
+        </p>
+        <p>
+          <strong>Email:</strong> {reserva.emailSolicitante}
+        </p>
+        <p>
+          <strong>Equipamento:</strong> {reserva.equipamento?.nome}
+        </p>
+        <p>
+          <strong>Data Início:</strong> {reserva.dataInicio}
+        </p>
+        <p>
+          <strong>Data Fim:</strong> {reserva.dataFim}
+        </p>
 
-        <div style={{ marginTop: 20, display: "flex", justifyContent: "center", gap: 20 }}>
+        <div
+          style={{
+            marginTop: 20,
+            display: "flex",
+            justifyContent: "center",
+            gap: 20,
+          }}
+        >
           <button
             onClick={handleAprovar}
             style={{
@@ -80,7 +109,7 @@ export default function AprovacaoReservaPage() {
               border: "none",
               borderRadius: 6,
               cursor: "pointer",
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           >
             Aprovar
@@ -95,7 +124,7 @@ export default function AprovacaoReservaPage() {
               border: "none",
               borderRadius: 6,
               cursor: "pointer",
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           >
             Negar

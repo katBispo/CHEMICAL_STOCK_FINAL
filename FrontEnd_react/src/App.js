@@ -59,7 +59,7 @@ function App() {
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
-        <Route path="/aprovar-reserva/:id" element={<AprovacaoReservaPage />} />
+        <Route path="/reserva-laboratorio/:id" element={<AprovacaoReservaPage />} />
 
         <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 

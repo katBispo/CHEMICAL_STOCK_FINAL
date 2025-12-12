@@ -80,7 +80,7 @@ export default function ReservaPublicPage() {
 
     try {
       await salvarReserva(reserva);
-      alert("✅ Solicitação enviada com sucesso! Aguarde aprovação por e-mail.");
+      alert("Solicitação enviada com sucesso! Aguarde aprovação por e-mail.");
 
       setFormData({
         nomeSolicitante: "",
@@ -99,18 +99,16 @@ export default function ReservaPublicPage() {
       });
     } catch (error) {
       console.error("Erro ao enviar solicitação:", error);
-      alert("❌ Falha ao enviar. Tente novamente.");
+      alert("Falha ao enviar. Tente novamente.");
     }
   };
 
 return (
   <>
-    {/* 🔥 Overlay aparece primeiro */}
     {mostrarAviso && (
       <AvisoOverlay onConfirm={() => setMostrarAviso(false)} />
     )}
 
-    {/* 🔥 Só renderiza o resto da página DEPOIS que o usuário confirmou */}
     {!mostrarAviso && (
       <Box
         sx={{
