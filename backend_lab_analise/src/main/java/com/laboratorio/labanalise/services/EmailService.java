@@ -5,7 +5,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.laboratorio.labanalise.model.ReservaLaboratorio;
-import com.laboratorio.labanalise.model.*;
+import com.laboratorio.labanalise.model.Usuario;
 
 @Service
 public class EmailService {
@@ -57,7 +57,7 @@ public class EmailService {
     public void enviarEmailReservaAprovada(ReservaLaboratorio reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());
-        message.setSubject("Reserva de Equipamento Aprovada");
+        message.setSubject("Reserva de Utilização do Laboratório Aprovada");
         message.setText(
             "Sua solicitação de reserva foi aprovada!\n\n" +
             "Equipamento: " + reserva.getEquipamento().getNome() + "\n" +
@@ -72,7 +72,7 @@ public class EmailService {
     public void enviarEmailReservaNegada(ReservaLaboratorio reserva) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(reserva.getEmailSolicitante());
-        message.setSubject("Reserva de Equipamento Negada");
+        message.setSubject("Reserva de Utilização do Laboratório Negada");
         message.setText(
             "Sua solicitação de reserva foi negada pelo administrador.\n\n" +
             "Caso queira, entre em contato para mais informações."

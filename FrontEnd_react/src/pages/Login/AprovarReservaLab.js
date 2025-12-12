@@ -30,7 +30,7 @@ export default function AprovacaoReservaPage() {
     aprovarReserva(id)
       .then(() => {
         alert("Reserva aprovada com sucesso!");
-        navigate("/reservas");
+        navigate("/loginPage");
       })
       .catch(() => alert("Erro ao aprovar a reserva."));
   };
@@ -39,7 +39,7 @@ export default function AprovacaoReservaPage() {
     negarReserva(id)
       .then(() => {
         alert("Reserva negada com sucesso!");
-        navigate("/reservas");
+        navigate("/loginPage");
       })
       .catch(() => alert("Erro ao negar a reserva."));
   };
