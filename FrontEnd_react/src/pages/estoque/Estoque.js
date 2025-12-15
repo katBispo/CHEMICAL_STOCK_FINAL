@@ -1,9 +1,24 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-    Box, Button, Typography, Paper, AppBar, Toolbar, IconButton
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Box,
+  Grid,
+  Button,
+  Card,
+  CardContent,
+  Chip,
 } from "@mui/material";
+
 import MenuIcon from "@mui/icons-material/Menu";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import WarningIcon from "@mui/icons-material/Warning";
+import SecurityIcon from "@mui/icons-material/Security";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+
 import { FaPlus } from "react-icons/fa";
 
 import SideBar from "../components/SideBar";
@@ -13,130 +28,237 @@ import TabelaListaReagentes from "./tabelas/TabelaListaReagentes";
 
 import { apiGet } from "../../services/api";
 
-// Cabeçalho
-const EstoqueHeader = ({ onAdd }) => (
-    <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4" component="h1" fontWeight="bold" color="text.primary" sx={{ ml: '120px' }}>
-            Estoque de Reagentes
-        </Typography>
-        <Button
-            component={Link}
-            to="/reagenteCadastro"
-            variant="contained"
-            style={{
-                backgroundColor: "#4CAF50",
-                color: "#fff",
-                textTransform: "none",
-                fontWeight: "bold",
-            }}
-            startIcon={<FaPlus />}
-        >
-            Novo Reagente
-        </Button>
-    </Box>
-);
+/* ================= KPI CARD ================= */
+const KpiCard = ({ title, value, icon, color, subtitle }) => {
+  return (
+    <Card sx={{ height: "100%", borderLeft: `6px solid ${color}` }}>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary">
+              {title}
+            </Typography>
 
-// Cartões de resumo
-const ResumoEstoque = ({ reagentes, vencidosTotal, frascosTotal, controlados }) => {
-    const total = reagentes.reduce((sum, r) => sum + r.quantidadeTotal, 0);
-    const vencidos = vencidosTotal !== undefined ? vencidosTotal : reagentes.filter(r => new Date(r.validade) < new Date()).length;
+            <Typography variant="h4" fontWeight="bold">
+              {value}
+            </Typography>
 
-    return (
-        <Box display="flex" gap={3} mb={4} flexWrap="wrap" sx={{ ml: '120px' }}>
-            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #4CAF50' }}>
-                <Typography variant="h6" color="success.main">Total de Frascos</Typography>
-                <Typography variant="h4" fontWeight="bold" mt={1}>{frascosTotal}</Typography>
-            </Paper>
-            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #f44336' }}>
-                <Typography variant="h6" color="error">Vencidos</Typography>
-                <Typography variant="h4" fontWeight="bold" mt={1}>{vencidos}</Typography>
-            </Paper>
-            <Paper elevation={3} sx={{ p: 3, flex: '0 1 200px', borderLeft: '5px solid #f44336' }}>
-                <Typography variant="h6" color="error">Controlados</Typography>
-                <Typography variant="h4" fontWeight="bold" mt={1}>{controlados}</Typography>
-            </Paper>
+            {subtitle && (
+              <Typography variant="caption" color="text.secondary">
+                {subtitle}
+              </Typography>
+            )}
+          </Box>
+
+          <Box sx={{ color }}>{icon}</Box>
         </Box>
-    );
+      </CardContent>
+    </Card>
+  );
 };
 
-// Componente principal
-const EstoqueReagentes = () => {
-    const [reagentes, setReagentes] = useState([]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [vencidosCount, setVencidosCount] = useState(0);
-    const [frascosCount, setFrascosCount] = useState(0);
-    const [controladosCount, setControladosCount] = useState(0);
+/* ================= HEADER ================= */
+const EstoqueHeader = () => {
+  return (
+    <Box
+      mb={3}
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      flexWrap="wrap"
+      gap={2}
+    >
+      <Box>
+        <Typography variant="h4" fontWeight="bold">
+          Estoque de Reagentes
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Visão geral, alertas e controle de reagentes laboratoriais
+        </Typography>
+      </Box>
 
-    const toggleDrawer = () => setDrawerOpen(prev => !prev);
+      <Button
+        component={Link}
+        to="/reagenteCadastro"
+        variant="contained"
+        startIcon={<FaPlus />}
+        sx={{
+          bgcolor: "#4CAF50",
+          fontWeight: "bold",
+          textTransform: "none",
+        }}
+      >
+        Novo Reagente
+      </Button>
+    </Box>
+  );
+};
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const reagentesData = await apiGet("/reagente");
-                const vencidos = await apiGet("/reagente/vencidos/quantidade");
-                const frascos = await apiGet("/reagente/total-frascos");
-                const controlados = await apiGet("/reagente/quantidade-controlados");
+/* ================= MAIN ================= */
+export default function EstoqueReagentes() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [reagentes, setReagentes] = useState([]);
 
-                setReagentes(reagentesData);
-                setVencidosCount(vencidos);
-                setFrascosCount(frascos);
-                setControladosCount(controlados);
-            } catch (error) {
-                console.error("Erro ao carregar dados do estoque:", error.message);
-            }
-        };
+  const [kpis, setKpis] = useState({
+    frascos: 0,
+    vencidos: 0,
+    controlados: 0,
+    proximos: 0,
+  });
 
-        fetchData();
-    }, []);
+  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
 
-    const handleAdd = () => {
-        alert("Abrir modal para adicionar novo reagente (futuro recurso)");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const reagentesData = await apiGet("/reagente");
+        const vencidos = await apiGet("/reagente/vencidos/quantidade");
+        const frascos = await apiGet("/reagente/total-frascos");
+        const controlados = await apiGet("/reagente/quantidade-controlados");
+
+        // se ainda não existir no backend, pode deixar 0 por enquanto
+  const proximos = 0;
+
+
+        setReagentes(reagentesData);
+        setKpis({ frascos, vencidos, controlados, proximos });
+      } catch (error) {
+        console.error("Erro ao carregar dados do estoque:", error);
+      }
     };
 
-    return (
-        <>
-            <AppBar position="fixed" sx={{ bgcolor: '#4CAF50', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'left' }}>
-                        Estoque de reagentes
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+    fetchData();
+  }, []);
 
-            <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
+  return (
+    <>
+      {/* APP BAR */}
+      <AppBar position="fixed" sx={{ bgcolor: "#4CAF50" }}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={toggleDrawer}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6">Estoque de Reagentes</Typography>
+        </Toolbar>
+      </AppBar>
 
-            <Box sx={{ maxWidth: '1600px', mx: 'auto', p: 3, bgcolor: '#f5f5f5', minHeight: '100vh', pt: 12 }}>
-                <EstoqueHeader onAdd={handleAdd} />
-                <ResumoEstoque
-                    reagentes={reagentes}
-                    vencidosTotal={vencidosCount}
-                    frascosTotal={frascosCount}
-                    controlados={controladosCount}
-                />
+      {/* SIDEBAR */}
+      <SideBar drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
 
-                <Box display="flex" flexWrap="wrap" gap={4} mb={4} justifyContent="center" alignItems="stretch">
-                    <Box display="flex" flexWrap="wrap" gap={4} justifyContent="center" mb={4}>
-                        <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
-                            <GraficoTiposReagente />
-                        </Box>
+      {/* CONTEÚDO */}
+      <Box
+        sx={{
+          p: 3,
+          pt: 10,
+          bgcolor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
+        <EstoqueHeader />
 
-                        <Box flex={1} minWidth={300} mt={6} height="900px" sx={{ overflowY: 'auto' }}>
-                            <TabelaListaReagentes reagentes={reagentes} />
-                        </Box>
-                    </Box>
-                </Box>
+        {/* KPIs */}
+        <Grid container spacing={3} mb={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <KpiCard
+              title="Total de Frascos"
+              value={kpis.frascos}
+              color="#4CAF50"
+              icon={<Inventory2Icon fontSize="large" />}
+            />
+          </Grid>
 
-                <Box display="flex" gap={2} flexWrap="wrap" mt={-70} mb={4} ml={10}>
-                    <Box flex="1 1 400px" minWidth={300} maxWidth={600}>
-                        <GraficoValidadeReagentes />
-                    </Box>
-                </Box>
-            </Box>
-        </>
-    );
-};
+          <Grid item xs={12} sm={6} md={3}>
+            <KpiCard
+              title="Vencidos"
+              value={kpis.vencidos}
+              color="#f44336"
+              icon={<WarningIcon fontSize="large" />}
+              subtitle="Ação imediata"
+            />
+          </Grid>
 
-export default EstoqueReagentes;
+          <Grid item xs={12} sm={6} md={3}>
+            <KpiCard
+              title="Próx. Vencimento"
+              value={kpis.proximos}
+              color="#ff9800"
+              icon={<ScheduleIcon fontSize="large" />}
+              subtitle="Até 30 dias"
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <KpiCard
+              title="Controlados"
+              value={kpis.controlados}
+              color="#9c27b0"
+              icon={<SecurityIcon fontSize="large" />}
+            />
+          </Grid>
+        </Grid>
+
+        {/* ALERTAS */}
+        <Box mb={3} display="flex" gap={2} flexWrap="wrap">
+          {kpis.vencidos > 0 && (
+            <Chip
+              color="error"
+              icon={<WarningIcon />}
+              label={`${kpis.vencidos} reagentes vencidos`}
+            />
+          )}
+
+          {kpis.proximos > 0 && (
+            <Chip
+              color="warning"
+              icon={<ScheduleIcon />}
+              label={`${kpis.proximos} próximos do vencimento`}
+            />
+          )}
+
+          {kpis.controlados > 0 && (
+            <Chip
+              color="secondary"
+              icon={<SecurityIcon />}
+              label={`${kpis.controlados} reagentes controlados`}
+            />
+          )}
+        </Box>
+
+        {/* GRÁFICOS */}
+        <Grid container spacing={3} mb={3}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" mb={2}>
+                  Distribuição por Tipo de Reagente
+                </Typography>
+                <GraficoTiposReagente />
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" mb={2}>
+                  Validade dos Reagentes
+                </Typography>
+                <GraficoValidadeReagentes />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* TABELA */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" mb={2}>
+              Lista de Reagentes
+            </Typography>
+            <TabelaListaReagentes reagentes={reagentes} />
+          </CardContent>
+        </Card>
+      </Box>
+    </>
+  );
+}
