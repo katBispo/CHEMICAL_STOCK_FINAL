@@ -44,6 +44,7 @@ function AmostraCadastro() {
   const [coordenadaColeta, setCoordenadaColeta] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const location = useLocation();
+
   const { selectedAnalise } = location.state || {};
   const navigate = useNavigate();
 
@@ -259,6 +260,18 @@ function AmostraCadastro() {
                 sx={{ width: "300px" }}
               />
             </Box>
+            {/* 🔽 CAMPO DE COORDENADAS ABAIXO DA DATA DE INÍCIO */}
+<Box display="flex" justifyContent="flex-start">
+  <TextField
+    label="Coordenadas da Coleta"
+    margin="normal"
+    value={coordenadaColeta}
+    onChange={(e) => setCoordenadaColeta(e.target.value)}
+    sx={{ width: "350px" }}
+    placeholder="Ex: 123.456;789.012"
+    helperText="Digite as coordenadas no formato: xxx;yyy"
+  />
+  </Box>
 
             <Box display="flex" flexDirection="column" gap={2}>
               <Button
@@ -297,21 +310,9 @@ function AmostraCadastro() {
                     {selectedProcedures.map((procedure, index) => (
                       <ListItem key={index}>
                         <Typography variant="body2">
-                          {procedure.classificacao ||
-                            "Classificação não disponível"}{" "}
-                          -{" "}
-                          {procedure.tipos?.length > 0
-                            ? procedure.tipos
-                                .map(
-                                  (tipo) =>
-                                    `${tipo.tipo || "Tipo não especificado"} (${
-                                      tipo.subtipos?.join(", ") ||
-                                      "Nenhum subtipo"
-                                    })`
-                                )
-                                .join("; ")
-                            : "Nenhum tipo disponível"}
-                        </Typography>
+  {procedure.nomeProcedimento}
+</Typography>
+
                       </ListItem>
                     ))}
                   </List>
