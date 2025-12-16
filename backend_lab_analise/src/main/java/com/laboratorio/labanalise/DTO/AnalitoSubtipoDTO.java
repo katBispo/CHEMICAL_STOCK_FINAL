@@ -1,9 +1,13 @@
 package com.laboratorio.labanalise.DTO;
 
 public class AnalitoSubtipoDTO {
+
     private Long analitoId;
     private String subtipo;
     private String classificacao;
+
+    public AnalitoSubtipoDTO() {
+    }
 
     public AnalitoSubtipoDTO(Long analitoId, String classificacao, String subtipo) {
         this.analitoId = analitoId;

@@ -146,6 +146,8 @@ function AmostraCadastro() {
     try {
       await salvarAmostra(novaAmostra);
       console.log("✅ Amostra salva com sucesso!");
+      console.log('Payload enviado:', novaAmostra);
+
 
       setNome("");
       setDescricao("");
@@ -158,6 +160,8 @@ function AmostraCadastro() {
       navigate("/");
     } catch (error) {
       console.error("Erro ao salvar a amostra:", error);
+            console.log('Payload enviado:', novaAmostra);
+
       alert("Erro ao salvar a amostra. Verifique o console para detalhes.");
     }
   };

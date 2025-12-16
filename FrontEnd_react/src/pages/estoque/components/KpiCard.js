@@ -7,6 +7,7 @@ import {
   Button,
   Modal,
   Divider,
+  Chip,
 } from "@mui/material";
 
 import IndicadoresCardsStyles from "../../../styles/indicadoresCardsEstilo";
@@ -16,10 +17,16 @@ const KpiCard = ({ title, value, icon, color, subtitle, modalContent }) => {
 
   return (
     <>
-      {/* CARD */}
-      <Card sx={IndicadoresCardsStyles.card(color)}>
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Card
+        sx={{
+          height: "100%",
+          borderLeft: `6px solid ${color}`,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Box display="flex" justifyContent="space-between">
             <Box>
               <Typography variant="subtitle2" color="text.secondary">
                 {title}
@@ -36,59 +43,81 @@ const KpiCard = ({ title, value, icon, color, subtitle, modalContent }) => {
               )}
             </Box>
 
-            <Box sx={IndicadoresCardsStyles.iconWrapper(color)}>
-              {icon}
-            </Box>
+            <Box sx={{ color }}>{icon}</Box>
           </Box>
-
-          {/* BOTÃO VER MAIS */}
-          <Button
-            variant="outlined"
-            size="small"
-            sx={IndicadoresCardsStyles.verMaisButton(color)}
-            onClick={() => setOpen(true)}
-          >
-            Ver mais
-          </Button>
         </CardContent>
+
+        {/* BOTÃO VER MAIS */}
+        {modalContent && (
+          <Box px={2} pb={2}>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => setOpen(true)}
+              sx={{
+                textTransform: "none",
+                fontWeight: 600,
+                borderColor: color,
+                color: color,
+                "&:hover": {
+                  borderColor: color,
+                  bgcolor: color + "11",
+                },
+              }}
+            >
+              Ver mais
+            </Button>
+          </Box>
+        )}
       </Card>
 
-      {/* MODAL / OVERLAY */}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        sx={IndicadoresCardsStyles.modal}
-      >
-        <Box sx={IndicadoresCardsStyles.modalBox}>
-          {/* HEADER */}
-          <Box sx={IndicadoresCardsStyles.modalHeader}>
-            <Box sx={IndicadoresCardsStyles.modalIcon(color)}>
-              {icon}
-            </Box>
+      {/* OVERLAY */}
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            borderRadius: 3,
+            p: 3,
+            width: { xs: "95%", md: 1000 },
+            maxHeight: "85vh",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* HEADER DO OVERLAY */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              {title}
+            </Typography>
 
-            <Box>
-              <Typography variant="h6" fontWeight="bold">
-                {title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total: {value}
-              </Typography>
-            </Box>
+            <Chip
+              label={`${value} itens`}
+              sx={{
+                bgcolor: color + "22",
+                color: color,
+                fontWeight: 600,
+              }}
+            />
           </Box>
 
-          <Divider sx={{ mb: 2 }} />
+          {/* CONTEÚDO (LISTA DIRETA) */}
+          <Box flexGrow={1} overflow="auto">
+            {modalContent}
+          </Box>
 
-          {/* CONTEÚDO DINÂMICO */}
-          {modalContent ? (
-            modalContent
-          ) : (
-            <Typography sx={IndicadoresCardsStyles.emptyState}>
-              Nenhuma informação adicional disponível.
-            </Typography>
-          )}
-
-          <Box sx={IndicadoresCardsStyles.closeButton}>
-            <Button onClick={() => setOpen(false)} variant="contained">
+          {/* AÇÕES */}
+          <Box textAlign="right" mt={2}>
+            <Button variant="outlined" onClick={() => setOpen(false)}>
               Fechar
             </Button>
           </Box>

@@ -1,37 +1,37 @@
 package com.laboratorio.labanalise.controller;
 
-import com.laboratorio.labanalise.DTO.AmostraComAnaliseDTO;
-import com.laboratorio.labanalise.DTO.AmostraDTO;
-import com.laboratorio.labanalise.model.Amostra;
-import com.laboratorio.labanalise.model.AmostraAnalito;
-import com.laboratorio.labanalise.model.Analise;
-import com.laboratorio.labanalise.model.Analito;
-import com.laboratorio.labanalise.model.Procedimento;
-import com.laboratorio.labanalise.model.enums.StatusAmostra;
-import com.laboratorio.labanalise.repositories.*;
+import java.util.List;
 
-import com.laboratorio.labanalise.services.AmostraService;
-import com.laboratorio.labanalise.services.AnaliseService;
-import com.laboratorio.labanalise.services.ProcedimentoService;
-import com.laboratorio.labanalise.DTO.projection.*;
-
-import com.laboratorio.labanalise.services.AnalitoService; // Serviço para manipular Analitos
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping; // Serviço para manipular Analitos
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.laboratorio.labanalise.DTO.AmostraComAnaliseDTO;
+import com.laboratorio.labanalise.DTO.AmostraDTO;
+import com.laboratorio.labanalise.DTO.projection.StatusAmostraCountProjection;
+import com.laboratorio.labanalise.model.Amostra;
+import com.laboratorio.labanalise.model.enums.StatusAmostra;
+import com.laboratorio.labanalise.repositories.AmostraRepository;
+import com.laboratorio.labanalise.repositories.AnaliseRepository;
+import com.laboratorio.labanalise.repositories.AnalitoRepository;
+import com.laboratorio.labanalise.repositories.ProcedimentoRepository;
+import com.laboratorio.labanalise.services.AmostraService;
+import com.laboratorio.labanalise.services.AnaliseService;
+import com.laboratorio.labanalise.services.AnalitoService;
+import com.laboratorio.labanalise.services.ProcedimentoService;
 
+@CrossOrigin(origins = "http://localhost:3000") // Altere para o seu frontend
 @RestController
 @RequestMapping(path = "/amostra")
 public class AmostraController {
@@ -60,9 +60,14 @@ public class AmostraController {
     private ProcedimentoRepository procedimentoRepository;
 
     @PostMapping
-    public ResponseEntity<Amostra> salvarAmostra(@RequestBody AmostraDTO dto) {
-        Amostra novaAmostra = service.saveAmostra(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaAmostra);
+    public ResponseEntity<?> salvar(@RequestBody AmostraDTO dto) {
+        try {
+            Amostra amostra = service.saveAmostra(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(amostra);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping
