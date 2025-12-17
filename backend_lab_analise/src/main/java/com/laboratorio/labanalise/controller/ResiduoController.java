@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.laboratorio.labanalise.DTO.ResiduoDTO;
+import com.laboratorio.labanalise.model.Residuo;
 import com.laboratorio.labanalise.services.ResiduoService;
+
 @RestController
 @RequestMapping("/residuos")
 @CrossOrigin(origins = "*")
@@ -43,8 +45,9 @@ public class ResiduoController {
     // 🔹 SALVAR
     @PostMapping
     public ResponseEntity<ResiduoDTO> salvar(@RequestBody ResiduoDTO dto) {
-        ResiduoDTO salvo = residuoService.salvarDTO(dto);
-        return ResponseEntity.ok(salvo);
+        Residuo residuo = toEntity(dto);
+        Residuo salvo = residuoService.salvar(residuo);
+        return ResponseEntity.ok(new ResiduoDTO(salvo));
     }
 
     // 🔹 ATUALIZAR
@@ -63,5 +66,33 @@ public class ResiduoController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         residuoService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+     private Residuo toEntity(ResiduoDTO dto) {
+        Residuo residuo = new Residuo();
+        residuo.setId(dto.getId());
+        residuo.setNome(dto.getNome());
+        residuo.setTipo(dto.getTipo());
+        residuo.setEstadoFisico(dto.getEstadoFisico());
+        residuo.setQuantidade(dto.getQuantidade());
+        residuo.setUnidadeMedida(dto.getUnidadeMedida());
+        residuo.setDataGeracao(dto.getDataGeracao());
+        residuo.setDataDescarte(dto.getDataDescarte());
+        residuo.setObservacao(dto.getObservacao());
+
+        // 🔐 regra de negócio: status
+        if (dto.getStatus() != null) {
+            residuo.setStatus(
+                com.laboratorio.labanalise.model.enums.StatusResiduo
+                    .valueOf(dto.getStatus())
+            );
+        } else {
+            residuo.setStatus(
+                com.laboratorio.labanalise.model.enums.StatusResiduo.EM_ESTOQUE
+            );
+        }
+
+        return residuo;
     }
 }

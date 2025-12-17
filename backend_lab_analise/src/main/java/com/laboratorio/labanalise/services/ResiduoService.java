@@ -28,6 +28,9 @@ public class ResiduoService {
     }
 
     public Residuo salvar(Residuo residuo) {
+        if (residuo.getStatus() == null) {
+            residuo.setStatus(StatusResiduo.EM_ESTOQUE);
+        }
         return residuoRepository.save(residuo);
     }
 
@@ -52,9 +55,10 @@ public class ResiduoService {
         residuo.setDataDescarte(dto.getDataDescarte());
         residuo.setObservacao(dto.getObservacao());
 
-        // ✅ String → Enum
         if (dto.getStatus() != null) {
             residuo.setStatus(StatusResiduo.valueOf(dto.getStatus()));
+        } else {
+            residuo.setStatus(StatusResiduo.EM_ESTOQUE);
         }
 
         return residuo;
