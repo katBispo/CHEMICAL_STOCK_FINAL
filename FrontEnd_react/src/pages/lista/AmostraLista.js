@@ -355,14 +355,14 @@ const AmostraLista = () => {
                         gap: "10px",
                       }}
                     >
-                     <IconButton
-  onClick={() => {
-    setSelectedAmostraId(amostra.id);
-    setOpenView(true);
-  }}
->
-  <FaEye />
-</IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setSelectedAmostraId(amostra.id);
+                          setOpenView(true);
+                        }}
+                      >
+                        <FaEye />
+                      </IconButton>
 
                       <IconButton
                         onClick={() => {
@@ -412,11 +412,11 @@ const AmostraLista = () => {
                 ))}
 
                 {/* Modais de detalhes e edição */}
-               <AmostraDetailOverlay
-  open={openView}
-  onClose={() => setOpenView(false)}
-  amostraId={selectedAmostraId}
-/>
+                <AmostraDetailOverlay
+                  open={openView}
+                  onClose={() => setOpenView(false)}
+                  amostraId={selectedAmostraId}
+                />
 
                 <AmostraEditOverlay
                   open={editOverlayOpen}

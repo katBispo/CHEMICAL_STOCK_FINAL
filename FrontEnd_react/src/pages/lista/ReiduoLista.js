@@ -16,18 +16,23 @@ import {
   Checkbox,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaEye } from "react-icons/fa";
 import SideBar from "../components/SideBar";
 import { getResiduos, deletarResiduo } from "../../services/ResiduoService";
+import ResiduoDetailOverlay from "../components/residuosListaIcons/ResiduoDetailOverlay";
 
 const ResiduoLista = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [residuos, setResiduos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openView, setOpenView] = useState(false);
 
   const [selectedResiduos, setSelectedResiduos] = useState([]);
   const [selectedResiduo, setSelectedResiduo] = useState(null);
   const [openDeleteOverlay, setOpenDeleteOverlay] = useState(false);
+  const [selectedResiduoId, setSelectedResiduoId] = useState(null);
+
+const [openDetail, setOpenDetail] = useState(false);
 
   // ================= HANDLERS =================
 
@@ -48,6 +53,11 @@ const ResiduoLista = () => {
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
+
+  const handleOpenDetail = (id) => {
+  setSelectedResiduoId(id);
+  setOpenDetail(true);
+};
 
   const handleSelectAll = () => {
     if (selectedResiduos.length === residuos.length) {
@@ -71,7 +81,7 @@ const ResiduoLista = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "EM_ESTOQUE":
-        return { backgroundColor: "#2196F3", color: "#fff" };
+        return { backgroundColor: "#ea3c0dff", color: "#fff" };
       case "TRATADO":
         return { backgroundColor: "#FF9800", color: "#fff" };
       case "DESCARTADO":
@@ -155,59 +165,84 @@ const ResiduoLista = () => {
                     onChange={handleSelectAll}
                   />
                 </TableCell>
-                {["Nome", "Tipo", "Estado Físico", "Quantidade", "Status", "Ações"].map(
-                  (h) => (
-                    <TableCell
-                      key={h}
-                      align="center"
-                      sx={{ color: "#fff", fontWeight: "bold" }}
-                    >
-                      {h}
-                    </TableCell>
-                  )
-                )}
+                {[
+                  "Nome",
+                  "Tipo",
+                  "Estado Físico",
+                  "Quantidade",
+                  "Status",
+                  "Ações",
+                ].map((h) => (
+                  <TableCell
+                    key={h}
+                    align="center"
+                    sx={{ color: "#fff", fontWeight: "bold" }}
+                  >
+                    {h}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {!loading && residuos.map((residuo) => (
-                <TableRow key={residuo.id} hover>
-                  <TableCell align="center">
-                    <Checkbox
-                      checked={selectedResiduos.includes(residuo.id)}
-                      onChange={() => handleSelectRow(residuo.id)}
-                    />
-                  </TableCell>
-                  <TableCell align="center">{residuo.nome}</TableCell>
-                  <TableCell align="center">{residuo.tipo}</TableCell>
-                  <TableCell align="center">{residuo.estadoFisico}</TableCell>
-                  <TableCell align="center">
-                    {residuo.quantidade} {residuo.unidadeMedida}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Box
-                      sx={{
-                        ...getStatusColor(residuo.status),
-                        px: 2,
-                        py: 0.5,
-                        borderRadius: 5,
-                        fontWeight: "bold",
-                        display: "inline-block",
-                      }}
-                    >
-                      {residuo.status}
-                    </Box>
-                  </TableCell>
-                  <TableCell align="center">
-                    <IconButton>
-                      <FaEdit style={{ color: "#4CAF50" }} />
-                    </IconButton>
-                    <IconButton onClick={() => handleOpenDeleteOverlay(residuo)}>
-                      <FaTrashAlt style={{ color: "#e74c3c" }} />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {!loading &&
+                residuos.map((residuo) => (
+                  <TableRow key={residuo.id} hover>
+                    <TableCell align="center">
+                      <Checkbox
+                        checked={selectedResiduos.includes(residuo.id)}
+                        onChange={() => handleSelectRow(residuo.id)}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{residuo.nome}</TableCell>
+                    <TableCell align="center">{residuo.tipo}</TableCell>
+                    <TableCell align="center">{residuo.estadoFisico}</TableCell>
+                    <TableCell align="center">
+                      {residuo.quantidade} {residuo.unidadeMedida}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box
+                        sx={{
+                          ...getStatusColor(residuo.status),
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: 5,
+                          fontWeight: "bold",
+                          display: "inline-block",
+                        }}
+                      >
+                        {residuo.status}
+                      </Box>
+                    </TableCell>
+                    <TableCell align="center">
+                      <IconButton
+  onClick={() => {
+    setSelectedResiduoId(residuo.id);
+    setOpenView(true);
+  }}
+>
+  <FaEye />
+</IconButton>
+
+                      <IconButton>
+                        <FaEdit style={{ color: "#4CAF50" }} />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleOpenDeleteOverlay(residuo)}
+                      >
+                        <FaTrashAlt style={{ color: "#e74c3c" }} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {/* Modais de detalhes e edição */}
+             <ResiduoDetailOverlay
+  open={openView}
+  onClose={() => setOpenView(false)}
+  residuoId={selectedResiduoId}
+/>
+
             </TableBody>
           </Table>
         </TableContainer>
