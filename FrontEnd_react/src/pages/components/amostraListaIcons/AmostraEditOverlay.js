@@ -3,7 +3,9 @@ import { Modal, Box, TextField, Typography, Button, IconButton } from '@mui/mate
 import { FaTimes } from 'react-icons/fa';
 
 const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
+
     const [editAmostra, setEditAmostra] = useState({
+        id: null,
         nome: '',
         dataColeta: '',
         prazoFinalizacao: '',
@@ -11,71 +13,83 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
         descricao: '',
         dataCadastro: '',
         coordenadaColeta: '',
-        analise: { id: '' },
-        procedures: [],
-        analitos: [],
-        id: null,
+
+        // campos somente leitura (relacionamentos)
+        analiseNome: '',
+        procedimentosNomes: [],
+        analitosNomes: [],
     });
 
+    const [message, setMessage] = useState('');
 
-    const [message, setMessage] = useState(''); // Estado para mensagem de erro/sucesso
-
-    // Atualiza o estado quando o componente recebe uma nova `amostra` como prop
     useEffect(() => {
         if (amostra) {
             setEditAmostra({
+                id: amostra.id,
                 nome: amostra.nome || '',
+                enderecoColeta: amostra.enderecoColeta || '',
                 dataColeta: amostra.dataColeta || '',
                 prazoFinalizacao: amostra.prazoFinalizacao || '',
-                enderecoColeta: amostra.enderecoColeta || '',
                 descricao: amostra.descricao || '',
                 dataCadastro: amostra.dataCadastro || '',
                 coordenadaColeta: amostra.coordenadaColeta || '',
-                analise: amostra.analise || { id: '' },
-                procedures: amostra.procedures || [],
-                analitos: amostra.analitos || [],
-                id: amostra.id,
+
+                // 🔽 AJUSTES IMPORTANTES
+                analiseNome: amostra.analise?.nome || '',
+                procedimentosNomes: amostra.procedimentos?.map(p => p.nome) || [],
+                analitosNomes: amostra.analitos?.map(a => a.classificacao) || [],
             });
         }
+            console.log('AMOSTRA RECEBIDA:', amostra);
+
     }, [amostra]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setEditAmostra((prev) => ({
+        setEditAmostra(prev => ({
             ...prev,
-            [name]: value || '', // Define um valor padrão para evitar undefined
+            [name]: value || '',
         }));
     };
 
     const handleSave = async () => {
         try {
-            if (!editAmostra || !editAmostra.id) {
-                setMessage('ID da amostra não está definido.');
+            if (!editAmostra.id) {
+                setMessage('ID da amostra não definido.');
                 return;
             }
+
+            // 🔴 NÃO enviamos análise, procedimentos e analitos
+            const payload = {
+                id: editAmostra.id,
+                nome: editAmostra.nome,
+                dataColeta: editAmostra.dataColeta,
+                prazoFinalizacao: editAmostra.prazoFinalizacao,
+                enderecoColeta: editAmostra.enderecoColeta,
+                descricao: editAmostra.descricao,
+                coordenadaColeta: editAmostra.coordenadaColeta,
+            };
 
             const response = await fetch(`http://localhost:8080/amostra/${editAmostra.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editAmostra),
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
                 const updatedAmostra = await response.json();
-                if (typeof onSave === 'function') {
-                    onSave(updatedAmostra);
-                }
+                onSave?.(updatedAmostra);
                 setMessage('Amostra atualizada com sucesso!');
                 setTimeout(() => setMessage(''), 3000);
                 onClose();
             } else {
                 const errorText = await response.text();
-                setMessage('Erro ao atualizar amostra: ' + errorText);
+                setMessage('Erro ao atualizar: ' + errorText);
             }
         } catch (error) {
-            setMessage('Erro ao fazer requisição: ' + error.message);
+            setMessage('Erro de requisição: ' + error.message);
         }
     };
 
@@ -96,15 +110,15 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     width: '100%',
                 }}
             >
+                {/* HEADER */}
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Typography variant="h6" component="h2">
-                        Editar Amostra
-                    </Typography>
+                    <Typography variant="h6">Editar Amostra</Typography>
                     <IconButton onClick={onClose}>
-                        <FaTimes style={{ color: '#666', fontSize: '20px' }} />
+                        <FaTimes />
                     </IconButton>
                 </Box>
 
+                {/* CAMPOS EDITÁVEIS */}
                 <TextField
                     label="Nome"
                     name="nome"
@@ -113,6 +127,7 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     fullWidth
                     margin="normal"
                 />
+
                 <TextField
                     label="Data de Coleta"
                     name="dataColeta"
@@ -123,6 +138,7 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     margin="normal"
                     InputLabelProps={{ shrink: true }}
                 />
+
                 <TextField
                     label="Prazo Finalização"
                     name="prazoFinalizacao"
@@ -133,14 +149,7 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     margin="normal"
                     InputLabelProps={{ shrink: true }}
                 />
-                <TextField
-                    label="Procedimento"
-                    name="procedimento"
-                    value={editAmostra.procedimento}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
-                />
+
                 <TextField
                     label="Descrição"
                     name="descricao"
@@ -148,9 +157,10 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     onChange={handleChange}
                     fullWidth
                     multiline
-                    rows={4}
+                    rows={3}
                     margin="normal"
                 />
+
                 <TextField
                     label="Coordenada de Coleta"
                     name="coordenadaColeta"
@@ -159,21 +169,43 @@ const AmostraEditOverlay = ({ open, onClose, amostra, onSave }) => {
                     fullWidth
                     margin="normal"
                 />
-               
 
-                    {message && (
-                        <Typography variant="body2" color="error" mt={2}>
-                            {message}
-                        </Typography>
-                    )}
+                {/* CAMPOS SOMENTE LEITURA */}
+                <TextField
+                    label="Análise"
+                    value={editAmostra.analiseNome}
+                    fullWidth
+                    margin="normal"
+                    InputProps={{ readOnly: true }}
+                />
 
+                <TextField
+                    label="Procedimentos"
+                    value={editAmostra.procedimentosNomes.join(', ')}
+                    fullWidth
+                    margin="normal"
+                    InputProps={{ readOnly: true }}
+                />
 
+                <TextField
+                    label="Analitos"
+                    value={editAmostra.analitosNomes.join(', ')}
+                    fullWidth
+                    margin="normal"
+                    InputProps={{ readOnly: true }}
+                />
 
-                    <Box display="flex" justifyContent="flex-end" mt={3}>
-                        <Button variant="contained" color="primary" onClick={handleSave}>
-                            Salvar
-                        </Button>
-                    </Box>
+                {message && (
+                    <Typography color="error" mt={2}>
+                        {message}
+                    </Typography>
+                )}
+
+                <Box display="flex" justifyContent="flex-end" mt={3}>
+                    <Button variant="contained" onClick={handleSave}>
+                        Salvar
+                    </Button>
+                </Box>
             </Box>
         </Modal>
     );

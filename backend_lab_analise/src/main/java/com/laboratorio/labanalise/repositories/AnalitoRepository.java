@@ -1,12 +1,13 @@
 package com.laboratorio.labanalise.repositories;
 
-import com.laboratorio.labanalise.model.Analito;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.laboratorio.labanalise.model.Analito;
 
 @Repository
 public interface AnalitoRepository extends JpaRepository<Analito, Long> {
@@ -20,7 +21,11 @@ public interface AnalitoRepository extends JpaRepository<Analito, Long> {
     List<String> findDistinctTipos();
 
     // Busca todos os subtipos distintos de analitos
-    @Query("SELECT DISTINCT s FROM Analito a JOIN a.subtipoAnalito s")
+    @Query("""
+        SELECT DISTINCT s
+        FROM Analito a
+        JOIN a.subtipos s
+    """)
     List<String> findDistinctSubtipos();
 
     // Busca um analito específico pela classificação (necessário para a função de

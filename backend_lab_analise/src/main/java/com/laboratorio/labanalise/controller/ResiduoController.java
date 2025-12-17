@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.laboratorio.labanalise.model.Residuo;
+import com.laboratorio.labanalise.DTO.ResiduoDTO;
 import com.laboratorio.labanalise.services.ResiduoService;
-
 @RestController
 @RequestMapping("/residuos")
 @CrossOrigin(origins = "*")
@@ -27,33 +26,39 @@ public class ResiduoController {
         this.residuoService = residuoService;
     }
 
+    // 🔹 LISTAR TODOS
     @GetMapping
-    public ResponseEntity<List<Residuo>> listarTodos() {
-        return ResponseEntity.ok(residuoService.listarTodos());
+    public ResponseEntity<List<ResiduoDTO>> listarTodos() {
+        return ResponseEntity.ok(residuoService.listarTodosDTO());
     }
 
+    // 🔹 BUSCAR POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<Residuo> buscarPorId(@PathVariable Long id) {
-        return residuoService.buscarPorId(id)
+    public ResponseEntity<ResiduoDTO> buscarPorId(@PathVariable Long id) {
+        return residuoService.buscarDTOPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // 🔹 SALVAR
     @PostMapping
-    public ResponseEntity<Residuo> salvar(@RequestBody Residuo residuo) {
-        return ResponseEntity.ok(residuoService.salvar(residuo));
+    public ResponseEntity<ResiduoDTO> salvar(@RequestBody ResiduoDTO dto) {
+        ResiduoDTO salvo = residuoService.salvarDTO(dto);
+        return ResponseEntity.ok(salvo);
     }
 
+    // 🔹 ATUALIZAR
     @PutMapping("/{id}")
-    public ResponseEntity<Residuo> atualizar(@PathVariable Long id, @RequestBody Residuo residuoAtualizado) {
-        return residuoService.buscarPorId(id)
-                .map(residuo -> {
-                    residuoAtualizado.setId(id);
-                    return ResponseEntity.ok(residuoService.salvar(residuoAtualizado));
-                })
+    public ResponseEntity<ResiduoDTO> atualizar(
+            @PathVariable Long id,
+            @RequestBody ResiduoDTO dto) {
+
+        return residuoService.atualizarDTO(id, dto)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // 🔹 DELETAR
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         residuoService.deletar(id);

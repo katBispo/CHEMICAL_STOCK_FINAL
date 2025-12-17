@@ -1,4 +1,3 @@
-// src/services/residuo.js
 import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 
 const BASE_ENDPOINT = "/residuos";
@@ -14,7 +13,12 @@ export async function getResiduoById(id) {
 }
 
 export async function criarResiduo(residuo) {
-  return apiPost(BASE_ENDPOINT, residuo);
+  const payload = {
+    ...residuo,
+    status: residuo.status ?? "EM_ESTOQUE",
+  };
+
+  return apiPost(BASE_ENDPOINT, payload);
 }
 
 export async function atualizarResiduo(id, residuo) {

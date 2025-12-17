@@ -16,7 +16,6 @@ import AnalitoSelector from "../components/AnalitoSelector";
 import ProcedimentoSelector from "../components/ProcedimentoSelector";
 import EquipamentoSelector from "../components/EquipamentoSelector";
 
-
 import SideBar from "../components/SideBar";
 import { salvarAmostra } from "../../services/amostraService.js";
 import Amostra from "../../models/AmostraModel.js";
@@ -29,11 +28,10 @@ function AmostraCadastro() {
   const [showProcedureSelector, setShowProcedureSelector] = useState(false);
   const [selectedAnalitos, setSelectedAnalitos] = useState([]);
   const [selectedProcedures, setSelectedProcedures] = useState([]);
- const [selectedEquipamentos, setSelectedEquipamentos] = useState([]);
+  const [selectedEquipamentos, setSelectedEquipamentos] = useState([]);
 
-  
-  const [showEquipamentoSelector,setShowEquipamentoSelector] = useState(false);
-  
+  const [showEquipamentoSelector, setShowEquipamentoSelector] = useState(false);
+
   const [procedimentos, setProcedimentos] = useState([]);
   const [analise, setAnalise] = useState([]);
   const [nome, setNome] = useState("");
@@ -147,8 +145,7 @@ function AmostraCadastro() {
     try {
       await salvarAmostra(novaAmostra);
       console.log("✅ Amostra salva com sucesso!");
-      console.log('Payload enviado:', novaAmostra);
-
+      console.log("Payload enviado:", novaAmostra);
 
       setNome("");
       setDescricao("");
@@ -161,7 +158,7 @@ function AmostraCadastro() {
       navigate("/");
     } catch (error) {
       console.error("Erro ao salvar a amostra:", error);
-            console.log('Payload enviado:', novaAmostra);
+      console.log("Payload enviado:", novaAmostra);
 
       alert("Erro ao salvar a amostra. Verifique o console para detalhes.");
     }
@@ -261,17 +258,17 @@ function AmostraCadastro() {
               />
             </Box>
             {/* 🔽 CAMPO DE COORDENADAS ABAIXO DA DATA DE INÍCIO */}
-<Box display="flex" justifyContent="flex-start">
-  <TextField
-    label="Coordenadas da Coleta"
-    margin="normal"
-    value={coordenadaColeta}
-    onChange={(e) => setCoordenadaColeta(e.target.value)}
-    sx={{ width: "350px" }}
-    placeholder="Ex: 123.456;789.012"
-    helperText="Digite as coordenadas no formato: xxx;yyy"
-  />
-  </Box>
+            <Box display="flex" justifyContent="flex-start">
+              <TextField
+                label="Coordenadas da Coleta"
+                margin="normal"
+                value={coordenadaColeta}
+                onChange={(e) => setCoordenadaColeta(e.target.value)}
+                sx={{ width: "350px" }}
+                placeholder="Ex: 123.456;789.012"
+                helperText="Digite as coordenadas no formato: xxx;yyy"
+              />
+            </Box>
 
             <Box display="flex" flexDirection="column" gap={2}>
               <Button
@@ -310,9 +307,8 @@ function AmostraCadastro() {
                     {selectedProcedures.map((procedure, index) => (
                       <ListItem key={index}>
                         <Typography variant="body2">
-  {procedure.nomeProcedimento}
-</Typography>
-
+                          {procedure.nomeProcedimento}
+                        </Typography>
                       </ListItem>
                     ))}
                   </List>
@@ -339,13 +335,10 @@ function AmostraCadastro() {
               </Button>
 
               {/* Botão Selecionar Equipamentos */}
+              {/* Botão Selecionar Equipamentos */}
               <Button
                 onClick={() => {
                   setShowEquipamentoSelector(true);
-                  console.log(
-                    "Botão Selecionar Equipamentos clicado, showEquipamentoSelector:",
-                    true
-                  );
                 }}
                 sx={{
                   width: "350px",
@@ -357,6 +350,34 @@ function AmostraCadastro() {
               >
                 Selecionar Equipamentos
               </Button>
+
+              {/* ✅ EXIBIÇÃO DOS EQUIPAMENTOS SELECIONADOS */}
+              {selectedEquipamentos?.length > 0 && (
+                <Box
+                  sx={{
+                    backgroundColor: "#f9f9f9",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    width: "350px",
+                    mt: 1,
+                  }}
+                >
+                  <Typography variant="subtitle1">
+                    Equipamentos Selecionados:
+                  </Typography>
+
+                  <List>
+                    {selectedEquipamentos.map((equipamento) => (
+                      <ListItem key={equipamento.id}>
+                        <Typography variant="body2">
+                          {equipamento.nome}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
 
               {selectedAnalitos?.length > 0 && (
                 <Box
@@ -413,17 +434,15 @@ function AmostraCadastro() {
                 />
               )}
 
-              
-{/* ✅ Modal de Equipamentos */}
-  {showEquipamentoSelector && (
-    <EquipamentoSelector
-      open={showEquipamentoSelector}
-      selectedEquipamentos={selectedEquipamentos}
-      onEquipamentoSelect={setSelectedEquipamentos}
-      handleClose={() => setShowEquipamentoSelector(false)}
-    />
-  )}
-
+              {/* ✅ Modal de Equipamentos */}
+              {showEquipamentoSelector && (
+                <EquipamentoSelector
+                  open={showEquipamentoSelector}
+                  selectedEquipamentos={selectedEquipamentos}
+                  onEquipamentoSelect={setSelectedEquipamentos}
+                  handleClose={() => setShowEquipamentoSelector(false)}
+                />
+              )}
             </Box>
 
             <Box display="flex" justifyContent="center" marginTop={2}>

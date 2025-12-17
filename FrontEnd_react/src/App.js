@@ -15,6 +15,7 @@ import MatrizLista from "./pages/lista/MatrizLista";
 import AnalitoLista from "./pages/lista/AnalitoLista";
 import AmostraLista from "./pages/lista/AmostraLista";
 import EquipamentoLista from "./pages/lista/EquipamentoLista";
+import ResiduoLista from "./pages/lista/ReiduoLista";
 
 import AnaliseCadastro from "./pages/cadastro/AnaliseCadastro";
 import ContratoCadastro from "./pages/cadastro/ContratoCadastro";
@@ -27,6 +28,7 @@ import AmostraCadastro from "./pages/cadastro/AmostraCadastro";
 import ReagenteCadastro from "./pages/cadastro/ReagenteCadastro";
 import AnalitoExistenteCadastro from "./pages/cadastro/AnalitoExistenteCadastro";
 import CadastrarProcesso from "./pages/cadastro/CadastrarProcesso";
+import ResiduoCadastro from "./pages/cadastro/ResiduoCadastro";
 
 import Estoque from "./pages/estoque/Estoque";
 import DashboardEquipamentos from "./pages/DashboardEquipamentos/DashboardEquipamentos";
@@ -44,7 +46,6 @@ import GraficoStatusAmostras from "./pages/DashboardAnalises/components/GraficoS
 import TabelaAnalises from "./pages/DashboardAnalises/components/TabelaAnalises";
 
 import EquipamentoCadastro from "./pages/cadastro/EquipamentoCadastro";
-import ResiduoCadastro from "./pages/cadastro/ResiduoCadastro";
 
 import Perfil from "./pages/perfil/Perfil";
 
@@ -59,7 +60,10 @@ function App() {
         <Route path="/loginPage" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
         <Route path="/aprovar-usuario/:id" element={<AprovarUsuarios />} />
-        <Route path="/reserva-laboratorio/:id" element={<AprovacaoReservaPage />} />
+        <Route
+          path="/reserva-laboratorio/:id"
+          element={<AprovacaoReservaPage />}
+        />
 
         <Route path="/reservaPublicPage" element={<ReservaPublicPage />} />
 
@@ -109,6 +113,15 @@ function App() {
           element={
             <PrivateRoute>
               <ResiduoCadastro />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/residuoLista"
+          element={
+            <PrivateRoute>
+              <ResiduoLista />
             </PrivateRoute>
           }
         />

@@ -185,7 +185,7 @@ public Amostra saveAmostra(AmostraDTO dto) {
             Analito analito = analitoRepository.findById(analitoId)
                     .orElseThrow(() -> new RuntimeException("Analito não encontrado: " + analitoId));
 
-            if (!analito.getSubtipoAnalito().contains(subtipoSelecionado)) {
+            if (!analito.getSubtipos().contains(subtipoSelecionado)) {
                 throw new RuntimeException(
                         "Subtipo " + subtipoSelecionado + " não pertence ao analito " + analitoId
                 );

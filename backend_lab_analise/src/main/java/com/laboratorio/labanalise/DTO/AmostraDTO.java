@@ -1,4 +1,3 @@
-
 package com.laboratorio.labanalise.DTO;
 
 import java.time.LocalDate;
@@ -9,6 +8,7 @@ import java.util.stream.Collectors;
 import com.laboratorio.labanalise.model.Amostra;
 
 public class AmostraDTO {
+
     private Long id;
     private String nome;
     private String enderecoColeta;
@@ -22,10 +22,13 @@ public class AmostraDTO {
     private List<Long> procedimentos;
     private LocalDate dataEncerramento;
 
+    private String dataCadastro;
+
     private LocalDate dataFinalizacaoReal;
 
     private List<Long> procedimentosIds;
     private List<AnalitoSubtipoDTO> analitosSelecionados = new ArrayList<>();
+
     private List<Long> proceduresIds;
 
     private String analiseNome;
@@ -171,11 +174,20 @@ public class AmostraDTO {
             this.analiseNome = amostra.getAnalise().getNome();
         }
 
-        if (amostra.getAnalitos() != null) {
-            this.analitos = amostra.getAnalitos().stream()
-                    .map(a -> a.getId())
-                    .collect(Collectors.toList());
-        }
+  if (amostra.getAnalitos() != null) {
+    this.analitosSelecionados = amostra.getAnalitos().stream()
+        .flatMap(analito ->
+            analito.getSubtipoAnalito().stream() 
+                .map(subtipo -> new AnalitoSubtipoDTO(
+                    analito.getId(),
+                    analito.getClassificacao(),
+                    subtipo
+                ))
+        )
+        .collect(Collectors.toList());
+}
+
+
         if (amostra.getProcedimentos() != null) {
             this.procedimentosIds = amostra.getProcedimentos().stream()
                     .map(p -> p.getId())
@@ -185,6 +197,10 @@ public class AmostraDTO {
                     .map(p -> p.getNomeProcedimento())
                     .collect(Collectors.toList());
         }
+
+        this.dataCadastro = amostra.getDataCadastro() != null
+                ? amostra.getDataCadastro().toString()
+                : null;
 
     }
 
@@ -210,6 +226,14 @@ public class AmostraDTO {
 
     public void setDataFinalizacaoReal(LocalDate dataFinalizacaoReal) {
         this.dataFinalizacaoReal = dataFinalizacaoReal;
+    }
+
+    public String getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(String dataCadastro) {
+        this.dataCadastro = dataCadastro;
     }
 
 }
