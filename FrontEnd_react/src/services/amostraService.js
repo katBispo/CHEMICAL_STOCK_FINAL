@@ -6,7 +6,17 @@ export async function getAmostras() {
 }
 
 export async function getAmostraById(id) {
-  return apiGet(`/amostra/${id}`);
+  try {
+    if (!id || isNaN(Number(id))) {
+      throw new Error("ID inválido");
+    }
+
+    const response = await apiGet(`/amostra/${id}`); // rota com id numérico
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar amostra:", error);
+    throw error;
+  }
 }
 
 export async function salvarAmostra(amostra) {

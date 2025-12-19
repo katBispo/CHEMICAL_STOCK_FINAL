@@ -1,41 +1,65 @@
 package com.laboratorio.labanalise.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
-import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDate;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MOVIMENTACAO_REAGENTE")
 @EntityListeners(AuditingEntityListener.class)
 public class MovimentacaoReagente {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reagente_id", nullable = false)
-    @JsonIgnore
     private Reagente reagente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "frasco_id")
+    private FrascoReagente frasco;
 
     @Column(nullable = false)
     private LocalDate dataMovimentacao = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoMovimentacao tipoMovimentacao; // ENTRADA ou SAÍDA
+    private TipoMovimentacao tipoMovimentacao;
 
     @Column(nullable = false)
-    private Double quantidadeAlterada; // Ex: +500g ou -200mL
+    private Double quantidadeAlterada;
 
     @Column(nullable = false)
-    private Double quantidadeFinal; // Quanto ficou no estoque após essa movimentação
+    private Double quantidadeFinal;
 
-    @Column(nullable = true)
-    private String motivo; 
+    @Column
+    private String motivo;
+
+    // getters e setters
+    public FrascoReagente getFrasco() {
+        return frasco;
+    }
+
+    public void setFrasco(FrascoReagente frasco) {
+        this.frasco = frasco;
+    }
 
     public Long getId() {
         return id;
@@ -75,7 +99,6 @@ public class MovimentacaoReagente {
 
     public void setQuantidadeAlterada(Double quantidadeAlterada) {
         this.quantidadeAlterada = quantidadeAlterada;
-
     }
 
     public Double getQuantidadeFinal() {
@@ -93,6 +116,7 @@ public class MovimentacaoReagente {
     public void setMotivo(String motivo) {
         this.motivo = motivo;
     }
+
 
 
 

@@ -1,19 +1,26 @@
 package com.laboratorio.labanalise.services;
 
-import com.laboratorio.labanalise.DTO.ReagenteDTO;
-import com.laboratorio.labanalise.mapper.ReagenteMapper;
-import com.laboratorio.labanalise.model.Reagente;
-import com.laboratorio.labanalise.model.enums.TipoReagente;
-import com.laboratorio.labanalise.repositories.ReagenteRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.util.HashMap;
-
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.laboratorio.labanalise.DTO.ReagenteDTO;
+import com.laboratorio.labanalise.DTO.SaidaReagenteDTO;
+import com.laboratorio.labanalise.mapper.ReagenteMapper;
+import com.laboratorio.labanalise.model.FrascoReagente;
+import com.laboratorio.labanalise.model.MovimentacaoReagente;
+import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.enums.StatusFrasco;
+import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
+import com.laboratorio.labanalise.model.enums.TipoReagente;
+import com.laboratorio.labanalise.repositories.FrascoReagenteRepository;
+import com.laboratorio.labanalise.repositories.ReagenteRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReagenteService {
@@ -21,42 +28,93 @@ public class ReagenteService {
     private final ReagenteRepository repository;
     private final MovimentacaoReagenteService movimentacaoReagenteService;
     private final ReagenteMapper reagenteMapper;
+    private final FrascoReagenteService frascoReagenteService;
+    private final FrascoReagenteRepository frascoReagenteRepository;
 
-    public ReagenteService(ReagenteRepository repository, MovimentacaoReagenteService movimentacaoReagenteService, ReagenteMapper reagenteMapper) {
+    public ReagenteService(
+            ReagenteRepository repository,
+            MovimentacaoReagenteService movimentacaoReagenteService,
+            ReagenteMapper reagenteMapper,
+            FrascoReagenteService frascoReagenteService,
+            FrascoReagenteRepository frascoReagenteRepository
+    ) {
         this.repository = repository;
         this.movimentacaoReagenteService = movimentacaoReagenteService;
         this.reagenteMapper = reagenteMapper;
+        this.frascoReagenteService = frascoReagenteService;
+        this.frascoReagenteRepository = frascoReagenteRepository;
     }
 
+    // =========================
+    // CADASTRO DE REAGENTE
+    // =========================
+    @Transactional
     public Reagente salvar(Reagente reagente) {
 
-        reagente = repository.save(reagente);
-        movimentacaoReagenteService.registrarMovimentacaoInicial(reagente);
-        return reagente;
+        Reagente reagenteSalvo = repository.save(reagente);
+
+        criarFrascosIniciais(reagenteSalvo);
+
+        movimentacaoReagenteService.registrarMovimentacaoInicial(reagenteSalvo);
+
+        return reagenteSalvo;
     }
 
+    // =========================
+    // ATUALIZAÇÃO DE REAGENTE
+    // =========================
     @Transactional
     public Reagente atualizarReagente(Long id, Reagente reagenteNovo) {
-        Reagente reagente = repository.findById(id).orElse(null);
-        atualizarDados(reagente, reagenteNovo);
-        registrarMovimentacao(reagenteNovo, reagente);
+
+        Reagente reagente = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reagente não encontrado"));
+
+        int frascosAntes = reagente.getQuantidadeDeFrascos();
+        int frascosDepois = reagenteNovo.getQuantidadeDeFrascos();
+
+        atualizarDadosBasicos(reagente, reagenteNovo);
+
+        // Se aumentou a quantidade de frascos → cria novos
+        if (frascosDepois > frascosAntes) {
+            criarNovosFrascos(reagente, frascosDepois - frascosAntes);
+        }
+
         return repository.save(reagente);
     }
 
-    private void registrarMovimentacao(Reagente reagenteNovo, Reagente reagente) {
-        movimentacaoReagenteService.registarMovimentacaoDeEntrada(reagente, reagenteNovo);
-    }
-
-    private void atualizarDados(Reagente reagente, Reagente reagenteNovo) {
+    // =========================
+    // MÉTODOS AUXILIARES
+    // =========================
+    private void atualizarDadosBasicos(Reagente reagente, Reagente reagenteNovo) {
         reagente.setNome(reagenteNovo.getNome());
         reagente.setDataValidade(reagenteNovo.getDataValidade());
         reagente.setQuantidadePorFrasco(reagenteNovo.getQuantidadePorFrasco());
         reagente.setQuantidadeDeFrascos(reagenteNovo.getQuantidadeDeFrascos());
         reagente.setLote(reagenteNovo.getLote());
-        reagente.setQuantidadeAtual(reagenteNovo.getQuantidadeAtual());
-        reagente.setQuantidadeTotal(reagente.getQuantidadeTotal() + reagenteNovo.getQuantidadeAtual());
     }
 
+    private void criarFrascosIniciais(Reagente reagente) {
+        criarNovosFrascos(reagente, reagente.getQuantidadeDeFrascos());
+    }
+
+    private void criarNovosFrascos(Reagente reagente, int quantidade) {
+
+        for (int i = 0; i < quantidade; i++) {
+
+            FrascoReagente frasco = new FrascoReagente();
+            frasco.setReagente(reagente);
+            frasco.setCapacidadeMaxima(reagente.getQuantidadePorFrasco());
+            frasco.setQuantidadeAtual(reagente.getQuantidadePorFrasco());
+            frasco.setStatus(StatusFrasco.CHEIO);
+            frasco.setDataValidade(reagente.getDataValidade());
+
+            frascoReagenteService.salvar(frasco);
+        }
+    }
+
+    // =========================
+    // CONSULTAS / DASHBOARD
+    // =========================
     public void remover(Long id) {
         repository.deleteById(id);
     }
@@ -81,38 +139,29 @@ public class ReagenteService {
         List<Object[]> resultados = repository.countReagentesByTipo();
         Map<TipoReagente, Long> mapa = new HashMap<>();
         for (Object[] obj : resultados) {
-            TipoReagente tipo = (TipoReagente) obj[0];
-            Long count = (Long) obj[1];
-            mapa.put(tipo, count);
+            mapa.put((TipoReagente) obj[0], (Long) obj[1]);
         }
         return mapa;
     }
 
     public long contarProximosAVencer15Dias() {
         LocalDate hoje = LocalDate.now();
-        LocalDate quinzeDias = hoje.plusDays(15);
-        return repository.proximosAVencer15Dias(hoje, quinzeDias).size();
+        return repository.proximosAVencer15Dias(hoje, hoje.plusDays(15)).size();
     }
 
     public long contarVencemEm30Dias() {
-        LocalDate quinzeDias = LocalDate.now().plusDays(15);
-        LocalDate trintaDias = LocalDate.now().plusDays(30);
-        return repository.vencemEm30Dias(quinzeDias, trintaDias).size();
+        return repository.vencemEm30Dias(
+                LocalDate.now().plusDays(15),
+                LocalDate.now().plusDays(30)
+        ).size();
     }
 
     public Map<String, Long> getDadosGraficoValidade() {
-        LocalDate hoje = LocalDate.now();
-        LocalDate quinzeDias = hoje.plusDays(15);
-        LocalDate trintaDias = hoje.plusDays(30);
-
-        long vencidos = repository.reagentesVencidos().size();
-        long vencemEm15Dias = repository.proximosAVencer15Dias(hoje, quinzeDias).size();
-        long vencemEntre15e30Dias = repository.vencemEm30Dias(quinzeDias, trintaDias).size();
 
         Map<String, Long> resultado = new HashMap<>();
-        resultado.put("vencidos", vencidos);
-        resultado.put("vencemEm15Dias", vencemEm15Dias);
-        resultado.put("vencemEntre15e30Dias", vencemEntre15e30Dias);
+        resultado.put("vencidos", (long) repository.reagentesVencidos().size());
+        resultado.put("vencemEm15Dias", contarProximosAVencer15Dias());
+        resultado.put("vencemEntre15e30Dias", contarVencemEm30Dias());
 
         return resultado;
     }
@@ -122,16 +171,52 @@ public class ReagenteService {
     }
 
     public List<ReagenteDTO> buscarPorNome(String nome) {
-        return repository.findByNomeContainingIgnoreCase(nome).stream()
+        return repository.findByNomeContainingIgnoreCase(nome)
+                .stream()
                 .map(reagenteMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ReagenteDTO> buscarFiltrados(String nome, TipoReagente tipo, LocalDate dataInicio, LocalDate dataFim) {
-        List<Reagente> reagentes = repository.buscarFiltrados(nome, tipo, dataInicio, dataFim);
-        return reagentes.stream()
+    public List<ReagenteDTO> buscarFiltrados(String nome, TipoReagente tipo,
+            LocalDate dataInicio, LocalDate dataFim) {
+
+        return repository.buscarFiltrados(nome, tipo, dataInicio, dataFim)
+                .stream()
                 .map(reagenteMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+
+
+    @Transactional
+    public void registrarSaida(Long reagenteId, SaidaReagenteDTO dto) {
+
+        Reagente reagente = repository.findById(reagenteId)
+                .orElseThrow(() -> new RuntimeException("Reagente não encontrado"));
+
+        frascoReagenteService.descontarQuantidade(reagente, dto.getQuantidade());
+
+        atualizarQuantidadeTotal(reagente);
+
+        MovimentacaoReagente mov = new MovimentacaoReagente();
+        mov.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+        mov.setReagente(reagente);
+        mov.setQuantidadeAlterada(dto.getQuantidade());
+        mov.setQuantidadeFinal(reagente.getQuantidadeTotal());
+        mov.setDataMovimentacao(LocalDate.now());
+        mov.setMotivo(dto.getMotivo());
+
+        movimentacaoReagenteService.salvar(mov);
+    }
+
+    @Transactional
+    public void atualizarQuantidadeTotal(Reagente reagente) {
+
+        Double total = frascoReagenteService
+                .somarQuantidadeAtualPorReagente(reagente);
+
+        reagente.setQuantidadeTotal(total);
+        repository.save(reagente);
     }
 
 }

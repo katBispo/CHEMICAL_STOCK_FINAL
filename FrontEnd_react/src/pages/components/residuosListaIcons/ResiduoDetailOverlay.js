@@ -16,17 +16,30 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
   const [residuo, setResiduo] = useState(null);
   const [quantidadeEtiquetas, setQuantidadeEtiquetas] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState(null);
 
   useEffect(() => {
     if (open && residuoId) {
       setLoading(true);
-      getResiduoById(residuoId)
+      setErro(null);
+
+      // Garantir que o ID é número
+      const idNumerico = Number(residuoId);
+      if (isNaN(idNumerico)) {
+        setErro("ID do resíduo inválido.");
+        setLoading(false);
+        return;
+      }
+
+      getResiduoById(idNumerico)
         .then((data) => {
-          console.log("RESÍDUO COMPLETO:", data);
           setResiduo(data);
         })
         .catch((error) => {
           console.error("Erro ao buscar resíduo:", error);
+          setErro(
+            error.response?.data?.message || "Erro ao buscar o resíduo."
+          );
         })
         .finally(() => setLoading(false));
     }
@@ -49,7 +62,6 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
     if (!residuo) return;
 
     const doc = new jsPDF();
-
     doc.setFontSize(12);
     doc.text(`Etiqueta de Resíduo`, 10, 10);
     doc.text(`Nome: ${residuo.nome}`, 10, 20);
@@ -61,11 +73,7 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
       50
     );
     doc.text(`Status: ${residuo.status}`, 10, 60);
-    doc.text(
-      `Data de Geração: ${residuo.dataGeracao || "N/A"}`,
-      10,
-      70
-    );
+    doc.text(`Data de Geração: ${residuo.dataGeracao || "N/A"}`, 10, 70);
 
     doc.save("etiqueta_residuo.pdf");
   };
@@ -87,7 +95,6 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
           width: "90%",
         }}
       >
-        {/* Cabeçalho */}
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Typography variant="h6">Detalhes do Resíduo</Typography>
           <IconButton onClick={onClose}>
@@ -97,7 +104,9 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
 
         {loading && <Typography>Carregando...</Typography>}
 
-        {!loading && residuo && (
+        {erro && <Typography color="error">{erro}</Typography>}
+
+        {!loading && residuo && !erro && (
           <>
             <Typography>
               <strong>Nome:</strong> {residuo.nome}
@@ -112,8 +121,8 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
             </Typography>
 
             <Typography>
-              <strong>Quantidade:</strong>{" "}
-              {residuo.quantidade} {residuo.unidadeMedida}
+              <strong>Quantidade:</strong> {residuo.quantidade}{" "}
+              {residuo.unidadeMedida}
             </Typography>
 
             <Typography>
@@ -127,8 +136,7 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
             </Typography>
 
             <Typography>
-              <strong>Observações:</strong>{" "}
-              {residuo.observacao || "Nenhuma"}
+              <strong>Observações:</strong> {residuo.observacao || "Nenhuma"}
             </Typography>
 
             <Box mt={2}>
@@ -140,7 +148,6 @@ const ResiduoDetailOverlay = ({ open, onClose, residuoId }) => {
               />
             </Box>
 
-            {/* Etiquetas */}
             <Box mt={3} display="flex" alignItems="center">
               <TextField
                 label="Qtd. Etiquetas"

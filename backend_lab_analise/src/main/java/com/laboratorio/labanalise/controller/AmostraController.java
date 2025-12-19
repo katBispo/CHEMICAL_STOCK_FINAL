@@ -107,6 +107,14 @@ public class AmostraController {
         }
     }
 
+    @GetMapping("/{id:\\d+}")
+    public ResponseEntity<AmostraDTO> buscarPorId(@PathVariable Long id) {
+        Amostra amostra = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Amostra não encontrada"));
+
+        return ResponseEntity.ok(new AmostraDTO(amostra));
+    }
+
     @GetMapping("/com-analises")
     public ResponseEntity<List<AmostraComAnaliseDTO>> listarAmostrasComAnalises() {
         List<AmostraComAnaliseDTO> dtos = service.buscarAmostrasComAnalise();

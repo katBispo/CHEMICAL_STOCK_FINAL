@@ -1,99 +1,110 @@
 package com.laboratorio.labanalise.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.laboratorio.labanalise.DTO.MovimentacaoReagenteResponseDTO;
 import com.laboratorio.labanalise.model.MovimentacaoReagente;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
 import com.laboratorio.labanalise.repositories.MovimentacaoReagenteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class MovimentacaoReagenteService {
 
-    @Autowired
-    private MovimentacaoReagenteRepository repository;
+    private final MovimentacaoReagenteRepository repository;
 
-
-    public MovimentacaoReagente salvar(MovimentacaoReagente movimentacaoReagente) {
-        return repository.save(movimentacaoReagente);
+    public MovimentacaoReagenteService(MovimentacaoReagenteRepository repository) {
+        this.repository = repository;
     }
 
-    public List<MovimentacaoReagente> listarTodasMovimentações() {
-        List<MovimentacaoReagente> lista = repository.findAll();
-        return lista;
+    /* ===============================
+       CRUD BÁSICO
+    =============================== */
+
+    public MovimentacaoReagente salvar(MovimentacaoReagente movimentacao) {
+        return repository.save(movimentacao);
     }
 
-    public MovimentacaoReagente registarMovimentacaoDeEntrada(Reagente reagente, Reagente novo) {
-        MovimentacaoReagente movimentacaoReagenteEntrada = new MovimentacaoReagente();
-        criarMovimentacaoEntrada(reagente, novo, movimentacaoReagenteEntrada);
-        return repository.save(movimentacaoReagenteEntrada);
+    public List<MovimentacaoReagente> listarTodas() {
+        return repository.findAll();
     }
+
+    public List<MovimentacaoReagente> listarPorReagente(Long reagenteId) {
+        return repository.findByReagenteIdOrderByDataMovimentacaoDesc(reagenteId);
+    }
+
+    public List<MovimentacaoReagenteResponseDTO> listarDTO() {
+        return repository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    /* ===============================
+       REGISTROS DE MOVIMENTAÇÃO
+    =============================== */
 
     public void registrarMovimentacaoInicial(Reagente reagente) {
-        MovimentacaoReagente movimentacao = new MovimentacaoReagente();
-        criarMovimentacaoInicial(reagente, movimentacao);
-        repository.save(movimentacao);
 
+        MovimentacaoReagente mov = new MovimentacaoReagente();
+        mov.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
+        mov.setReagente(reagente);
+        mov.setDataMovimentacao(LocalDate.now());
+        mov.setQuantidadeAlterada(reagente.getQuantidadeTotal());
+        mov.setQuantidadeFinal(reagente.getQuantidadeTotal());
+        mov.setMotivo("Cadastro inicial do reagente");
+
+        repository.save(mov);
     }
 
-    private void criarMovimentacaoInicial(Reagente reagente, MovimentacaoReagente movimentacao) {
-        movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        movimentacao.setReagente(reagente);
-        movimentacao.setDataMovimentacao(LocalDate.now());
-        movimentacao.setQuantidadeAlterada(reagente.getQuantidadeAtual());
-        movimentacao.setQuantidadeFinal(reagente.getQuantidadeAtual());
+    public void registrarMovimentacaoDeEntrada(Reagente reagente, Double quantidade) {
+
+        MovimentacaoReagente mov = new MovimentacaoReagente();
+        mov.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
+        mov.setReagente(reagente);
+        mov.setDataMovimentacao(LocalDate.now());
+        mov.setQuantidadeAlterada(quantidade);
+        mov.setQuantidadeFinal(reagente.getQuantidadeTotal());
+        mov.setMotivo("Entrada de reagente");
+
+        repository.save(mov);
     }
 
-    private void criarMovimentacaoEntrada(Reagente reagente, Reagente novo, MovimentacaoReagente movimentacao) {
-        movimentacao.setTipoMovimentacao(TipoMovimentacao.ENTRADA);
-        movimentacao.setReagente(reagente);
-        movimentacao.setDataMovimentacao(LocalDate.now());
-        movimentacao.setQuantidadeAlterada(novo.getQuantidadeTotal());
-        movimentacao.setQuantidadeFinal(novo.getQuantidadeTotal());
+    public void registrarMovimentacaoDeSaida(Reagente reagente, Double quantidade) {
+
+        MovimentacaoReagente mov = new MovimentacaoReagente();
+        mov.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+        mov.setReagente(reagente);
+        mov.setDataMovimentacao(LocalDate.now());
+        mov.setQuantidadeAlterada(quantidade);
+        mov.setQuantidadeFinal(reagente.getQuantidadeTotal());
+        mov.setMotivo("Saída por uso em procedimento");
+
+        repository.save(mov);
     }
 
-    public void registrarMovimentacaoDeSaida(Reagente reagente, Double quantidadeRemovida) {
-        if (quantidadeRemovida <= 0) {
-            throw new IllegalArgumentException("A quantidade de saída deve ser maior que zero.");
-        }
+    /* ===============================
+       DTO
+    =============================== */
 
-        if (reagente.getQuantidadeTotal() < quantidadeRemovida) {
-            throw new IllegalArgumentException("Quantidade insuficiente em estoque para saída.");
-        }
+    private MovimentacaoReagenteResponseDTO toDTO(MovimentacaoReagente mov) {
 
-        MovimentacaoReagente movimentacaoReagenteSaida = new MovimentacaoReagente();
-        movimentacaoReagenteSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        movimentacaoReagenteSaida.setReagente(reagente);
-        movimentacaoReagenteSaida.setDataMovimentacao(LocalDate.now());
-        movimentacaoReagenteSaida.setQuantidadeAlterada(quantidadeRemovida);
+        MovimentacaoReagenteResponseDTO dto =
+                new MovimentacaoReagenteResponseDTO();
 
-        double novaQuantidade = Math.max(0, reagente.getQuantidadeTotal() - quantidadeRemovida);
-        movimentacaoReagenteSaida.setQuantidadeFinal(novaQuantidade);
+        dto.setId(mov.getId());
+        dto.setTipoMovimentacao(mov.getTipoMovimentacao());
+        dto.setQuantidadeAlterada(mov.getQuantidadeAlterada());
+        dto.setQuantidadeFinal(mov.getQuantidadeFinal());
+        dto.setDataMovimentacao(mov.getDataMovimentacao());
+        dto.setMotivo(mov.getMotivo());
 
-        repository.save(movimentacaoReagenteSaida);
+        dto.setReagenteId(mov.getReagente().getId());
+        dto.setNomeReagente(mov.getReagente().getNome());
+
+        return dto;
     }
-    /*public void registrarMovimentacaoDeSaida(Reagente reagente, Reagente novo) {
-        if (novo.getQuantidadeTotal() <= 0) {
-            throw new IllegalArgumentException("A quantidade de saída deve ser maior que zero.");
-        }
-
-        if (reagente.getQuantidadeTotal() < novo.getQuantidadeTotal()) {
-            throw new IllegalArgumentException("Quantidade insuficiente em estoque para saída.");
-        }
-
-        MovimentacaoReagente movimentacaoReagenteSaida = new MovimentacaoReagente();
-        movimentacaoReagenteSaida.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        movimentacaoReagenteSaida.setReagente(reagente);
-        movimentacaoReagenteSaida.setDataMovimentacao(LocalDate.now());
-        movimentacaoReagenteSaida.setQuantidadeAlterada(novo.getQuantidadeTotal());
-
-        double novaQuantidade = Math.max(0, reagente.getQuantidadeTotal() - novo.getQuantidadeTotal());
-        movimentacaoReagenteSaida.setQuantidadeFinal(novaQuantidade);
-
-        repository.save(movimentacaoReagenteSaida);
-    }*/
-
 }
