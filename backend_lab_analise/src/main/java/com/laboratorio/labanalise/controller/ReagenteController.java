@@ -51,8 +51,8 @@ public class ReagenteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reagente>> listar() {
-        return ResponseEntity.ok(service.buscarTodos());
+    public ResponseEntity<List<ReagenteDTO>> listar() {
+        return ResponseEntity.ok(service.buscarTodosDTO());
     }
 
     @GetMapping("/{id}")
@@ -141,7 +141,7 @@ public class ReagenteController {
             @PathVariable Long id,
             @RequestBody SaidaReagenteDTO dto
     ) {
-        service.registrarSaida(id,dto);
+        service.registrarSaida(id, dto);
         return ResponseEntity.ok("Saída registrada com sucesso");
     }
 }

@@ -1,48 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Autocomplete, Box, Typography,
-  FormGroup, FormControlLabel, Checkbox, Button
-} from '@mui/material';
-import { getAnalitos } from '../../services/AnalitoService.js';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
+  Typography,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  TextField
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import { getAnalitos } from "../../services/AnalitoService";
 
-const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect, open }) => {
-  const [analitos, setAnalitos] = useState([]);
+const AnalitoSelector = ({ handleClose, onAnalitoSelect, open }) => {
   const [tiposESubtipos, setTiposESubtipos] = useState([]);
-  const [showTiposESubtipos, setShowTiposESubtipos] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedClassificacao, setSelectedClassificacao] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
 
   useEffect(() => {
     if (!open) return;
 
     const fetchAnalitos = async () => {
       try {
-        const data = await getAnalitos(); // ✅ usa a função do service com token
-        if (!data) {
-          console.warn("⚠️ Nenhum analito retornado");
+        const data = await getAnalitos();
+
+        if (!Array.isArray(data)) {
+          console.error("❌ API não retornou um array:", data);
           return;
         }
 
-        setAnalitos(data);
+        /**
+         * Agrupa analitos por classificação
+         */
+        const agrupado = {};
 
-        const tiposMap = {};
         data.forEach(item => {
-          if (item.classificacao && item.tipoAnalito && item.subtipoAnalito) {
-            if (!tiposMap[item.classificacao]) tiposMap[item.classificacao] = [];
-            tiposMap[item.classificacao].push({
-              tipo: item.tipoAnalito,
-              subtipos: item.subtipoAnalito,
-              analitoId: item.id
-            });
+          if (!item.classificacao || !item.tipoAnalito || !Array.isArray(item.subtipos)) {
+            return;
           }
+
+          if (!agrupado[item.classificacao]) {
+            agrupado[item.classificacao] = [];
+          }
+
+          agrupado[item.classificacao].push({
+            analitoId: item.id,
+            tipo: item.tipoAnalito,
+            subtipos: item.subtipos
+          });
         });
 
-        const tiposESubtiposData = Object.entries(tiposMap).map(([classificacao, tipos]) => ({
-          classificacao,
-          tipos
-        }));
-        setTiposESubtipos(tiposESubtiposData);
+        const resultado = Object.entries(agrupado).map(
+          ([classificacao, tipos]) => ({
+            classificacao,
+            tipos
+          })
+        );
+
+        setTiposESubtipos(resultado);
       } catch (error) {
         console.error("Erro ao buscar analitos:", error);
       }
@@ -50,11 +68,6 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect, open 
 
     fetchAnalitos();
   }, [open]);
-
-  const handleAnalitoSelection = (event, value) => {
-    setSelectedClassificacao(value);
-    setShowTiposESubtipos(!!value);
-  };
 
   const handleOptionChange = (classificacao, tipo, subtipo, checked) => {
     setSelectedOptions(prev => ({
@@ -73,32 +86,23 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect, open 
     const analitosSelecionados = [];
 
     tiposESubtipos.forEach(classObj => {
-      const tiposSelecionados = [];
-
       classObj.tipos.forEach(tipoObj => {
-        const subtiposSelecionados = tipoObj.subtipos.filter(
-          subtipo => selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo]
-        );
-        if (subtiposSelecionados.length > 0) {
-          tiposSelecionados.push({
-            tipo: tipoObj.tipo,
-            subtipos: subtiposSelecionados,
-            analitoId: tipoObj.analitoId
-          });
-        }
-      });
-
-      if (tiposSelecionados.length > 0) {
-        analitosSelecionados.push({
-          classificacao: classObj.classificacao,
-          analitoId: tiposSelecionados[0].analitoId,
-          tipos: tiposSelecionados
+        tipoObj.subtipos.forEach(subtipo => {
+          if (
+            selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo]
+          ) {
+            analitosSelecionados.push({
+              analitoId: tipoObj.analitoId,
+              classificacao: classObj.classificacao,
+              subtipo
+            });
+          }
         });
-      }
+      });
     });
 
     if (analitosSelecionados.length === 0) {
-      alert("Selecione pelo menos um subtipo de analito.");
+      alert("Selecione pelo menos um subtipo.");
       return;
     }
 
@@ -109,47 +113,61 @@ const AnalitoSelector = ({ selectedAnalitos, handleClose, onAnalitoSelect, open 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Escolha o Analito</DialogTitle>
+
       <DialogContent>
         <Autocomplete
           options={tiposESubtipos}
-          getOptionLabel={option => option.classificacao || ""}
-          onChange={handleAnalitoSelection}
+          getOptionLabel={option => option.classificacao}
           value={selectedClassificacao}
-          renderInput={params => <TextField {...params} label="Classificação" required margin="normal" style={{ width: 350 }} />}
+          onChange={(e, value) => setSelectedClassificacao(value)}
+          renderInput={params => (
+            <TextField {...params} label="Classificação" margin="normal" />
+          )}
         />
 
-        {showTiposESubtipos && selectedClassificacao &&
-          tiposESubtipos
-            .filter(item => item.classificacao === selectedClassificacao.classificacao)
-            .map((classObj, index) => (
-              <Box key={index} sx={{ backgroundColor: 'white', padding: 2, mt: 1, borderRadius: 1, boxShadow: 1 }}>
-                <Typography variant="h6">{classObj.classificacao}</Typography>
-                {classObj.tipos.map((tipoObj, idx) => (
-                  <Box key={idx} sx={{ ml: 2 }}>
-                    <Typography variant="subtitle1">{tipoObj.tipo}</Typography>
-                    <FormGroup>
-                      {tipoObj.subtipos.map((subtipo, sIdx) => (
-                        <FormControlLabel
-                          key={sIdx}
-                          control={
-                            <Checkbox
-                              checked={selectedOptions[classObj.classificacao]?.[tipoObj.tipo]?.[subtipo] || false}
-                              onChange={e => handleOptionChange(classObj.classificacao, tipoObj.tipo, subtipo, e.target.checked)}
-                            />
+        {selectedClassificacao && (
+          <Box mt={2}>
+            {selectedClassificacao.tipos.map((tipoObj, idx) => (
+              <Box key={idx} ml={2}>
+                <Typography variant="subtitle1">{tipoObj.tipo}</Typography>
+                <FormGroup>
+                  {tipoObj.subtipos.map((subtipo, sIdx) => (
+                    <FormControlLabel
+                      key={sIdx}
+                      control={
+                        <Checkbox
+                          checked={
+                            selectedOptions[selectedClassificacao.classificacao]
+                              ?. [tipoObj.tipo]
+                              ?. [subtipo] || false
                           }
-                          label={subtipo}
+                          onChange={e =>
+                            handleOptionChange(
+                              selectedClassificacao.classificacao,
+                              tipoObj.tipo,
+                              subtipo,
+                              e.target.checked
+                            )
+                          }
                         />
-                      ))}
-                    </FormGroup>
-                  </Box>
-                ))}
+                      }
+                      label={subtipo}
+                    />
+                  ))}
+                </FormGroup>
               </Box>
-            ))
-        }
+            ))}
+          </Box>
+        )}
       </DialogContent>
+
       <DialogActions>
-        <Button onClick={handleClose} color="secondary">Fechar</Button>
-        <Button onClick={handleSave} color="primary">Salvar</Button>
+        <Button onClick={handleClose} color="secondary">
+          Cancelar
+        </Button>
+        <Button onClick={handleSave} color="primary">
+          Salvar
+        </Button>
       </DialogActions>
     </Dialog>
   );

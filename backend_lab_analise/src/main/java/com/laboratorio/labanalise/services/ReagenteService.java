@@ -1,6 +1,7 @@
 package com.laboratorio.labanalise.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class ReagenteService {
     private final MovimentacaoReagenteService movimentacaoReagenteService;
     private final ReagenteMapper reagenteMapper;
     private final FrascoReagenteService frascoReagenteService;
+
     private final FrascoReagenteRepository frascoReagenteRepository;
 
     public ReagenteService(
@@ -112,6 +114,8 @@ public class ReagenteService {
         }
     }
 
+   
+
     // =========================
     // CONSULTAS / DASHBOARD
     // =========================
@@ -186,37 +190,40 @@ public class ReagenteService {
                 .collect(Collectors.toList());
     }
 
-
-
     @Transactional
     public void registrarSaida(Long reagenteId, SaidaReagenteDTO dto) {
 
         Reagente reagente = repository.findById(reagenteId)
                 .orElseThrow(() -> new RuntimeException("Reagente não encontrado"));
 
-        frascoReagenteService.descontarQuantidade(reagente, dto.getQuantidade());
+        // 1️⃣ Desconta dos frascos (FIFO, validade, etc.)
+        List<FrascoReagente> frascosUsados
+                = frascoReagenteService.descontarQuantidade(reagente, dto.getQuantidade());
 
-        atualizarQuantidadeTotal(reagente);
+        //  Registra UMA movimentação por frasco
+        for (FrascoReagente frasco : frascosUsados) {
 
-        MovimentacaoReagente mov = new MovimentacaoReagente();
-        mov.setTipoMovimentacao(TipoMovimentacao.SAIDA);
-        mov.setReagente(reagente);
-        mov.setQuantidadeAlterada(dto.getQuantidade());
-        mov.setQuantidadeFinal(reagente.getQuantidadeTotal());
-        mov.setDataMovimentacao(LocalDate.now());
-        mov.setMotivo(dto.getMotivo());
+            MovimentacaoReagente mov = new MovimentacaoReagente();
+            mov.setTipoMovimentacao(TipoMovimentacao.SAIDA);
+            mov.setReagente(reagente);
+            mov.setFrasco(frasco);
+            mov.setQuantidadeAlterada(frasco.getQuantidadeMovimentada());
+            mov.setDataMovimentacao(LocalDateTime.now());
+           //mov.setDataMovimentacao(null);
+            mov.setMotivo(dto.getMotivo());
 
-        movimentacaoReagenteService.salvar(mov);
+            movimentacaoReagenteService.salvar(mov);
+        }
     }
 
-    @Transactional
-    public void atualizarQuantidadeTotal(Reagente reagente) {
-
-        Double total = frascoReagenteService
-                .somarQuantidadeAtualPorReagente(reagente);
-
-        reagente.setQuantidadeTotal(total);
-        repository.save(reagente);
+    // =========================
+// DTO PARA FRONT
+// =========================
+    public List<ReagenteDTO> buscarTodosDTO() {
+        return repository.findAll()
+                .stream()
+                .map(reagenteMapper::toDTO)
+                .toList();
     }
 
 }

@@ -174,20 +174,15 @@ public class AmostraDTO {
             this.analiseNome = amostra.getAnalise().getNome();
         }
 
-  if (amostra.getAnalitos() != null) {
-    this.analitosSelecionados = amostra.getAnalitos().stream()
-        .flatMap(analito ->
-            analito.getSubtipoAnalito().stream() 
-                .map(subtipo -> new AnalitoSubtipoDTO(
-                    analito.getId(),
-                    analito.getClassificacao(),
-                    subtipo
-                ))
-        )
-        .collect(Collectors.toList());
-}
-
-
+        if (amostra.getAmostraAnalitos() != null) {
+            this.analitosSelecionados = amostra.getAmostraAnalitos().stream()
+                    .map(aa -> new AnalitoSubtipoDTO(
+                    aa.getAnalito().getId(),
+                    aa.getAnalito().getClassificacao(),
+                    aa.getSubtipo()
+            ))
+                    .collect(Collectors.toList());
+        }
         if (amostra.getProcedimentos() != null) {
             this.procedimentosIds = amostra.getProcedimentos().stream()
                     .map(p -> p.getId())

@@ -13,7 +13,6 @@ public class MovimentacaoReagenteResponseDTO {
 
     private TipoMovimentacao tipoMovimentacao;
     private Double quantidadeAlterada;
-    private Double quantidadeFinal;
     private LocalDate dataMovimentacao;
     private String motivo;
 
@@ -57,13 +56,6 @@ public class MovimentacaoReagenteResponseDTO {
         this.quantidadeAlterada = quantidadeAlterada;
     }
 
-    public Double getQuantidadeFinal() {
-        return quantidadeFinal;
-    }
-
-    public void setQuantidadeFinal(Double quantidadeFinal) {
-        this.quantidadeFinal = quantidadeFinal;
-    }
 
     public LocalDate getDataMovimentacao() {
         return dataMovimentacao;

@@ -42,22 +42,6 @@ public class AmostraController {
     @Autowired
     private AmostraRepository repository;
 
-    @Autowired
-    private AnalitoService analitoService;
-
-    @Autowired
-    private AnalitoRepository analitoRepository;
-
-    @Autowired
-    private AnaliseService analiseService;
-    @Autowired
-    private AnaliseRepository analiseRepository;
-
-    @Autowired
-    private ProcedimentoService procedimentoService;
-
-    @Autowired
-    private ProcedimentoRepository procedimentoRepository;
 
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody AmostraDTO dto) {

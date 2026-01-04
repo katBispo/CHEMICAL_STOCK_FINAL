@@ -126,23 +126,6 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
         </Box>
 
         <List sx={{ position: "relative", height: "100%" }}>
-          {/* PERFIL */}
-          <ListItem
-            button
-            component={Link}
-            to="/perfil"
-            onClick={() => setSelectedItem("/perfil")}
-            selected={selectedItem === "/perfil"}
-            sx={{
-              bgcolor: selectedItem === "/perfil" ? "#8BC34A" : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <AccountCircleIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Perfil" />
-          </ListItem>
           {/* HOME */}
           <ListItem
             button
@@ -159,47 +142,6 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
               <HomeIcon sx={{ color: "white" }} />
             </ListItemIcon>
             <ListItemText primary="Home" />
-          </ListItem>
-
-          {/* DASHBOARDS */}
-          <ListItem
-            button
-            component={Link}
-            to="/dashboardAnalises"
-            onClick={() => setSelectedItem("/dashboardAnalises")}
-            selected={selectedItem === "/dashboardAnalises"}
-            sx={{
-              bgcolor:
-                selectedItem === "/dashboardAnalises"
-                  ? "#8BC34A"
-                  : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <AnalyticsIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard de Análises" />
-          </ListItem>
-
-          <ListItem
-            button
-            component={Link}
-            to="/dashboardEquipamentos"
-            onClick={() => setSelectedItem("/dashboardEquipamentos")}
-            selected={selectedItem === "/dashboardEquipamentos"}
-            sx={{
-              bgcolor:
-                selectedItem === "/dashboardEquipamentos"
-                  ? "#8BC34A"
-                  : "transparent",
-              color: "white",
-            }}
-          >
-            <ListItemIcon>
-              <InventoryIcon sx={{ color: "white" }} />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard de Equipamentos" />
           </ListItem>
 
           {/* ESTOQUE */}
@@ -220,6 +162,67 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
             <ListItemText primary="Estoque" />
           </ListItem>
 
+          {/* Ordem de serviço */}
+          <ListItem
+            button
+            component={Link}
+            to="/contratoLista"
+            onClick={() => setSelectedItem("/contratoLista")}
+            selected={selectedItem === "/contratoLista"}
+            sx={{
+              bgcolor:
+                selectedItem === "/contratoLista" ? "#8BC34A" : "transparent",
+              color: "white",
+            }}
+          >
+            <ListItemIcon>
+              <FolderCopyIcon sx={{ color: "white" }} />
+            </ListItemIcon>
+            <ListItemText primary="Ordem de Serviço" />
+          </ListItem>
+
+          {/* DASHBORAD ANALISES */}
+          <ListItem
+            button
+            component={Link}
+            to="/dashboardAnalises"
+            onClick={() => setSelectedItem("/dashboardAnalises")}
+            selected={selectedItem === "/dashboardAnalises"}
+            sx={{
+              bgcolor:
+                selectedItem === "/dashboardAnalises"
+                  ? "#8BC34A"
+                  : "transparent",
+              color: "white",
+            }}
+          >
+            <ListItemIcon>
+              <FolderCopyIcon sx={{ color: "white" }} />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard de Análises" />
+          </ListItem>
+
+          {/* DASHBORAD ANALISES */}
+          <ListItem
+            button
+            component={Link}
+            to="/dashboardEquipamentos"
+            onClick={() => setSelectedItem("/dashboardEquipamentos")}
+            selected={selectedItem === "/dashboardEquipamentos"}
+            sx={{
+              bgcolor:
+                selectedItem === "/dashboardEquipamentos"
+                  ? "#8BC34A"
+                  : "transparent",
+              color: "white",
+            }}
+          >
+            <ListItemIcon>
+              <FolderCopyIcon sx={{ color: "white" }} />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard de Equipamentos" />
+          </ListItem>
+
           {/* LISTAS */}
           <ListItem button onClick={handleListasClick}>
             <ListItemIcon>
@@ -231,6 +234,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
           <Collapse in={openListas} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
+              {/* Análises */}
               <ListItem
                 button
                 component={Link}
@@ -252,6 +256,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Análises" />
               </ListItem>
 
+              {/* Procedimentos */}
               <ListItem
                 button
                 component={Link}
@@ -273,6 +278,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Procedimentos" />
               </ListItem>
 
+              {/* Contratos */}
               <ListItem
                 button
                 component={Link}
@@ -294,6 +300,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Contratos" />
               </ListItem>
 
+              {/* Matrizes */}
               <ListItem
                 button
                 component={Link}
@@ -313,6 +320,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Matrizes" />
               </ListItem>
 
+              {/* Clientes */}
               <ListItem
                 button
                 component={Link}
@@ -334,6 +342,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Clientes" />
               </ListItem>
 
+              {/* Amostras */}
               <ListItem
                 button
                 component={Link}
@@ -360,7 +369,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
           {/* CADASTRO DE ITENS */}
           <ListItem button onClick={handleCadastroItensClick}>
             <ListItemIcon>
-              <PersonAddIcon sx={{ color: "white" }} />
+              <InventoryIcon sx={{ color: "white" }} />
             </ListItemIcon>
             <ListItemText primary="Cadastro de Itens" />
             {openCadastroItens ? <ExpandLess /> : <ExpandMore />}
@@ -368,7 +377,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
 
           <Collapse in={openCadastroItens} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {/* Agrupamento similar às listas */}
+              {/* Análises */}
               <ListItem
                 button
                 component={Link}
@@ -390,9 +399,11 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Análises" />
               </ListItem>
 
+              {/* Amostras */}
               <ListItem
                 button
                 onClick={handleOpenAmostraOverlay}
+                selected={selectedItem === "/amostraCadastro"}
                 sx={{
                   pl: 4,
                   bgcolor:
@@ -408,6 +419,12 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Amostras" />
               </ListItem>
 
+              <SelectAnaliseDaAmostra
+                open={openAmostraOverlay}
+                handleClose={handleCloseAmostraOverlay}
+              />
+
+              {/* Matriz */}
               <ListItem
                 button
                 onClick={handleOpenMatrizOverlay}
@@ -423,9 +440,15 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemIcon>
                   <CategoryIcon sx={{ color: "white" }} />
                 </ListItemIcon>
-                <ListItemText primary="Matrizes" />
+                <ListItemText primary="Matriz" />
               </ListItem>
 
+              <MatrizCadastro
+                open={openMatrizOverlay}
+                handleClose={handleCloseMatrizOverlay}
+              />
+
+              {/* Equipamentos */}
               <ListItem
                 button
                 component={Link}
@@ -442,11 +465,12 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 }}
               >
                 <ListItemIcon>
-                  <InventoryIcon sx={{ color: "white" }} />
+                  <AnalyticsIcon sx={{ color: "white" }} />
                 </ListItemIcon>
                 <ListItemText primary="Equipamentos" />
               </ListItem>
 
+              {/* Resíduos */}
               <ListItem
                 button
                 component={Link}
@@ -463,11 +487,12 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 }}
               >
                 <ListItemIcon>
-                  <ScienceIcon sx={{ color: "white" }} />
+                  <AnalyticsIcon sx={{ color: "white" }} />
                 </ListItemIcon>
                 <ListItemText primary="Resíduos" />
               </ListItem>
 
+              {/* Reagentes */}
               <ListItem
                 button
                 component={Link}
@@ -489,6 +514,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Reagentes" />
               </ListItem>
 
+              {/* Analito */}
               <ListItem
                 button
                 onClick={handleOpenAnalitoOverlay}
@@ -507,6 +533,12 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Analito" />
               </ListItem>
 
+              <AnalitoCadastro
+                open={openAnalitoOverlay}
+                handleClose={handleCloseAnalitoOverlay}
+              />
+
+              {/* Clientes */}
               <ListItem
                 button
                 component={Link}
@@ -528,6 +560,7 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
                 <ListItemText primary="Clientes" />
               </ListItem>
 
+              {/* Procedimentos */}
               <ListItem
                 button
                 component={Link}
@@ -551,10 +584,81 @@ const SideBar = ({ drawerOpen, toggleDrawer }) => {
             </List>
           </Collapse>
 
-      
+          {/* PERFIL */}
+          <ListItem
+            button
+            component={Link}
+            to="/perfil"
+            onClick={() => setSelectedItem("/perfil")}
+            selected={selectedItem === "/perfil"}
+            sx={{
+              bgcolor: selectedItem === "/perfil" ? "#8BC34A" : "transparent",
+              color: "white",
+            }}
+          >
+            <ListItemIcon>
+              <AccountCircleIcon sx={{ color: "white" }} />
+            </ListItemIcon>
+            <ListItemText primary="Perfil" />
+          </ListItem>
+
+          {/* LOGOUT — ÍCONE NO CANTO INFERIOR */}
+          <ListItem
+            button
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/loginPage");
+            }}
+            sx={{
+              position: "absolute",
+              bottom: 10,
+              left: 10,
+              width: "auto",
+              color: "white",
+              padding: 0,
+              minWidth: 0,
+            }}
+          >
+            <LogoutIcon sx={{ color: "white", fontSize: 28 }} />
+          </ListItem>
         </List>
-        
       </Drawer>
+
+      {/* Ícones compactos (sidebar recolhida) */}
+      {!drawerOpen && (
+        <Box
+          sx={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            height: "100vh",
+            width: 60,
+            backgroundColor: "#4CAF50",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: 1,
+            boxShadow: 2,
+            paddingTop: "70px",
+          }}
+        >
+          <IconButton onClick={toggleDrawer} sx={{ color: "white" }}>
+            <ArrowForwardIcon />
+          </IconButton>
+          <IconButton sx={{ color: "white" }}>
+            <HomeIcon />
+          </IconButton>
+          <IconButton sx={{ color: "white" }}>
+            <ListAltIcon />
+          </IconButton>
+          <IconButton sx={{ color: "white" }}>
+            <InventoryIcon />
+          </IconButton>
+          <IconButton sx={{ color: "white" }}>
+            <AccountCircleIcon />
+          </IconButton>
+        </Box>
+      )}
     </>
   );
 };

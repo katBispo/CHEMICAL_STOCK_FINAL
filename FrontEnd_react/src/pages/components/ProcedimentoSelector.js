@@ -14,18 +14,13 @@ function ProcedimentoSelector({ onSave, onClose }) {
   const [procedures, setProcedures] = useState([]);
   const [selectedProcedures, setSelectedProcedures] = useState([]);
 
-  useEffect(() => {
-    const fetchProcedures = async () => {
-      try {
-        const data = await getProcedimentos();
-        setProcedures(data);
-      } catch (error) {
-        console.error("Erro ao buscar procedimentos:", error);
-      }
-    };
-
-    fetchProcedures();
-  }, []);
+useEffect(() => {
+  const fetchProcedures = async () => {
+    const data = await getProcedimentos();
+    setProcedures(Array.isArray(data) ? data : []);
+  };
+  fetchProcedures();
+}, []);
 
   const handleSave = () => {
     onSave(selectedProcedures);

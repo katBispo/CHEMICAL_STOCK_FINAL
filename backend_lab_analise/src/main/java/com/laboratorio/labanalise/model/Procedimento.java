@@ -1,5 +1,11 @@
 package com.laboratorio.labanalise.model;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,15 +17,11 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "PROCEDIMENTO")
 public class Procedimento implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,8 @@ public class Procedimento implements Serializable {
     private String descricaoProcedimento;
     @Lob
     private byte[] pdfData;
+    @Column(nullable = false)
+    private Integer totalExecucoes = 0;
 
     @OneToMany(mappedBy = "id.procedimento")
     private Set<AmostraProcedimento> amostraProcedimentos = new HashSet();
@@ -93,6 +97,7 @@ public class Procedimento implements Serializable {
         this.dataCadastro = dataCadastro;
     }
 
+    
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -104,7 +109,46 @@ public class Procedimento implements Serializable {
         }
     }
 
+    public void incrementarUso() {
+        if (this.totalExecucoes == null) {
+            this.totalExecucoes = 0;
+        }
+        this.totalExecucoes++;
+    }
+
     public int hashCode() {
-        return Objects.hash(new Object[] { this.id });
+        return Objects.hash(new Object[]{this.id});
+    }
+
+    public Integer getTotalExecucoes() {
+        return totalExecucoes;
+    }
+
+    public void setTotalExecucoes(Integer totalExecucoes) {
+        this.totalExecucoes = totalExecucoes;
+    }
+
+    public Set<AmostraProcedimento> getAmostraProcedimentos() {
+        return amostraProcedimentos;
+    }
+
+    public void setAmostraProcedimentos(Set<AmostraProcedimento> amostraProcedimentos) {
+        this.amostraProcedimentos = amostraProcedimentos;
+    }
+
+    public Set<Equipamento> getEquipamentos() {
+        return equipamentos;
+    }
+
+    public void setEquipamentos(Set<Equipamento> equipamentos) {
+        this.equipamentos = equipamentos;
+    }
+
+    public Set<ReagenteUsadoProcedimento> getReagentesUsados() {
+        return reagentesUsados;
+    }
+
+    public void setReagentesUsados(Set<ReagenteUsadoProcedimento> reagentesUsados) {
+        this.reagentesUsados = reagentesUsados;
     }
 }

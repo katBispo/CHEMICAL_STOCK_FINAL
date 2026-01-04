@@ -5,6 +5,7 @@ import com.laboratorio.labanalise.model.pk.AmostraProcedimentoPK;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
+
 @Entity
 @Table(name = "procedimento_amostra")
 public class AmostraProcedimento implements Serializable {

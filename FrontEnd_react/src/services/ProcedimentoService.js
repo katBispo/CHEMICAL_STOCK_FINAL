@@ -1,10 +1,14 @@
 // src/services/ProcedimentoService.js
-import { apiGet, apiPost, apiPut, apiDelete } from "./api";
+import{ apiGet, apiPost, apiPut, apiDelete } from "./api";
 
-export async function getProcedimentos() {
-  return apiGet("/procedimento");
-}
+export const getProcedimentos = async () => {
+  return apiGet("/procedimento/select");
+};
 
+export const getAnalitos = async () => {
+  const response = await apiGet("/analitos");
+  return response.data; 
+};
 export async function getProcedimentoById(id) {
   return apiGet(`/procedimento/${id}`);
 }
@@ -27,4 +31,9 @@ export async function getProcedimentosMaisUsados() {
 
 export async function getProcedimentosUsoTotal() {
   return apiGet("/procedimento/uso-total");
+}
+export async function executarProcedimento(procedimentoId) {
+  return apiPost("/procedimento/executar", {
+    procedimentoId,
+  });
 }

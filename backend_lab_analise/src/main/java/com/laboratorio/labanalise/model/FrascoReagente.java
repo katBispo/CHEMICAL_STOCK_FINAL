@@ -1,6 +1,5 @@
 package com.laboratorio.labanalise.model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.laboratorio.labanalise.model.enums.StatusFrasco;
@@ -15,26 +14,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 
 @Entity
-@Table(name = "FRASCO_REAGENTE")
-public class FrascoReagente implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@Table(name = "frasco_reagente")
+public class FrascoReagente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "reagente_id")
-    private Reagente reagente;
+    @Column(nullable = false)
+    private Double capacidadeMaxima;
 
     @Column(nullable = false)
-    private Double capacidadeMaxima;   // ex: 1000 ml
-
-    @Column(nullable = false)
-    private Double quantidadeAtual;    // ex: 450 ml
+    private Double quantidadeAtual;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,6 +37,15 @@ public class FrascoReagente implements Serializable {
 
     @Column(nullable = false)
     private LocalDate dataValidade;
+
+    @ManyToOne
+    @JoinColumn(name = "reagente_id", nullable = false)
+    private Reagente reagente;
+
+    // NÃO VAI PARA O BANCO
+    @Transient
+    private Double quantidadeMovimentada;
+
 
     public FrascoReagente() {}
 
@@ -93,6 +97,14 @@ public class FrascoReagente implements Serializable {
 
     public void setDataValidade(LocalDate dataValidade) {
         this.dataValidade = dataValidade;
+    }
+
+    public Double getQuantidadeMovimentada() {
+        return quantidadeMovimentada;
+    }
+
+    public void setQuantidadeMovimentada(Double quantidadeMovimentada) {
+        this.quantidadeMovimentada = quantidadeMovimentada;
     }
 
 

@@ -1,6 +1,7 @@
 package com.laboratorio.labanalise.controller;
 
 import com.laboratorio.labanalise.model.Analito;
+import com.laboratorio.labanalise.DTO.AnalitoListDTO;
 import com.laboratorio.labanalise.DTO.TipoAnalitoDto; // Certifique-se de que você tenha esse DTO criado
 import com.laboratorio.labanalise.services.AnalitoService;
 import com.laboratorio.labanalise.request.*;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpStatus;
 import java.util.Optional;
-
 
 import java.net.URI;
 import java.util.List;
@@ -31,12 +31,11 @@ public class AnalitoController {
         return ResponseEntity.created(uri).body(analito);
     }
 
-    @GetMapping
+    /*  @GetMapping
     public ResponseEntity<List<Analito>> listarAnalitos() {
         List<Analito> analitos = service.buscarTodos();
         return ResponseEntity.ok().body(analitos);
-    }
-
+    }*/
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deletarAnalito(@PathVariable Long id) {
         service.remover(id);
@@ -84,12 +83,17 @@ public class AnalitoController {
         if (analitoOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-    
+
         Analito analito = analitoOpt.get();
         analito.adicionarTipo(request.getTipoAnalito(), request.getSubtipoAnalito());
         analitoRepository.save(analito);
-    
+
         return ResponseEntity.ok(analito);
     }
-    
+
+    @GetMapping
+    public ResponseEntity<List<AnalitoListDTO>> listarAnalitos() {
+        return ResponseEntity.ok(service.listarAnalitos());
+    }
+
 }

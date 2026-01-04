@@ -1,17 +1,13 @@
 package com.laboratorio.labanalise.model;
 
-import java.time.LocalDate;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.time.LocalDateTime;
 
 import com.laboratorio.labanalise.model.enums.TipoMovimentacao;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,24 +16,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "MOVIMENTACAO_REAGENTE")
-@EntityListeners(AuditingEntityListener.class)
+@Table(name = "movimentacao_reagente")
 public class MovimentacaoReagente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reagente_id", nullable = false)
-    private Reagente reagente;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "frasco_id")
-    private FrascoReagente frasco;
-
     @Column(nullable = false)
-    private LocalDate dataMovimentacao = LocalDate.now();
+    private LocalDateTime dataMovimentacao;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,27 +33,27 @@ public class MovimentacaoReagente {
     @Column(nullable = false)
     private Double quantidadeAlterada;
 
-    @Column(nullable = false)
-    private Double quantidadeFinal;
-
-    @Column
     private String motivo;
 
-    // getters e setters
-    public FrascoReagente getFrasco() {
-        return frasco;
+    @ManyToOne
+    @JoinColumn(name = "reagente_id", nullable = false)
+    private Reagente reagente;
+
+    @ManyToOne
+    @JoinColumn(name = "frasco_id")
+    private FrascoReagente frasco;
+
+    // =========================
+    // CONSTRUTORES
+    // =========================
+    public MovimentacaoReagente() {
     }
 
-    public void setFrasco(FrascoReagente frasco) {
-        this.frasco = frasco;
-    }
-
+    // =========================
+    // GETTERS / SETTERS
+    // =========================
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Reagente getReagente() {
@@ -77,12 +64,12 @@ public class MovimentacaoReagente {
         this.reagente = reagente;
     }
 
-    public LocalDate getDataMovimentacao() {
-        return dataMovimentacao;
+    public FrascoReagente getFrasco() {
+        return frasco;
     }
 
-    public void setDataMovimentacao(LocalDate dataMovimentacao) {
-        this.dataMovimentacao = dataMovimentacao;
+    public void setFrasco(FrascoReagente frasco) {
+        this.frasco = frasco;
     }
 
     public TipoMovimentacao getTipoMovimentacao() {
@@ -101,14 +88,6 @@ public class MovimentacaoReagente {
         this.quantidadeAlterada = quantidadeAlterada;
     }
 
-    public Double getQuantidadeFinal() {
-        return quantidadeFinal;
-    }
-
-    public void setQuantidadeFinal(Double quantidadeFinal) {
-        this.quantidadeFinal = quantidadeFinal;
-    }
-
     public String getMotivo() {
         return motivo;
     }
@@ -117,7 +96,11 @@ public class MovimentacaoReagente {
         this.motivo = motivo;
     }
 
+    public LocalDateTime getDataMovimentacao() {
+        return dataMovimentacao;
+    }
 
-
-
+    public void setDataMovimentacao(LocalDateTime dataMovimentacao) {
+        this.dataMovimentacao = dataMovimentacao;
+    }
 }

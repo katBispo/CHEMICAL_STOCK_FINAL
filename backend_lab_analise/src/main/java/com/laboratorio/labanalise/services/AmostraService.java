@@ -147,58 +147,31 @@ public Amostra saveAmostra(AmostraDTO dto) {
     amostra.getAnalise().setQuantidadeAmostras(quantidade);
     analiseRepository.save(amostra.getAnalise());
 
-    // ================= ANALITOS (SEM SUBTIPO) =================
-    if (dto.getAnalitos() != null && !dto.getAnalitos().isEmpty()) {
-
-        List<Long> analitosFiltrados = dto.getAnalitos().stream()
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (!analitosFiltrados.isEmpty()) {
-
-            List<Analito> analitos = analitoRepository.findAllById(analitosFiltrados);
-
-            if (analitos.size() != analitosFiltrados.size()) {
-                throw new RuntimeException("Um ou mais analitos não foram encontrados!");
-            }
-
-            for (Analito analito : analitos) {
-                AmostraAnalito aa = new AmostraAnalito(amostra, analito);
-                amostra.getAmostraAnalitos().add(aa);
-            }
-        }
-    }
-
+    
     // ================= ANALITOS COM SUBTIPO =================
     if (dto.getAnalitosSelecionados() != null && !dto.getAnalitosSelecionados().isEmpty()) {
 
-        for (AnalitoSubtipoDTO analitoSubtipoDTO : dto.getAnalitosSelecionados()) {
+    for (AnalitoSubtipoDTO dtoSub : dto.getAnalitosSelecionados()) {
 
-            Long analitoId = analitoSubtipoDTO.getAnalitoId();
-            String subtipoSelecionado = analitoSubtipoDTO.getSubtipo();
+        Analito analito = analitoRepository.findById(dtoSub.getAnalitoId())
+            .orElseThrow(() -> new RuntimeException("Analito não encontrado"));
 
-            if (analitoId == null || subtipoSelecionado == null || subtipoSelecionado.isBlank()) {
-                throw new RuntimeException("Analito ou subtipo inválido.");
-            }
-
-            Analito analito = analitoRepository.findById(analitoId)
-                    .orElseThrow(() -> new RuntimeException("Analito não encontrado: " + analitoId));
-
-            if (!analito.getSubtipos().contains(subtipoSelecionado)) {
-                throw new RuntimeException(
-                        "Subtipo " + subtipoSelecionado + " não pertence ao analito " + analitoId
-                );
-            }
-
-            AmostraAnalito amostraAnalito = new AmostraAnalito();
-            amostraAnalito.setAmostra(amostra);
-            amostraAnalito.setAnalito(analito);
-            amostraAnalito.setSubtipo(subtipoSelecionado);
-
-            amostra.getAmostraAnalitos().add(amostraAnalito);
+        if (!analito.getSubtipos().contains(dtoSub.getSubtipo())) {
+            throw new RuntimeException(
+                "Subtipo inválido: " + dtoSub.getSubtipo()
+            );
         }
+
+        AmostraAnalito aa = new AmostraAnalito(
+            amostra,
+            analito,
+            dtoSub.getSubtipo()
+        );
+
+        amostra.getAmostraAnalitos().add(aa);
     }
+}
+
 
     // ================= PROCEDIMENTOS =================
     if (dto.getProceduresIds() != null && !dto.getProceduresIds().isEmpty()) {
@@ -212,6 +185,8 @@ public Amostra saveAmostra(AmostraDTO dto) {
 
             AmostraProcedimento ap = new AmostraProcedimento(amostra, procedimento);
             amostraProcedimentoRepository.save(ap);
+            procedimentoService.executarProcedimento(procedimento.getId());
+
         }
     }
 

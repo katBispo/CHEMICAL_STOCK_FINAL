@@ -1,6 +1,7 @@
 package com.laboratorio.labanalise.services;
 
 import com.laboratorio.labanalise.model.Analito;
+import com.laboratorio.labanalise.DTO.AnalitoListDTO;
 import com.laboratorio.labanalise.DTO.TipoAnalitoDto; // Certifique-se de que este DTO esteja criado
 import com.laboratorio.labanalise.repositories.AnalitoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AnalitoService {
@@ -63,5 +65,19 @@ public class AnalitoService {
         } else {
             throw new RuntimeException("Classificação não encontrada com o ID: " + classificacaoId);
         }
+    }
+
+       public List<AnalitoListDTO> listarAnalitos() {
+
+        List<Analito> analitos = repository.findAll();
+
+        return analitos.stream()
+                .map(analito -> new AnalitoListDTO(
+                        analito.getId(),
+                        analito.getClassificacao(),
+                        analito.getTipoAnalito(),
+                        analito.getSubtipos()
+                ))
+                .collect(Collectors.toList());
     }
 }

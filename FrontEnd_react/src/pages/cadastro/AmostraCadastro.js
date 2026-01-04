@@ -81,33 +81,6 @@ function AmostraCadastro() {
     setShowProcedureSelector(false);
   };
 
-  function montarAnalitosSelecionados(selectedAnalitos) {
-    const resultado = [];
-
-    selectedAnalitos.forEach((analito) => {
-      if (!analito.analitoId) {
-        console.warn(
-          `AnalitoId ausente para classificação '${analito.classificacao}'`
-        );
-        return;
-      }
-
-      analito.tipos.forEach((tipo) => {
-        tipo.subtipos.forEach((subtipo) => {
-          resultado.push({
-            analitoId: analito.analitoId,
-            subtipo: subtipo,
-            classificacao: analito.classificacao,
-          });
-        });
-      });
-    });
-
-    return resultado;
-  }
-
-  const analitosSelecionados = montarAnalitosSelecionados(selectedAnalitos);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -121,7 +94,7 @@ function AmostraCadastro() {
       return;
     }
 
-    if (!selectedAnalitos?.length || !analitosSelecionados?.length) {
+    if (!selectedAnalitos?.length) {
       alert("Por favor, selecione pelo menos um analito com subtipo.");
       return;
     }
@@ -139,7 +112,7 @@ function AmostraCadastro() {
       selectedAnalise.id,
       selectedProcedures.map((p) => p.id),
       "EM_ANDAMENTO",
-      analitosSelecionados
+      selectedAnalitos
     );
 
     try {
@@ -393,26 +366,22 @@ function AmostraCadastro() {
                     Analitos Selecionados:
                   </Typography>
                   <List>
-                    {selectedAnalitos.map((analito, index) => (
+                    {Object.entries(
+                      selectedAnalitos.reduce((acc, analito) => {
+                        if (!acc[analito.classificacao]) {
+                          acc[analito.classificacao] = [];
+                        }
+                        acc[analito.classificacao].push(analito.subtipo);
+                        return acc;
+                      }, {})
+                    ).map(([classificacao, subtipos], index) => (
                       <ListItem key={index}>
                         <Typography variant="body2">
-                          {analito.classificacao ||
-                            "Classificação não disponível"}{" "}
-                          -{" "}
-                          {analito.tipos?.length > 0
-                            ? analito.tipos
-                                .map(
-                                  (tipo) =>
-                                    `${tipo.tipo || "Tipo não especificado"} (${
-                                      tipo.subtipos?.join(", ") ||
-                                      "Nenhum subtipo"
-                                    })`
-                                )
-                                .join("; ")
-                            : "Nenhum tipo disponível"}
+                          {classificacao} - {subtipos.join(", ")}
                         </Typography>
                       </ListItem>
                     ))}
+                    
                   </List>
                 </Box>
               )}

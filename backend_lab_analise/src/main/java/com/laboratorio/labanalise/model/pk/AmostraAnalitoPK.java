@@ -1,4 +1,5 @@
 package com.laboratorio.labanalise.model.pk;
+
 import com.laboratorio.labanalise.model.Amostra;
 import com.laboratorio.labanalise.model.Analito;
 import jakarta.persistence.Embeddable;
@@ -8,22 +9,46 @@ import java.io.Serializable;
 import java.util.Objects;
 import jakarta.persistence.Column;
 
-
 @Embeddable
 public class AmostraAnalitoPK implements Serializable {
 
+    @Column(name = "amostra_id")
     private Long amostraId;
 
+    @Column(name = "analito_id")
     private Long analitoId;
 
-    public AmostraAnalitoPK() {}
+    @Column(name = "subtipo")
+    private String subtipo;
 
-    public AmostraAnalitoPK(Long amostraId, Long analitoId) {
-        this.amostraId = amostraId;
-        this.analitoId = analitoId;
+    public AmostraAnalitoPK() {
     }
 
-    // getters e setters
+    public AmostraAnalitoPK(Long amostraId, Long analitoId, String subtipo) {
+        this.amostraId = amostraId;
+        this.analitoId = analitoId;
+        this.subtipo = subtipo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AmostraAnalitoPK)) {
+            return false;
+        }
+        AmostraAnalitoPK that = (AmostraAnalitoPK) o;
+        return Objects.equals(amostraId, that.amostraId)
+                && Objects.equals(analitoId, that.analitoId)
+                && Objects.equals(subtipo, that.subtipo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amostraId, analitoId, subtipo);
+    }
+    // getters & setters
 
     public Long getAmostraId() {
         return amostraId;
@@ -41,19 +66,11 @@ public class AmostraAnalitoPK implements Serializable {
         this.analitoId = analitoId;
     }
 
-    // equals e hashCode
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AmostraAnalitoPK)) return false;
-        AmostraAnalitoPK that = (AmostraAnalitoPK) o;
-        return Objects.equals(amostraId, that.amostraId) &&
-               Objects.equals(analitoId, that.analitoId);
+    public String getSubtipo() {
+        return subtipo;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(amostraId, analitoId);
+    public void setSubtipo(String subtipo) {
+        this.subtipo = subtipo;
     }
 }

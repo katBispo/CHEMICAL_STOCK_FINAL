@@ -12,13 +12,12 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
-
 @Entity
 @Table(name = "amostra_analito")
 public class AmostraAnalito implements Serializable {
 
     @EmbeddedId
-    private AmostraAnalitoPK id = new AmostraAnalitoPK();
+    private AmostraAnalitoPK id;
 
     @ManyToOne
     @MapsId("amostraId")
@@ -26,40 +25,21 @@ public class AmostraAnalito implements Serializable {
     private Amostra amostra;
 
     @ManyToOne
-    @MapsId("analitoId") 
+    @MapsId("analitoId")
     @JoinColumn(name = "analito_id")
     private Analito analito;
-
-    @Column(name = "SUBTIPO_ANALITO")
-    private String subtipo;
-
-
 
     public AmostraAnalito() {
     }
 
-    public AmostraAnalito(Amostra amostra, Analito analito) {
+    public AmostraAnalito(Amostra amostra, Analito analito, String subtipo) {
         this.amostra = amostra;
         this.analito = analito;
-        this.id = new AmostraAnalitoPK(amostra.getId(), analito.getId());
-    }
-
-    public Amostra getAmostra() {
-        return amostra;
-    }
-
-    public void setAmostra(Amostra amostra) {
-        this.amostra = amostra;
-        this.id.setAmostraId(amostra.getId());
-    }
-
-    public Analito getAnalito() {
-        return analito;
-    }
-
-    public void setAnalito(Analito analito) {
-        this.analito = analito;
-        this.id.setAnalitoId(analito.getId());
+        this.id = new AmostraAnalitoPK(
+                amostra.getId(),
+                analito.getId(),
+                subtipo
+        );
     }
 
     public AmostraAnalitoPK getId() {
@@ -70,12 +50,24 @@ public class AmostraAnalito implements Serializable {
         this.id = id;
     }
 
+    public Amostra getAmostra() {
+        return amostra;
+    }
+
+    public void setAmostra(Amostra amostra) {
+        this.amostra = amostra;
+    }
+
+    public Analito getAnalito() {
+        return analito;
+    }
+
+    public void setAnalito(Analito analito) {
+        this.analito = analito;
+    }
 
     public String getSubtipo() {
-        return subtipo;
+        return id.getSubtipo();
     }
 
-    public void setSubtipo(String subtipo) {
-        this.subtipo = subtipo;
-    }
 }

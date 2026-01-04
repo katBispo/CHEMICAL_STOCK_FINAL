@@ -16,86 +16,113 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.laboratorio.labanalise.DTO.ProcedimentoExecucaoDTO;
+import com.laboratorio.labanalise.DTO.ProcedimentoSelectDTO;
 import com.laboratorio.labanalise.DTO.projection.ProcedimentoMaisUsadoDTO;
+import com.laboratorio.labanalise.DTO.request.ProcedimentoRequest;
 import com.laboratorio.labanalise.model.Procedimento;
-import com.laboratorio.labanalise.model.Reagente;
-import com.laboratorio.labanalise.request.ProcedimentoRequest;
-import com.laboratorio.labanalise.request.ReagenteQuantidadeRequest;
 import com.laboratorio.labanalise.services.ProcedimentoService;
-import com.laboratorio.labanalise.services.ReagenteService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping(path = "/procedimento")
+@RequestMapping("/procedimento")
 public class ProcedimentoController {
 
     @Autowired
     private ProcedimentoService service;
 
-    @Autowired
-    private ReagenteService reagenteService;
-
-    // Endpoint para salvar o procedimento
+    // ============================
+    // SALVAR PROCEDIMENTO
+    // ============================
     @PostMapping
-    public ResponseEntity<Procedimento> salvar(@RequestBody ProcedimentoRequest request) {
-        Procedimento procedimento = request.getProcedimento();
-        List<ReagenteQuantidadeRequest> reagenteQuantidadeRequests = request.getReagentesQuantidades();
-        reagenteQuantidadeRequests.stream()
-                .forEach(r -> {
-                    Reagente reagente = reagenteService.buscarPorId(r.getIdReagente());
-                    service.salvar(procedimento, reagente, r.getQuantidade());
-                });
+    public ResponseEntity<Procedimento> salvar(
+            @RequestBody ProcedimentoRequest request) {
+
+        Procedimento salvo = service.salvarProcedimentoCompleto(
+                request.getProcedimento(),
+                request.getReagentesQuantidades()
+        );
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(procedimento.getId())
+                .buildAndExpand(salvo.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(procedimento);
+        return ResponseEntity.created(uri).body(salvo);
     }
 
-    // Endpoint para listar todos os procedimentos
+    // ============================
+    // LISTAR PROCEDIMENTOS
+    // ============================
     @GetMapping
     public ResponseEntity<List<Procedimento>> listarProcedimentos() {
-        List<Procedimento> procedimentos = service.buscarTodos();
-        return ResponseEntity.ok().body(procedimentos); // Retorna todos os procedimentos
+        return ResponseEntity.ok(service.buscarTodos());
     }
 
-    // Endpoint para fazer download do PDF de um procedimento
+    // ============================
+    // DOWNLOAD PDF
+    // ============================
     @GetMapping("/download/{nomeProcedimento}")
-    public ResponseEntity<byte[]> downloadPdf(@PathVariable String nomeProcedimento) {
-        Procedimento procedimento = service.buscarPorNome(nomeProcedimento);
+    public ResponseEntity<byte[]> downloadPdf(
+            @PathVariable String nomeProcedimento) {
+
+        Procedimento procedimento
+                = service.buscarPorNome(nomeProcedimento);
 
         if (procedimento == null || procedimento.getPdfData() == null) {
             return ResponseEntity.notFound().build();
         }
 
-        // Retorna o PDF com os cabeçalhos apropriados
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + procedimento.getNomeProcedimento() + ".pdf");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf"); // Define o tipo do conteúdo
+        headers.add(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=" + procedimento.getNomeProcedimento() + ".pdf"
+        );
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(procedimento.getPdfData());
     }
 
-    // Endpoint para deletar um procedimento
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deletarProcedimento(@PathVariable Long id) {
+    // ============================
+    // DELETAR PROCEDIMENTO
+    // ============================
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarProcedimento(
+            @PathVariable Long id) {
+
         service.remover(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ============================
+    // ESTATÍSTICAS
+    // ============================
     @GetMapping("/mais-usados")
-    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> buscarTop5Procedimentos() {
-        List<ProcedimentoMaisUsadoDTO> top5 = service.buscarTop5Procedimentos();
-        return ResponseEntity.ok(top5);
+    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> buscarTop5() {
+        return ResponseEntity.ok(service.buscarTop5Procedimentos());
     }
 
     @GetMapping("/uso-total")
-    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> listarUsoTotalProcedimentos() {
-        List<ProcedimentoMaisUsadoDTO> procedimentos = service.buscarUsoTotalProcedimentos();
-        return ResponseEntity.ok(procedimentos);
+    public ResponseEntity<List<ProcedimentoMaisUsadoDTO>> usoTotal() {
+        return ResponseEntity.ok(service.buscarUsoTotalProcedimentos());
+    }
+
+    // ============================
+    // EXECUTAR PROCEDIMENTO
+    // ============================
+    @PostMapping("/executar")
+    public ResponseEntity<String> executarProcedimento(
+            @RequestBody ProcedimentoExecucaoDTO dto) {
+
+        service.executarProcedimento(dto.getProcedimentoId());
+        return ResponseEntity.ok("Procedimento executado com sucesso");
+    }
+
+    @GetMapping("/select")
+    public ResponseEntity<List<ProcedimentoSelectDTO>> listarParaSelect() {
+        return ResponseEntity.ok(service.listarParaSelect());
     }
 
 }

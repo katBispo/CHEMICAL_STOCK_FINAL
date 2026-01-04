@@ -5,12 +5,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.laboratorio.labanalise.DTO.ProcedimentoSelectDTO;
 import com.laboratorio.labanalise.DTO.projection.ProcedimentoMaisUsadoDTO;
+import com.laboratorio.labanalise.DTO.request.ReagenteQuantidadeRequest;
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
 import com.laboratorio.labanalise.repositories.ProcedimentoRepository;
+import com.laboratorio.labanalise.repositories.ReagenteRepository;
 import com.laboratorio.labanalise.repositories.ReagenteUsadoProcedimentoRepository;
+
+import jakarta.transaction.Transactional;
+
 @Service
 public class ProcedimentoService {
 
@@ -22,34 +28,68 @@ public class ProcedimentoService {
 
     @Autowired
     private ReagenteService reagenteService;
+    @Autowired
+    private ReagenteRepository reagenteRepository;
 
     @Autowired
     private MovimentacaoReagenteService movimentacaoReagenteService;
 
-    // Salvar procedimento com reagente usado
-    public Procedimento salvar(Procedimento procedimento, Reagente reagente, Double quantidade) {
-        if (reagente.getQuantidadeTotal() < quantidade) {
-            throw new IllegalArgumentException("Quantidade insuficiente no estoque do reagente.");
-        }
+    @Autowired
+    private FrascoReagenteService frascoReagenteService;
 
-        Reagente r = reagenteService.buscarPorId(reagente.getId());
-
-        ReagenteUsadoProcedimento reagenteUsadoProcedimento = criarReagenteUsadoProcedimento(procedimento, quantidade, r);
-
-        movimentacaoReagenteService.registrarMovimentacaoDeSaida(r, quantidade);
-
-        repository.save(procedimento);
-        reagenteUsadoProcedimentoRepository.save(reagenteUsadoProcedimento);
-
-        return procedimento;
+    public ProcedimentoService(
+            ProcedimentoRepository repository,
+            ReagenteUsadoProcedimentoRepository reagenteUsadoProcedimentoRepository,
+            ReagenteService reagenteService,
+            ReagenteRepository reagenteRepository,
+            MovimentacaoReagenteService movimentacaoReagenteService,
+            FrascoReagenteService frascoReagenteService
+    ) {
+        this.repository = repository;
+        this.reagenteUsadoProcedimentoRepository = reagenteUsadoProcedimentoRepository;
+        this.reagenteService = reagenteService;
+        this.reagenteRepository = reagenteRepository;
+        this.movimentacaoReagenteService = movimentacaoReagenteService;
+        this.frascoReagenteService = frascoReagenteService;
     }
 
-    private ReagenteUsadoProcedimento criarReagenteUsadoProcedimento(Procedimento procedimento, Double quantidade, Reagente r) {
+
+    // Salvar procedimento com reagente usado
+    @Transactional
+    public Procedimento salvar(
+            Procedimento procedimento,
+            Reagente reagente,
+            Double quantidade) {
+
+        // 🔹 Busca o reagente
+        Reagente r = reagenteService.buscarPorId(reagente.getId());
+
+        // 🔹 Salva o procedimento (se for novo)
+        Procedimento procedimentoSalvo = repository.save(procedimento);
+
+        // 🔹 Cria o vínculo "procedimento usa reagente X na quantidade Y"
+        ReagenteUsadoProcedimento rup
+                = criarReagenteUsadoProcedimento(
+                        procedimentoSalvo,
+                        quantidade,
+                        r
+                );
+
+        reagenteUsadoProcedimentoRepository.save(rup);
+
+        return procedimentoSalvo;
+    }
+
+    private ReagenteUsadoProcedimento criarReagenteUsadoProcedimento(
+            Procedimento procedimento,
+            Double quantidade,
+            Reagente r) {
+
         ReagenteUsadoProcedimento rup = new ReagenteUsadoProcedimento();
         rup.setReagente(r);
         rup.setProcedimento(procedimento);
         rup.setQuantidade(quantidade);
-        r.reduzirQuantidade(quantidade);
+
         return rup;
     }
 
@@ -70,19 +110,91 @@ public class ProcedimentoService {
     }
 
     // Estatísticas
-
     // Top 5 procedimentos mais usados
     public List<ProcedimentoMaisUsadoDTO> buscarTop5Procedimentos() {
         return repository.buscarUsoTotalProcedimentos()
-                         .stream()
-                         .sorted((p1, p2) -> p2.getQuantidade().compareTo(p1.getQuantidade()))
-                         .limit(5)
-                         .toList();
+                .stream()
+                .sorted((p1, p2) -> p2.getQuantidade().compareTo(p1.getQuantidade()))
+                .limit(5)
+                .toList();
+    }
+
+    @Transactional
+    public Procedimento salvarProcedimentoCompleto(
+            Procedimento procedimento,
+            List<ReagenteQuantidadeRequest> reagentesQuantidades) {
+
+        // 🔹 Salva o procedimento primeiro
+        Procedimento procedimentoSalvo = repository.save(procedimento);
+
+        // 🔹 Validação básica
+        if (reagentesQuantidades == null || reagentesQuantidades.isEmpty()) {
+            throw new RuntimeException(
+                    "Procedimento deve possuir ao menos um reagente"
+            );
+        }
+
+        // 🔹 Cria os vínculos procedimento ↔ reagente
+        for (ReagenteQuantidadeRequest rq : reagentesQuantidades) {
+
+            Reagente reagente
+                    = reagenteService.buscarPorId(rq.getIdReagente());
+
+            ReagenteUsadoProcedimento rup
+                    = criarReagenteUsadoProcedimento(
+                            procedimentoSalvo,
+                            rq.getQuantidade(),
+                            reagente
+                    );
+
+            reagenteUsadoProcedimentoRepository.save(rup);
+        }
+
+        return procedimentoSalvo;
     }
 
     // Total de uso de todos os procedimentos
     public List<ProcedimentoMaisUsadoDTO> buscarUsoTotalProcedimentos() {
         return repository.buscarUsoTotalProcedimentos();
     }
-}
 
+    @Transactional
+    public void executarProcedimento(Long procedimentoId) {
+
+        Procedimento procedimento = repository
+                .findById(procedimentoId)
+                .orElseThrow(() -> new RuntimeException("Procedimento não encontrado"));
+
+        // 🔹 Busca TODOS os reagentes usados nesse procedimento
+        List<ReagenteUsadoProcedimento> reagentesUsados
+                = reagenteUsadoProcedimentoRepository
+                        .findByProcedimento(procedimento);
+
+        if (reagentesUsados.isEmpty()) {
+            throw new RuntimeException("Procedimento não possui reagentes cadastrados");
+        }
+
+        for (ReagenteUsadoProcedimento rup : reagentesUsados) {
+
+            Reagente reagente = rup.getReagente();
+            Double quantidade = rup.getQuantidade();
+
+            frascoReagenteService.descontarQuantidade(reagente, quantidade);
+
+
+            movimentacaoReagenteService
+                    .registrarMovimentacaoDeSaida(
+                            reagente,
+                            quantidade
+                    );
+        }
+
+        procedimento.incrementarUso();
+        repository.save(procedimento);
+    }
+
+    public List<ProcedimentoSelectDTO> listarParaSelect() {
+        return repository.listarParaSelect();
+    }
+
+}
