@@ -10,6 +10,13 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  Snackbar,
+  Alert,
+  DialogTitle,
+  DialogActions,
+  Dialog,
+  DialogContentText,
+  DialogContent,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AnalitoSelector from "../components/AnalitoSelector";
@@ -43,8 +50,16 @@ function AmostraCadastro() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const location = useLocation();
 
+  const [erroEstoque, setErroEstoque] = useState([]);
+  const [openErro, setOpenErro] = useState(false);
+
   const { selectedAnalise } = location.state || {};
   const navigate = useNavigate();
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,67 +95,109 @@ function AmostraCadastro() {
     setSelectedProcedures(procedures || []);
     setShowProcedureSelector(false);
   };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  if (!selectedProcedures?.length) {
+    alert("Por favor, selecione pelo menos um procedimento.");
+    return;
+  }
 
-    if (!selectedProcedures?.length) {
-      alert("Por favor, selecione pelo menos um procedimento.");
+  if (!selectedAnalise) {
+    alert("Por favor, selecione uma análise.");
+    return;
+  }
+
+  if (!selectedAnalitos?.length) {
+    alert("Por favor, selecione pelo menos um analito com subtipo.");
+    return;
+  }
+
+  const currentDate = new Date().toISOString().split("T")[0];
+
+  const novaAmostra = new Amostra(
+    nome,
+    dataColeta,
+    prazoFinalizacao,
+    enderecoColeta,
+    descricao,
+    currentDate,
+    coordenadaColeta,
+    selectedAnalise.id,
+    selectedProcedures.map((p) => p.id),
+    "EM_ANDAMENTO",
+    selectedAnalitos
+  );
+
+  try {
+    await salvarAmostra(novaAmostra);
+
+    console.log("✅ Amostra salva com sucesso!");
+    console.log("Payload enviado:", novaAmostra);
+
+    // limpa formulário
+    setNome("");
+    setDescricao("");
+    setCoordenadaColeta("");
+    setSelectedProcedures([]);
+    setSelectedAnalitos([]);
+    setShowAnalitoSelector(false);
+    setShowProcedureSelector(false);
+
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Amostra cadastrada com sucesso!",
+    });
+
+    navigate("/");
+
+  } catch (err) {
+    console.error("Erro ao salvar a amostra:", err);
+    console.log("Payload enviado:", novaAmostra);
+
+    /**
+     * 🔥 ERRO DE NEGÓCIO — ESTOQUE INSUFICIENTE
+     * err já é o JSON vindo do backend
+     */
+    if (err.erro === "ESTOQUE_INSUFICIENTE") {
+      console.log("Detalhes do estoque:", err.detalhes);
+
+      setErroEstoque(err.detalhes || []);
+      setOpenErro(true);
       return;
     }
 
-    if (!selectedAnalise) {
-      alert("Por favor, selecione uma análise.");
-      return;
-    }
+    /**
+     * ❌ OUTROS ERROS
+     */
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: err.mensagem || "Erro ao salvar a amostra. Tente novamente.",
+    });
+  }
+};
 
-    if (!selectedAnalitos?.length) {
-      alert("Por favor, selecione pelo menos um analito com subtipo.");
-      return;
-    }
-
-    const currentDate = new Date().toISOString().split("T")[0];
-
-    const novaAmostra = new Amostra(
-      nome,
-      dataColeta,
-      prazoFinalizacao,
-      enderecoColeta,
-      descricao,
-      currentDate,
-      coordenadaColeta,
-      selectedAnalise.id,
-      selectedProcedures.map((p) => p.id),
-      "EM_ANDAMENTO",
-      selectedAnalitos
-    );
-
-    try {
-      await salvarAmostra(novaAmostra);
-      console.log("✅ Amostra salva com sucesso!");
-      console.log("Payload enviado:", novaAmostra);
-
-      setNome("");
-      setDescricao("");
-      setCoordenadaColeta("");
-      setSelectedProcedures([]);
-      setSelectedAnalitos([]);
-      setShowAnalitoSelector(false);
-      setShowProcedureSelector(false);
-
-      navigate("/");
-    } catch (error) {
-      console.error("Erro ao salvar a amostra:", error);
-      console.log("Payload enviado:", novaAmostra);
-
-      alert("Erro ao salvar a amostra. Verifique o console para detalhes.");
-    }
-  };
 
   const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
   return (
     <Box sx={{ display: "flex" }}>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
       <AppBar
         position="fixed"
         sx={{ bgcolor: "#4CAF50", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -381,7 +438,6 @@ function AmostraCadastro() {
                         </Typography>
                       </ListItem>
                     ))}
-                    
                   </List>
                 </Box>
               )}
@@ -420,6 +476,34 @@ function AmostraCadastro() {
               </Button>
             </Box>
           </form>
+          <Dialog open={openErro} onClose={() => setOpenErro(false)}>
+            <DialogTitle>⚠️ Estoque insuficiente</DialogTitle>
+
+            <DialogContent>
+              <DialogContentText>
+                Não foi possível cadastrar a amostra porque os seguintes
+                reagentes estão em falta:
+              </DialogContentText>
+
+              <ul>
+                {erroEstoque.map((item, index) => (
+                  <li key={index}>
+                    <strong>Procedimento:</strong> {item.procedimento}
+                    <br />
+                    <strong>Reagente:</strong> {item.reagente}
+                    <br />
+                    <strong>Disponível:</strong> {item.quantidadeDisponivel}
+                    <br />
+                    <strong>Necessário:</strong> {item.quantidadeNecessaria}
+                  </li>
+                ))}
+              </ul>
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={() => setOpenErro(false)}>Fechar</Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Box>
     </Box>

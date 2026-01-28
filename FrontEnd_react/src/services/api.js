@@ -35,6 +35,8 @@ export async function apiPost(endpoint, body) {
     return response.data;
   } catch (error) {
     handleApiError(error);
+        throw error; 
+
   }
 }
 
@@ -65,13 +67,17 @@ export async function apiDelete(endpoint) {
 
 // Tratamento centralizado de erros
 function handleApiError(error) {
-  if (error.response?.status === 401|| error.response?.status === 403) {
+  if (error.response?.status === 401 || error.response?.status === 403) {
     localStorage.removeItem("token");
     localStorage.removeItem("tokenExp");
-    window.location.href = "/loginPage"; // força logout
+    window.location.href = "/loginPage";
     return;
   }
-  throw error.response?.data?.message || error.message || "Erro inesperado";
+
+  // 👉 lança o JSON inteiro, não só uma string
+  throw error.response?.data || {
+    mensagem: error.message || "Erro inesperado",
+  };
 }
 
 

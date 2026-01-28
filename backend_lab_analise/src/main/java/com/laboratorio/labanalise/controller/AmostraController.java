@@ -42,17 +42,12 @@ public class AmostraController {
     @Autowired
     private AmostraRepository repository;
 
+@PostMapping
+public ResponseEntity<Amostra> salvar(@RequestBody AmostraDTO dto) {
+    Amostra amostra = service.saveAmostra(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(amostra);
+}
 
-    @PostMapping
-    public ResponseEntity<?> salvar(@RequestBody AmostraDTO dto) {
-        try {
-            Amostra amostra = service.saveAmostra(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(amostra);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
     @GetMapping
     public ResponseEntity<List<AmostraDTO>> listarAmostras() {

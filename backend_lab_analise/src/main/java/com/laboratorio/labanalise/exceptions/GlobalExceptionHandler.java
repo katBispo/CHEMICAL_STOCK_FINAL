@@ -1,5 +1,8 @@
 package com.laboratorio.labanalise.exceptions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +14,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityError(DataIntegrityViolationException ex) {
-
-        String message = "Erro: Você tentou cadastrar um CPF que já está sendo usado.";
-
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(message);
+                .body("Erro: Você tentou cadastrar um CPF que já está sendo usado.");
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeError(RuntimeException ex) {
+   @ExceptionHandler(EstoqueInsuficienteException.class)
+public ResponseEntity<Map<String, Object>> handleEstoqueInsuficiente(
+        EstoqueInsuficienteException ex) {
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage());
-    }
+    Map<String, Object> body = new HashMap<>();
+    body.put("status", 400);
+    body.put("erro", "ESTOQUE_INSUFICIENTE");
+    body.put("mensagem", ex.getMessage());
+    body.put("detalhes", ex.getFaltas()); 
+    return ResponseEntity.badRequest().body(body);
+}
+
 }

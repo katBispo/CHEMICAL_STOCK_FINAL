@@ -1,13 +1,17 @@
 package com.laboratorio.labanalise.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.laboratorio.labanalise.DTO.FaltaReagenteDetalheDTO;
 import com.laboratorio.labanalise.DTO.ProcedimentoSelectDTO;
 import com.laboratorio.labanalise.DTO.projection.ProcedimentoMaisUsadoDTO;
 import com.laboratorio.labanalise.DTO.request.ReagenteQuantidadeRequest;
+import com.laboratorio.labanalise.exceptions.EstoqueInsuficienteException;
+import com.laboratorio.labanalise.exceptions.QuantidadeInsuficienteException;
 import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.ReagenteUsadoProcedimento;
@@ -52,7 +56,6 @@ public class ProcedimentoService {
         this.movimentacaoReagenteService = movimentacaoReagenteService;
         this.frascoReagenteService = frascoReagenteService;
     }
-
 
     // Salvar procedimento com reagente usado
     @Transactional
@@ -165,15 +168,41 @@ public class ProcedimentoService {
                 .findById(procedimentoId)
                 .orElseThrow(() -> new RuntimeException("Procedimento não encontrado"));
 
-        // 🔹 Busca TODOS os reagentes usados nesse procedimento
         List<ReagenteUsadoProcedimento> reagentesUsados
-                = reagenteUsadoProcedimentoRepository
-                        .findByProcedimento(procedimento);
+                = reagenteUsadoProcedimentoRepository.findByProcedimento(procedimento);
 
         if (reagentesUsados.isEmpty()) {
             throw new RuntimeException("Procedimento não possui reagentes cadastrados");
         }
 
+        List<FaltaReagenteDetalheDTO> faltas = new ArrayList<>();
+
+        // 🔹 PRIMEIRO: validar tudo
+        for (ReagenteUsadoProcedimento rup : reagentesUsados) {
+
+            Reagente reagente = rup.getReagente();
+            Double quantidade = rup.getQuantidade();
+
+            try {
+                frascoReagenteService.descontarQuantidade(reagente, quantidade);
+            } catch (QuantidadeInsuficienteException e) {
+
+                faltas.add(
+                        new FaltaReagenteDetalheDTO(
+                                reagente.getNome(),
+                                procedimento.getNomeProcedimento(),
+                                quantidade,
+                                e.getDisponivel()
+                        )
+                );
+            }
+        }
+
+        if (!faltas.isEmpty()) {
+            throw new EstoqueInsuficienteException(faltas);
+        }
+
+        // 🔹 SEGUNDO: agora sim executa de verdade
         for (ReagenteUsadoProcedimento rup : reagentesUsados) {
 
             Reagente reagente = rup.getReagente();
@@ -181,12 +210,10 @@ public class ProcedimentoService {
 
             frascoReagenteService.descontarQuantidade(reagente, quantidade);
 
-
-            movimentacaoReagenteService
-                    .registrarMovimentacaoDeSaida(
-                            reagente,
-                            quantidade
-                    );
+            movimentacaoReagenteService.registrarMovimentacaoDeSaida(
+                    reagente,
+                    quantidade
+            );
         }
 
         procedimento.incrementarUso();

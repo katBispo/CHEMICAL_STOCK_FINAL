@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.laboratorio.labanalise.exceptions.QuantidadeInsuficienteException;
 import com.laboratorio.labanalise.model.FrascoReagente;
+import com.laboratorio.labanalise.model.Procedimento;
 import com.laboratorio.labanalise.model.Reagente;
 import com.laboratorio.labanalise.model.enums.StatusFrasco;
 import com.laboratorio.labanalise.repositories.FrascoReagenteRepository;
@@ -34,7 +36,7 @@ public class FrascoReagenteService {
     }
 
     @Transactional
-    public List<FrascoReagente> descontarQuantidade(Reagente reagente, Double quantidade) {
+    public List<FrascoReagente> descontarQuantidade(Reagente reagente, Double quantidade, Procedimento procedimento) {
 
         double restante = quantidade;
         List<FrascoReagente> usados = new ArrayList<>();
@@ -43,7 +45,9 @@ public class FrascoReagenteService {
 
         for (FrascoReagente frasco : frascos) {
 
-            if (restante <= 0) break;
+            if (restante <= 0) {
+                break;
+            }
 
             double disponivel = frasco.getQuantidadeAtual();
             double usado = Math.min(disponivel, restante);
@@ -54,20 +58,20 @@ public class FrascoReagenteService {
 
             frasco.setStatus(
                     frasco.getQuantidadeAtual() == 0
-                            ? StatusFrasco.VAZIO
-                            : StatusFrasco.EM_USO
+                    ? StatusFrasco.VAZIO
+                    : StatusFrasco.EM_USO
             );
 
             repository.save(frasco);
             usados.add(frasco);
         }
-
         if (restante > 0) {
-            throw new RuntimeException(
-                    "Estoque insuficiente para o reagente: " + reagente.getNome()
-            );
-        }
+            double totalDisponivel = frascos.stream()
+                    .mapToDouble(FrascoReagente::getQuantidadeAtual)
+                    .sum();
 
+            throw new QuantidadeInsuficienteException(totalDisponivel);
+        }
         return usados;
     }
 
@@ -78,7 +82,17 @@ public class FrascoReagenteService {
                 .sum();
     }
 
-     public List<FrascoReagente> listarTodos() {
+    public List<FrascoReagente> listarTodos() {
         return repository.findAll();
     }
+
+    //sobrecarga
+    @Transactional
+    public List<FrascoReagente> descontarQuantidade(
+            Reagente reagente,
+            Double quantidade
+    ) {
+        return descontarQuantidade(reagente, quantidade, null);
+    }
+
 }
