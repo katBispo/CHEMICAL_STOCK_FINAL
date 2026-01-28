@@ -71,15 +71,25 @@ public class ReagenteService {
         Reagente reagente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reagente não encontrado"));
 
-        int frascosAntes = reagente.getQuantidadeDeFrascos();
-        int frascosDepois = reagenteNovo.getQuantidadeDeFrascos();
+        int frascosEntrada = reagenteNovo.getQuantidadeDeFrascos();
 
-        atualizarDadosBasicos(reagente, reagenteNovo);
-
-        // Se aumentou a quantidade de frascos → cria novos
-        if (frascosDepois > frascosAntes) {
-            criarNovosFrascos(reagente, frascosDepois - frascosAntes);
+        if (frascosEntrada <= 0) {
+            throw new IllegalArgumentException("Quantidade de frascos inválida");
         }
+
+        // 🔹 SOMA ao estoque existente (regra de negócio correta)
+        int totalFrascos = reagente.getQuantidadeDeFrascos() + frascosEntrada;
+        reagente.setQuantidadeDeFrascos(totalFrascos);
+
+        // 🔹 Atualiza apenas dados que realmente podem mudar na reposição
+        reagente.setDataValidade(reagenteNovo.getDataValidade());
+        reagente.setQuantidadePorFrasco(reagenteNovo.getQuantidadePorFrasco());
+        reagente.setLote(reagenteNovo.getLote());
+
+        // ❌ NÃO setar atualizadoEm
+        // O Spring Data JPA faz isso automaticamente via @LastModifiedDate
+        // 🔹 Cria os novos frascos físicos
+        criarNovosFrascos(reagente, frascosEntrada);
 
         return repository.save(reagente);
     }
@@ -113,8 +123,6 @@ public class ReagenteService {
             frascoReagenteService.salvar(frasco);
         }
     }
-
-   
 
     // =========================
     // CONSULTAS / DASHBOARD
@@ -209,7 +217,7 @@ public class ReagenteService {
             mov.setFrasco(frasco);
             mov.setQuantidadeAlterada(frasco.getQuantidadeMovimentada());
             mov.setDataMovimentacao(LocalDateTime.now());
-           //mov.setDataMovimentacao(null);
+            //mov.setDataMovimentacao(null);
             mov.setMotivo(dto.getMotivo());
 
             movimentacaoReagenteService.salvar(mov);

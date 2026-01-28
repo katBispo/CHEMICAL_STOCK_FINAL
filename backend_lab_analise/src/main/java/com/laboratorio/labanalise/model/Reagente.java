@@ -24,6 +24,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+
 @Entity
 @Table(name = "REAGENTE")
 @EntityListeners(AuditingEntityListener.class)
@@ -194,6 +195,8 @@ public class Reagente implements Serializable {
         this.quantidadePorFrasco = quantidadePorFrasco;
     }
 
+    
+
     // =========================
     // EQUALS / HASHCODE
     // =========================
@@ -208,5 +211,37 @@ public class Reagente implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String getCadastradoPor() {
+        return cadastradoPor;
+    }
+
+    public void setCadastradoPor(String cadastradoPor) {
+        this.cadastradoPor = cadastradoPor;
+    }
+
+    public String getAtualizadoPor() {
+        return atualizadoPor;
+    }
+
+    public void setAtualizadoPor(String atualizadoPor) {
+        this.atualizadoPor = atualizadoPor;
+    }
+
+    public Instant getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(Instant criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
+    public Instant getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(Instant atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
     }
 }
