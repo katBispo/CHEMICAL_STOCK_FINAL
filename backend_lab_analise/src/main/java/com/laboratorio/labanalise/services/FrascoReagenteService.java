@@ -86,6 +86,23 @@ public class FrascoReagenteService {
         return repository.findAll();
     }
 
+    public void validarQuantidadeDisponivel(Reagente reagente, Double quantidade) {
+
+        if (quantidade == null || quantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade inválida para validação.");
+        }
+
+        Double totalDisponivel = repository
+                .findByReagente(reagente)
+                .stream()
+                .mapToDouble(FrascoReagente::getQuantidadeAtual)
+                .sum();
+
+        if (totalDisponivel < quantidade) {
+            throw new QuantidadeInsuficienteException(totalDisponivel);
+        }
+    }
+
     //sobrecarga
     @Transactional
     public List<FrascoReagente> descontarQuantidade(

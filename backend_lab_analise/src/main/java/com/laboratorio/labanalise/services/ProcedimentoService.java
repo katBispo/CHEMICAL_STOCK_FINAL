@@ -177,14 +177,14 @@ public class ProcedimentoService {
 
         List<FaltaReagenteDetalheDTO> faltas = new ArrayList<>();
 
-        // 🔹 PRIMEIRO: validar tudo
+        // 🔹 PRIMEIRO: apenas validar (sem descontar!)
         for (ReagenteUsadoProcedimento rup : reagentesUsados) {
 
             Reagente reagente = rup.getReagente();
             Double quantidade = rup.getQuantidade();
 
             try {
-                frascoReagenteService.descontarQuantidade(reagente, quantidade);
+                frascoReagenteService.validarQuantidadeDisponivel(reagente, quantidade);
             } catch (QuantidadeInsuficienteException e) {
 
                 faltas.add(
@@ -202,7 +202,7 @@ public class ProcedimentoService {
             throw new EstoqueInsuficienteException(faltas);
         }
 
-        // 🔹 SEGUNDO: agora sim executa de verdade
+        // 🔹 SEGUNDO: agora sim desconta de verdade
         for (ReagenteUsadoProcedimento rup : reagentesUsados) {
 
             Reagente reagente = rup.getReagente();

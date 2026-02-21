@@ -156,10 +156,7 @@ function AmostraCadastro() {
     console.error("Erro ao salvar a amostra:", err);
     console.log("Payload enviado:", novaAmostra);
 
-    /**
-     * 🔥 ERRO DE NEGÓCIO — ESTOQUE INSUFICIENTE
-     * err já é o JSON vindo do backend
-     */
+
     if (err.erro === "ESTOQUE_INSUFICIENTE") {
       console.log("Detalhes do estoque:", err.detalhes);
 
@@ -168,9 +165,6 @@ function AmostraCadastro() {
       return;
     }
 
-    /**
-     * ❌ OUTROS ERROS
-     */
     setSnackbar({
       open: true,
       severity: "error",
