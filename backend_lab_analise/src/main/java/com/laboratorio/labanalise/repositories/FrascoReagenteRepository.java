@@ -50,4 +50,11 @@ public interface FrascoReagenteRepository extends JpaRepository<FrascoReagente, 
 
     List<FrascoReagente> findByReagente(Reagente reagente);
 
+    @Query("""
+    SELECT COUNT(f)
+    FROM FrascoReagente f
+    WHERE f.status IN ('CHEIO', 'EM_USO')
+    AND f.quantidadeAtual > 0
+""")
+    Long contarFrascosDisponiveis();
 }

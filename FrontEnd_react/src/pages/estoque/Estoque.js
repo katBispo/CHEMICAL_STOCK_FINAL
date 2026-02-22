@@ -29,6 +29,17 @@ import GraficoValidadeReagentes from "./graficos/GraficoValidadeReagentes";
 import TabelaListaReagentes from "./tabelas/TabelaListaReagentes";
 
 import { apiGet } from "../../services/api";
+import {
+  getReagentes,
+  getQuantidadeReagentesVencidos,
+  getQuantidadeControlados,
+  getGraficoValidade
+} from "../../services/reagenteService";
+
+import {
+  getTotalFrascos
+} from "../../services/frascoReagenteService";
+
 
 /* ======================================================
    KPI CARD COM MODAL (OVERLAY)
@@ -184,34 +195,35 @@ export default function EstoqueReagentes() {
     carregarDados();
   }, []);
 
-  const carregarDados = async () => {
-    try {
-      const dados = await apiGet("/reagente");
+const carregarDados = async () => {
+  try {
+    const [
+      dadosReagentes,
+      totalFrascos,
+      quantidadeVencidos,
+      quantidadeControlados,
+      dadosGrafico
+    ] = await Promise.all([
+      getReagentes(),
+      getTotalFrascos(),                 // vem do FrascoService
+      getQuantidadeReagentesVencidos(), // vem do ReagenteService
+      getQuantidadeControlados(),       // vem do ReagenteService
+      getGraficoValidade()              // vem do ReagenteService
+    ]);
 
-      const hoje = new Date();
+    setReagentes(dadosReagentes);
 
-      const vencidos = dados.filter((r) => new Date(r.validade) < hoje);
+    setKpis({
+      frascos: totalFrascos,
+      vencidos: quantidadeVencidos,
+      proximos: dadosGrafico.proximos ?? 0,
+      controlados: quantidadeControlados,
+    });
 
-      const proximos = dados.filter((r) => {
-        const validade = new Date(r.validade);
-        const diff = (validade - hoje) / (1000 * 60 * 60 * 24);
-        return diff > 0 && diff <= 30;
-      });
-
-      const controlados = dados.filter((r) => r.controlado);
-
-      setReagentes(dados);
-      setKpis({
-        frascos: dados.length,
-        vencidos: vencidos.length,
-        proximos: proximos.length,
-        controlados: controlados.length,
-      });
-    } catch (error) {
-      console.error("Erro ao carregar estoque:", error);
-    }
-  };
-
+  } catch (error) {
+    console.error("Erro ao carregar estoque:", error);
+  }
+};
   return (
     <>
       {/* APP BAR */}
@@ -255,7 +267,7 @@ export default function EstoqueReagentes() {
               modalContent={
                 <TabelaListaReagentes
                   reagentes={reagentes.filter(
-                    (r) => new Date(r.validade) < new Date()
+                    (r) => new Date(r.validade) < new Date(),
                   )}
                 />
               }

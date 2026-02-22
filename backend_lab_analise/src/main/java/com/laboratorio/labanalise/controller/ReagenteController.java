@@ -144,4 +144,9 @@ public class ReagenteController {
         service.registrarSaida(id, dto);
         return ResponseEntity.ok("Saída registrada com sucesso");
     }
+
+    @GetMapping("/vencidos/quantidade")
+    public ResponseEntity<Long> quantidadeVencidos() {
+        return ResponseEntity.ok(service.contarReagentesVencidos());
+    }
 }

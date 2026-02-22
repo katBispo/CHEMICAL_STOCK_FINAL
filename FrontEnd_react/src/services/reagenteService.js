@@ -43,11 +43,6 @@ export async function getQuantidadeReagentesVencidos() {
   return apiGet(`${BASE_ENDPOINT}/vencidos/quantidade`);
 }
 
-// 🔹 Buscar total de frascos
-export async function getTotalFrascos() {
-  return apiGet(`${BASE_ENDPOINT}/total-frascos`);
-}
-
 // 🔹 Contar reagentes por tipo (para gráfico ou dashboard)
 export async function getQuantidadePorTipo() {
   return apiGet(`${BASE_ENDPOINT}/quantidade-por-tipo`);

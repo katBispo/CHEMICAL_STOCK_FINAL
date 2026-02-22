@@ -1,14 +1,14 @@
 package com.laboratorio.labanalise.repositories;
 
-import com.laboratorio.labanalise.model.Reagente;
-import com.laboratorio.labanalise.model.enums.TipoReagente;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.laboratorio.labanalise.model.Reagente;
+import com.laboratorio.labanalise.model.enums.TipoReagente;
 
 public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
 
@@ -41,5 +41,12 @@ public interface ReagenteRepository extends JpaRepository<Reagente, Long> {
             @Param("tipo") TipoReagente tipo,
             @Param("dataInicio") LocalDate dataInicio,
             @Param("dataFim") LocalDate dataFim);
+
+    @Query("""
+    SELECT COUNT(r)
+    FROM Reagente r
+    WHERE r.dataValidade < :hoje
+""")
+    Long contarReagentesVencidos(@Param("hoje") LocalDate hoje);
 
 }

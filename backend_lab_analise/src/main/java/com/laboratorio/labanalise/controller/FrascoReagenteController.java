@@ -3,6 +3,7 @@ package com.laboratorio.labanalise.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,5 +40,10 @@ public class FrascoReagenteController {
         dto.setStatus(frasco.getStatus());
         dto.setDataValidade(frasco.getDataValidade());
         return dto;
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Long> totalFrascosDisponiveis() {
+        return ResponseEntity.ok(service.obterTotalDeFrascos());
     }
 }

@@ -234,4 +234,7 @@ public class ReagenteService {
                 .toList();
     }
 
+ public Long contarReagentesVencidos() {
+    return repository.contarReagentesVencidos(LocalDate.now());
+}
 }

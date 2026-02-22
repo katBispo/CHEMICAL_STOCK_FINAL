@@ -112,4 +112,7 @@ public class FrascoReagenteService {
         return descontarQuantidade(reagente, quantidade, null);
     }
 
+    public Long obterTotalDeFrascos() {
+        return repository.contarFrascosDisponiveis();
+    }
 }
